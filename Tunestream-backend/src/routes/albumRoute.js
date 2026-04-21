@@ -15,7 +15,7 @@ const albumRouter = express.Router();
 albumRouter.get("/list", listAlbum);
 
 // Protected Routes
-albumRouter.post("/add", protect, upload.single("image"), addAlbum);
+albumRouter.post("/add", protect, authorizeRoles("admin"), upload.single("image"), addAlbum);
 albumRouter.delete("/:id", protect, authorizeRoles("admin"), removeAlbum); 
 
 export default albumRouter;

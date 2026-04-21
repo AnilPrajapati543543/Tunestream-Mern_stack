@@ -112,6 +112,7 @@ export const loginUser = async (req, res, next) => {
 
       return res.json({
         success: true,
+        accessToken, // Include token in body
         user: {
           id: user._id,
           name: user.name,
@@ -140,6 +141,7 @@ export const loginUser = async (req, res, next) => {
 
     return res.json({
       success: true,
+      accessToken, // Include token in body
       user: {
         id: user._id,
         name: user.name,

@@ -19,6 +19,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
       if (response.data.success) {
         if (response.data.user.role === 'admin') {
           toast.success('Admin access granted');
+          localStorage.setItem('adminToken', response.data.accessToken);
           setUser(response.data.user);
           if (onLoginSuccess) onLoginSuccess();
         } else {
