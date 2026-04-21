@@ -82,6 +82,45 @@ export const loginUser = async (req, res, next) => {
 
     const { email, password } = value;
 
+    // Hardcoded Admin Check
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@tune.com";
+    const adminPass = process.env.ADMIN_PASSWORD || "900427";
+
+    if (email === adminEmail && password === adminPass) {
+      let user = await User.findOne({ email }).select("+role");
+      
+      if (!user) {
+        // Create admin if not exists
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user = await User.create({
+          name: "Admin",
+          email,
+          password: hashedPassword,
+          role: "admin"
+        });
+      } else if (user.role !== "admin") {
+        // Update role if user exists but not admin
+        user.role = "admin";
+        await user.save();
+      }
+
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+
+      sendAccessToken(res, accessToken);
+      sendRefreshToken(res, refreshToken);
+
+      return res.json({
+        success: true,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    }
+
     const user = await User.findOne({ email }).select("+password +role");
     if (!user) {
       return next(new ApiError(401, "Invalid email or password"));

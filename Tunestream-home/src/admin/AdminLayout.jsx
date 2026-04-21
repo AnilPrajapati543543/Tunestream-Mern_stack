@@ -8,9 +8,12 @@ import AddAlbum from './pages/AddAlbum/AddAlbum';
 import ListAlbum from './pages/ListAlbum/ListAlbum';
 import Sidebar from './components/Sidebar/Sidebar';
 import Navbar from './components/Navbar/Navbar';
+import AdminLogin from './pages/AdminLogin';
+import { useAuth } from '../context/AuthContext';
 
 const AdminLayout = () => {
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
@@ -20,6 +23,20 @@ const AdminLayout = () => {
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode)
   }, [darkMode])
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-[#0f0f1a]">
+        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Admin Auth Gate
+  if (!user || user.role !== 'admin') {
+    return <AdminLogin />;
+  }
 
   return (
     <div className={`flex min-h-screen w-full ${darkMode ? 'bg-[#0f0f1a] text-white' : 'bg-gray-100 text-gray-800'}`}>
