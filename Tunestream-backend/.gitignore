@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+
+# Environment variables (VERY IMPORTANT)
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# Runtime files
+pids/
+*.pid
+*.pid.lock
+
+# Uploads (if using multer/cloudinary temp)
+uploads/
+public/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# Misc
+*.swp
+*.swo

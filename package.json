@@ -1,0 +1,19 @@
+{
+  "name": "tunestream-full-stack",
+  "version": "1.0.0",
+  "description": "Tunestream Full Stack Application",
+  "main": "index.js",
+  "scripts": {
+    "dev:home": "npm run dev --prefix Tunestream-home",
+    "dev:backend": "npm run dev --prefix Tunestream-backend",
+    "dev:admin": "npm run dev --prefix Tunestream-admin",
+    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:home\"",
+    "install:home": "npm install --prefix Tunestream-home",
+    "install:backend": "npm install --prefix Tunestream-backend",
+    "install:admin": "npm install --prefix Tunestream-admin",
+    "install-all": "npm install --prefix Tunestream-home && npm install --prefix Tunestream-backend && npm install --prefix Tunestream-admin"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
