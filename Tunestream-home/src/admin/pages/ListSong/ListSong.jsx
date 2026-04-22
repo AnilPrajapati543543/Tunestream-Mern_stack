@@ -56,7 +56,7 @@ const ListSong = () => {
       />
 
       <div className="border rounded overflow-hidden">
-        <div className="grid grid-cols-5 p-3 bg-gray-700 sticky top-0">
+        <div className="grid grid-cols-5 p-3 bg-gray-10 sticky top-0">
           <b>Img</b><b>Name</b><b>Album</b><b>Duration</b><b>Action</b>
         </div>
 
