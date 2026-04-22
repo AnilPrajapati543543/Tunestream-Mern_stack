@@ -51,7 +51,14 @@ const ListAlbum = () => {
 
       <input
         placeholder="Search album..."
-        className="mb-4 p-2 border rounded w-full"
+        className=" mb-4 p-2 w-full rounded 
+  bg-transparent 
+  border border-gray-400/40 
+  text-white 
+  placeholder-gray-400
+  focus:outline-none 
+  focus:border-green-500 
+  focus:ring-1 focus:ring-green-500"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
