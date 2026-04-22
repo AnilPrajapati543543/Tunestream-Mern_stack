@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { PlayerContext } from "../context/PlayerContext";
 import { assets } from "../assets/assets.js";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,13 +18,20 @@ const NowPlayingCard = () => {
 
   const [collapsed, setCollapsed] = useState(true);
 
+  // Prevent re-creation every render
+  const bars = useMemo(() => [0.4, 0.8, 1.2, 0.7, 1], []);
+
   useEffect(() => {
     if (track && playStatus) setCollapsed(false);
   }, [track, playStatus]);
 
   if (!track) return null;
 
-  const bars = [0.4, 0.8, 1.2, 0.7, 1];
+  const handleSeek = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const percent = ((e.clientX - rect.left) / rect.width) * 100;
+    seekSong(percent);
+  };
 
   return (
     <AnimatePresence>
@@ -34,10 +41,11 @@ const NowPlayingCard = () => {
           initial={{ width: 0, opacity: 0 }}
           animate={{ width: 320, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
+          transition={{ duration: 0.35 }}
           className="h-full p-2 flex overflow-hidden"
         >
           <motion.div
+            layout
             className="w-full rounded-2xl p-4 flex flex-col text-white overflow-hidden shadow-2xl relative"
             style={{
               background: `linear-gradient(135deg, ${
@@ -49,24 +57,22 @@ const NowPlayingCard = () => {
 
             {/* HEADER */}
             <div className="flex justify-end relative z-10">
-              <motion.button
+              <button
                 onClick={() => setCollapsed(true)}
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-1 rounded-full hover:bg-white/10"
+                className="p-1 rounded-full hover:bg-white/10 transition"
+                aria-label="Collapse player"
               >
                 <img className="w-5" src={assets.arrow_icon} alt="collapse" />
-              </motion.button>
+              </button>
             </div>
 
             {/* IMAGE */}
             <div className="relative mt-3 z-10">
               <motion.img
                 src={track.image}
-                whileHover={{ scale: 1.04 }}
-                transition={{ duration: 0.3 }}
+                whileHover={{ scale: 1.03 }}
                 className="rounded-xl w-full h-[200px] object-cover shadow-lg"
-                alt="track"
+                alt={track.name}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
             </div>
@@ -80,13 +86,16 @@ const NowPlayingCard = () => {
                 {track.desc}
               </p>
 
+              {/* VISUALIZER */}
               <div className="flex justify-center items-end gap-[4px] mt-3 h-6">
                 {bars.map((h, i) => (
                   <motion.div
                     key={i}
                     className="w-[3px] bg-emerald-400 rounded-full"
                     animate={{
-                      scaleY: playStatus ? [0.4, h, 0.6, h + 0.2, 0.5] : 0.4,
+                      scaleY: playStatus
+                        ? [0.4, h, 0.6, h + 0.2, 0.5]
+                        : 0.4,
                     }}
                     transition={{
                       repeat: Infinity,
@@ -101,15 +110,15 @@ const NowPlayingCard = () => {
 
             {/* CONTROLS */}
             <div className="mt-auto z-10">
+
               {/* PROGRESS */}
               <div
-                onClick={seekSong}
+                onClick={handleSeek}
                 className="h-[5px] bg-gray-600/60 rounded-full mt-4 cursor-pointer overflow-hidden"
               >
                 <motion.div
                   className="bg-green-500 h-full"
-                  animate={{ width: `${progress}%` }}
-                  transition={{ ease: "easeOut", duration: 0.3 }}
+                  style={{ width: `${progress}%` }}
                 />
               </div>
 
@@ -119,19 +128,19 @@ const NowPlayingCard = () => {
                   onClick={previous}
                   src={assets.prev_icon}
                   className="w-6 cursor-pointer hover:scale-125 transition"
-                  alt="prev"
+                  alt="previous"
                 />
 
                 <motion.button
                   onClick={() => (playStatus ? pause() : play())}
                   whileTap={{ scale: 0.9 }}
-                  className="w-12 h-12 bg-white rounded-full flex items-center justify-center 
-                             shadow-lg"
+                  className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"
+                  aria-label="Play Pause"
                 >
                   <img
                     src={playStatus ? assets.pause_icon : assets.play_icon}
                     className="w-6 h-6 invert"
-                    alt="play"
+                    alt="play-pause"
                   />
                 </motion.button>
 
@@ -155,4 +164,4 @@ const NowPlayingCard = () => {
   );
 };
 
-export default NowPlayingCard;
+export default React.memo(NowPlayingCard);
