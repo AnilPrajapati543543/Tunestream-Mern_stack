@@ -17,7 +17,6 @@ const ListAlbum = () => {
         toast.error("Failed to fetch albums");
       }
     } catch (error) {
-      console.error(error);
       toast.error("Error occurred while fetching albums");
     }
   };
@@ -27,14 +26,13 @@ const ListAlbum = () => {
     try {
       const response = await axios.delete(`/album/${id}`);
 
-if (response.data.success) {
-  alert("Album deleted");
-  fetchAlbums();
-} else {
+      if (response.data.success) {
+        toast.success("Album deleted");
+        fetchAlbums();
+      } else {
         toast.error("Failed to delete album");
       }
     } catch (error) {
-      console.error(error);
       toast.error("Error occurred while deleting album");
     }
   };
@@ -44,40 +42,81 @@ if (response.data.success) {
   }, []);
 
   return (
-    <div>
-      <p className="text-lg font-semibold">All Albums List</p>
-      <br />
+    <div className="p-6 w-full h-full flex flex-col">
+      {/* Title */}
+      <h2 className="text-2xl font-semibold mb-4">All Albums</h2>
 
-      {/* Header */}
-      <div className="sm:grid hidden grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 bg-gray-100">
-        <b>Image</b>
-        <b>Name</b>
-        <b>Description</b>
-        <b>Album Colour</b>
-        <b>Action</b>
-      </div>
+      {/* Container */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full">
 
-      {/* List */}
-      {data.map((item) => (
-        <div
-          key={item._id}
-          className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5"
-        >
-          <img className="w-12" src={item.image} alt={item.name} />
-          <p>{item.name}</p>
-          <p>{item.desc}</p>
-
-          {/* FIXED: removed warning */}
-          <input type="color" defaultValue={item.bgColour} />
-
-          <p
-            className="cursor-pointer text-red-500 font-bold"
-            onClick={() => removeAlbum(item._id)}
-          >
-            X
-          </p>
+        {/* Header */}
+        <div className="grid grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] 
+                        bg-gray-100 text-gray-700 text-sm font-semibold
+                        p-4 border-b">
+          <p>Image</p>
+          <p>Name</p>
+          <p>Description</p>
+          <p>Color</p>
+          <p className="text-center">Action</p>
         </div>
-      ))}
+
+        {/* Scrollable List */}
+        <div className="overflow-y-auto max-h-[70vh]">
+
+          {data.length === 0 ? (
+            <p className="p-4 text-gray-500 text-center">
+              No albums available
+            </p>
+          ) : (
+            data.map((item) => (
+              <div
+                key={item._id}
+                className="grid grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] 
+                           items-center p-4 border-b text-sm
+                           hover:bg-gray-50 transition duration-200"
+              >
+                {/* Image */}
+                <img
+                  className="w-12 h-12 object-cover rounded"
+                  src={item.image}
+                  alt={item.name}
+                />
+
+                {/* Name */}
+                <p className="font-medium text-gray-800">
+                  {item.name}
+                </p>
+
+                {/* Description */}
+                <p className="text-gray-600 line-clamp-1">
+                  {item.desc}
+                </p>
+
+                {/* Color */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={item.bgColour}
+                    readOnly
+                    className="w-8 h-8 border-none cursor-default"
+                  />
+                  <span className="text-xs text-gray-500">
+                    {item.bgColour}
+                  </span>
+                </div>
+
+                {/* Action */}
+                <button
+                  onClick={() => removeAlbum(item._id)}
+                  className="text-red-500 hover:text-red-700 font-bold text-center"
+                >
+                  ✕
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };
