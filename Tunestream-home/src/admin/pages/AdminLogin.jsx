@@ -70,7 +70,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@tune.com"
+                  placeholder="Admin.com"
                   className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-white 
                   focus:outline-none focus:ring-2 focus:ring-white/20 
                   transition-all duration-300 hover:border-white/20"
@@ -88,7 +88,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="xxxxxx."
                   className="w-full px-5 py-4 pr-14 rounded-2xl bg-white/5 border border-white/10 text-white 
                   focus:outline-none focus:ring-2 focus:ring-white/20 
                   transition-all duration-300 hover:border-white/20"
