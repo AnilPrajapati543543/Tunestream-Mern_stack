@@ -52,95 +52,97 @@ const AddAlbum = () => {
   }
 
   return (
-    <motion.form
-      onSubmit={onSubmitHandler}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className='flex flex-col gap-8 p-8 rounded-2xl 
-                 bg-white/5 backdrop-blur-md 
-                 border border-gray-700 
-                 shadow-lg hover:shadow-2xl 
-                 transition-shadow duration-300 
-                 text-gray-200 w-fit'
-    >
+   <motion.form
+  onSubmit={onSubmitHandler}
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  className='flex flex-col gap-6 p-10 rounded-2xl 
+             bg-white/5 backdrop-blur-md 
+             border border-gray-700 
+             shadow-lg hover:shadow-2xl 
+             transition duration-300 
+             text-gray-200 w-full max-w-2xl'
+>
 
-      {/* Upload Image */}
-      <div className="flex flex-col gap-4">
-        <p className='font-medium'>Upload Image</p>
+  {/* Upload Image */}
+  <div className="flex flex-col gap-3 items-center">
+    <p className='font-medium text-sm'>Upload Image</p>
 
-        <input
-          onChange={(e) => setImage(e.target.files[0])}
-          type="file"
-          id='image'
-          accept='image/*'
-          hidden
-        />
+    <input
+      onChange={(e) => setImage(e.target.files[0])}
+      type="file"
+      id='image'
+      accept='image/*'
+      hidden
+    />
 
-        <label htmlFor="image">
-          <img
-            className='w-28 h-28 object-cover rounded-xl cursor-pointer 
-                       border border-gray-500 
-                       shadow-md hover:shadow-xl 
-                       transition duration-300'
-            src={image ? URL.createObjectURL(image) : assets.upload_area}
-            alt=""
-          />
-        </label>
-      </div>
+    <label htmlFor="image">
+      <img
+        className='w-28 h-28 object-cover rounded-xl cursor-pointer 
+                   border border-gray-500 
+                   shadow-md hover:shadow-xl transition'
+        src={image ? URL.createObjectURL(image) : assets.upload_area}
+        alt=""
+      />
+    </label>
+  </div>
 
-      {/* Album Name */}
-      <div className="flex flex-col gap-2">
-        <p className='font-medium'>Album name</p>
-        <input
-          className='bg-transparent border border-gray-500 rounded-lg p-3 
-                     w-[max(40vw,250px)] 
-                     shadow-sm focus:shadow-md 
-                     focus:border-green-500 outline-none transition'
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          type="text"
-          placeholder='Type here'
-        />
-      </div>
+  {/* Inputs */}
+  <div className="flex flex-col gap-5">
 
-      {/* Description */}
-      <div className="flex flex-col gap-2">
-        <p className='font-medium'>Album description</p>
-        <input
-          className='bg-transparent border border-gray-500 rounded-lg p-3 
-                     w-[max(40vw,250px)] 
-                     shadow-sm focus:shadow-md 
-                     focus:border-green-500 outline-none transition'
-          onChange={(e) => setDesc(e.target.value)}
-          value={desc}
-          type="text"
-          placeholder='Type here'
-        />
-      </div>
+    {/* Album Name */}
+    <div className="flex flex-col gap-1">
+      <p className='font-medium text-sm'>Album name</p>
+      <input
+        className='bg-transparent border border-gray-500 rounded-lg p-3 
+                   w-full shadow-sm focus:shadow-md 
+                   focus:border-green-500 outline-none transition'
+        onChange={(e) => setName(e.target.value)}
+        value={name}
+        type="text"
+        placeholder='Type here'
+      />
+    </div>
 
-      {/* Color Picker */}
-      <div className="flex flex-col gap-3">
-        <p className='font-medium'>Background Colour</p>
-        <input
-          onChange={(e) => setColour(e.target.value)}
-          value={colour}
-          type="color"
-          className="w-16 h-10 rounded border border-gray-500 shadow-sm cursor-pointer"
-        />
-      </div>
+    {/* Description */}
+    <div className="flex flex-col gap-1">
+      <p className='font-medium text-sm'>Album description</p>
+      <input
+        className='bg-transparent border border-gray-500 rounded-lg p-3 
+                   w-full shadow-sm focus:shadow-md 
+                   focus:border-green-500 outline-none transition'
+        onChange={(e) => setDesc(e.target.value)}
+        value={desc}
+        type="text"
+        placeholder='Type here'
+      />
+    </div>
 
-      {/* Submit Button */}
-      <button
-        className='bg-green-600 hover:bg-green-700 
-                   text-white py-3 px-10 rounded-xl 
-                   shadow-md hover:shadow-xl 
-                   transition duration-300'
-        type='submit'
-      >
-        ADD
-      </button>
+    {/* Color Picker */}
+    <div className="flex flex-col gap-2">
+      <p className='font-medium text-sm'>Background Colour</p>
+      <input
+        onChange={(e) => setColour(e.target.value)}
+        value={colour}
+        type="color"
+        className="w-20 h-10 rounded border border-gray-500 shadow-sm cursor-pointer"
+      />
+    </div>
 
-    </motion.form>
+  </div>
+
+  {/* Submit */}
+  <button
+    className='bg-green-600 hover:bg-green-700 
+               text-white py-3 rounded-xl 
+               shadow-md hover:shadow-xl 
+               transition duration-300 mt-2'
+    type='submit'
+  >
+    ADD ALBUM
+  </button>
+
+</motion.form>
   )
 }
 
