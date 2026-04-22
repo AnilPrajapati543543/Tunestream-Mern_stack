@@ -57,7 +57,7 @@ const ListAlbum = () => {
       />
 
       <div className="border rounded overflow-hidden">
-        <div className="grid grid-cols-5 p-3 bg-gray-100 sticky top-0">
+        <div className="grid grid-cols-5 p-3 bg-gray-10 sticky top-0">
           <b>Img</b><b>Name</b><b>Description</b><b>Color</b><b>Action</b>
         </div>
 
