@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { assets } from '../../assets/assets'
-import { url } from "../../../App";
 import { toast } from 'react-toastify'
 import axios from "../../utils/axios";
+import { motion } from "framer-motion";
 
 const AddAlbum = () => {
 
@@ -13,80 +13,126 @@ const AddAlbum = () => {
   const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (e) => {
-
     e.preventDefault();
-
     setLoading(true);
 
     try {
-
       const formData = new FormData();
-
       formData.append("name", name);
       formData.append("desc", desc);
       formData.append("image", image);
       formData.append("bgColour", colour);
 
       const response = await axios.post(`/album/add`, formData, {
-  withCredentials: true
-});
+        withCredentials: true
+      });
 
       if (response.data.success) {
         toast.success("Album Added");
         setName("");
         setDesc("");
         setImage(false);
-      }
-      else {
+      } else {
         toast.error("Something went wrong");
       }
 
       setLoading(false);
-
     } catch (error) {
-
       toast.error("Error occured");
       setLoading(false);
-
     }
-
   }
 
-  return loading ? (
+  if (loading) {
+    return (
+      <div className='grid place-items-center min-h-[80vh]'>
+        <motion.div
+          className="w-16 h-16 border-4 border-gray-300 border-t-green-600 rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        />
+      </div>
+    )
+  }
 
-    <div className='grid place-items-center min-h-[80vh]'>
-      <div className="w-16 h-16 place-self-center border-4 border-gray-400 border-t-green-800 rounded-full animate-spin"></div>
-    </div>
+  return (
+    <motion.form
+      onSubmit={onSubmitHandler}
+      className='flex flex-col gap-8 p-8 rounded-2xl bg-white/5 backdrop-blur-md shadow-xl border border-gray-700 text-gray-200 w-fit'
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
 
-  ) : (
-    
-    <form onSubmit={onSubmitHandler} className='flex flex-col items-start gap-8 text-gray-600'>
-
+      {/* Upload Image */}
       <div className="flex flex-col gap-4">
-        <p>Upload Image</p>
-        <input onChange={(e) => setImage(e.target.files[0])} type="file" id='image' accept='image/*' hidden />
+        <p className='font-semibold'>Upload Image</p>
+
+        <input
+          onChange={(e) => setImage(e.target.files[0])}
+          type="file"
+          id='image'
+          accept='image/*'
+          hidden
+        />
+
         <label htmlFor="image">
-          <img className='w-24 cursor-pointer' src={image ? URL.createObjectURL(image) : assets.upload_area} alt="" />
+          <motion.img
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className='w-28 h-28 object-cover rounded-xl cursor-pointer border border-gray-500 shadow-md'
+            src={image ? URL.createObjectURL(image) : assets.upload_area}
+            alt=""
+          />
         </label>
       </div>
 
-      <div className="flex flex-col gap-2.5">
-        <p>Album name</p>
-        <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setName(e.target.value)} value={name} type="text" placeholder='Type here' />
+      {/* Album Name */}
+      <div className="flex flex-col gap-2">
+        <p className='font-semibold'>Album name</p>
+        <input
+          className='bg-transparent border border-gray-500 rounded-lg p-3 w-[max(40vw,250px)] focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all duration-200 outline-none'
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+          type="text"
+          placeholder='Type here'
+        />
       </div>
 
-      <div className="flex flex-col gap-2.5">
-        <p>Album description</p>
-        <input className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' onChange={(e) => setDesc(e.target.value)} value={desc} type="text" placeholder='Type here' />
+      {/* Description */}
+      <div className="flex flex-col gap-2">
+        <p className='font-semibold'>Album description</p>
+        <input
+          className='bg-transparent border border-gray-500 rounded-lg p-3 w-[max(40vw,250px)] focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all duration-200 outline-none'
+          onChange={(e) => setDesc(e.target.value)}
+          value={desc}
+          type="text"
+          placeholder='Type here'
+        />
       </div>
 
+      {/* Color Picker */}
       <div className="flex flex-col gap-3">
-        <p>Background Colour</p>
-        <input onChange={(e) => setColour(e.target.value)} value={colour} type="color" name="" id="" />
+        <p className='font-semibold'>Background Colour</p>
+        <input
+          onChange={(e) => setColour(e.target.value)}
+          value={colour}
+          type="color"
+          className="w-16 h-10 rounded cursor-pointer border border-gray-500"
+        />
       </div>
 
-      <button className='text-base bg-black text-white py-2.5 px-14 cursor-pointer' type='submit'>ADD</button>
-    </form>
+      {/* Submit Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className='bg-green-600 hover:bg-green-700 text-white py-3 px-10 rounded-xl font-semibold shadow-lg transition-all duration-200'
+        type='submit'
+      >
+        ADD
+      </motion.button>
+
+    </motion.form>
   )
 }
 
