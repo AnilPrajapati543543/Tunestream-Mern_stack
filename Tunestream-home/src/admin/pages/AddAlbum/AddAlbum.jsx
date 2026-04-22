@@ -46,11 +46,7 @@ const AddAlbum = () => {
   if (loading) {
     return (
       <div className='grid place-items-center min-h-[80vh]'>
-        <motion.div
-          className="w-16 h-16 border-4 border-gray-300 border-t-green-600 rounded-full"
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-        />
+        <div className="w-14 h-14 border-4 border-gray-300 border-t-green-600 rounded-full animate-spin shadow-md"></div>
       </div>
     )
   }
@@ -58,15 +54,19 @@ const AddAlbum = () => {
   return (
     <motion.form
       onSubmit={onSubmitHandler}
-      className='flex flex-col gap-8 p-8 rounded-2xl bg-white/5 backdrop-blur-md shadow-xl border border-gray-700 text-gray-200 w-fit'
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      className='flex flex-col gap-8 p-8 rounded-2xl 
+                 bg-white/5 backdrop-blur-md 
+                 border border-gray-700 
+                 shadow-lg hover:shadow-2xl 
+                 transition-shadow duration-300 
+                 text-gray-200 w-fit'
     >
 
       {/* Upload Image */}
       <div className="flex flex-col gap-4">
-        <p className='font-semibold'>Upload Image</p>
+        <p className='font-medium'>Upload Image</p>
 
         <input
           onChange={(e) => setImage(e.target.files[0])}
@@ -77,10 +77,11 @@ const AddAlbum = () => {
         />
 
         <label htmlFor="image">
-          <motion.img
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className='w-28 h-28 object-cover rounded-xl cursor-pointer border border-gray-500 shadow-md'
+          <img
+            className='w-28 h-28 object-cover rounded-xl cursor-pointer 
+                       border border-gray-500 
+                       shadow-md hover:shadow-xl 
+                       transition duration-300'
             src={image ? URL.createObjectURL(image) : assets.upload_area}
             alt=""
           />
@@ -89,9 +90,12 @@ const AddAlbum = () => {
 
       {/* Album Name */}
       <div className="flex flex-col gap-2">
-        <p className='font-semibold'>Album name</p>
+        <p className='font-medium'>Album name</p>
         <input
-          className='bg-transparent border border-gray-500 rounded-lg p-3 w-[max(40vw,250px)] focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all duration-200 outline-none'
+          className='bg-transparent border border-gray-500 rounded-lg p-3 
+                     w-[max(40vw,250px)] 
+                     shadow-sm focus:shadow-md 
+                     focus:border-green-500 outline-none transition'
           onChange={(e) => setName(e.target.value)}
           value={name}
           type="text"
@@ -101,9 +105,12 @@ const AddAlbum = () => {
 
       {/* Description */}
       <div className="flex flex-col gap-2">
-        <p className='font-semibold'>Album description</p>
+        <p className='font-medium'>Album description</p>
         <input
-          className='bg-transparent border border-gray-500 rounded-lg p-3 w-[max(40vw,250px)] focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all duration-200 outline-none'
+          className='bg-transparent border border-gray-500 rounded-lg p-3 
+                     w-[max(40vw,250px)] 
+                     shadow-sm focus:shadow-md 
+                     focus:border-green-500 outline-none transition'
           onChange={(e) => setDesc(e.target.value)}
           value={desc}
           type="text"
@@ -113,24 +120,25 @@ const AddAlbum = () => {
 
       {/* Color Picker */}
       <div className="flex flex-col gap-3">
-        <p className='font-semibold'>Background Colour</p>
+        <p className='font-medium'>Background Colour</p>
         <input
           onChange={(e) => setColour(e.target.value)}
           value={colour}
           type="color"
-          className="w-16 h-10 rounded cursor-pointer border border-gray-500"
+          className="w-16 h-10 rounded border border-gray-500 shadow-sm cursor-pointer"
         />
       </div>
 
       {/* Submit Button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className='bg-grey-600 hover:bg-grey-700 text-white py-3 px-10 rounded-xl font-semibold shadow-lg transition-all duration-200'
+      <button
+        className='bg-green-600 hover:bg-green-700 
+                   text-white py-3 px-10 rounded-xl 
+                   shadow-md hover:shadow-xl 
+                   transition duration-300'
         type='submit'
       >
         ADD
-      </motion.button>
+      </button>
 
     </motion.form>
   )
