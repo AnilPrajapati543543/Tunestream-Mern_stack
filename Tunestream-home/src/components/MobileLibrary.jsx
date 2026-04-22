@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { PlayerContext } from "../context/PlayerContext";
 import { assets } from "../assets/assets";
 import {
@@ -14,31 +14,53 @@ const MobileLibrary = ({ open, setOpen }) => {
 
   const y = useMotionValue(600);
 
-  const backdropOpacity = useTransform(y, [0, 600], [0.5, 0]);
-
   const SNAP_TOP = 0;
-  const SNAP_MID = 320;
+  const SNAP_MID = 300;
   const SNAP_CLOSE = 650;
+
+  // ✅ FIX: reset position when opening
+  useEffect(() => {
+    if (open) {
+      animate(y, SNAP_MID, {
+        type: "spring",
+        stiffness: 180,
+        damping: 22,
+      });
+    }
+  }, [open]);
+
+  const backdropOpacity = useTransform(y, [0, 650], [0.55, 0]);
 
   const handleDragEnd = (_, info) => {
     const offset = info.offset.y;
     const velocity = info.velocity.y;
 
-    // 🔥 FAST SWIPE DOWN = CLOSE
-    if (velocity > 800) {
-      animate(y, SNAP_CLOSE, { type: "spring", stiffness: 200, damping: 25 });
-      setTimeout(() => setOpen(false), 200);
-      return;
-    }
+    const close = () => {
+      animate(y, SNAP_CLOSE, {
+        type: "spring",
+        stiffness: 200,
+        damping: 25,
+      });
+      setTimeout(() => setOpen(false), 180);
+    };
 
-    // 🔥 SNAP LOGIC
-    if (offset > 250) {
-      animate(y, SNAP_CLOSE, { type: "spring", stiffness: 200, damping: 25 });
-      setTimeout(() => setOpen(false), 200);
-    } else if (offset > 80) {
-      animate(y, SNAP_MID, { type: "spring", stiffness: 180, damping: 22 });
+    // 🔥 fast swipe down
+    if (velocity > 900) return close();
+
+    if (offset > 250) return close();
+
+    if (offset > 100) {
+      animate(y, SNAP_MID, {
+        type: "spring",
+        stiffness: 180,
+        damping: 22,
+      });
     } else {
-      animate(y, SNAP_TOP, { type: "spring", stiffness: 180, damping: 20 });
+      animate(y, SNAP_TOP, {
+        type: "spring",
+        stiffness: 180,
+        damping: 20,
+      });
     }
   };
 
@@ -46,44 +68,42 @@ const MobileLibrary = ({ open, setOpen }) => {
     <AnimatePresence>
       {open && (
         <>
-          {/* 🔥 BACKDROP */}
+          {/* BACKDROP */}
           <motion.div
             style={{ opacity: backdropOpacity }}
             onClick={() => setOpen(false)}
-            className="fixed inset-0 bg-black backdrop-blur-md z-40"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-40"
           />
 
-          {/* 🔥 BOTTOM SHEET */}
+          {/* SHEET */}
           <motion.div
             drag="y"
             style={{ y }}
             dragConstraints={{ top: 0, bottom: SNAP_CLOSE }}
-            dragElastic={0.25}
-            initial={{ y: SNAP_CLOSE }}
-            animate={{ y: SNAP_MID }}
-            exit={{ y: SNAP_CLOSE }}
+            dragElastic={0.18}
             onDragEnd={handleDragEnd}
+            initial={{ y: SNAP_CLOSE }}
+            exit={{ y: SNAP_CLOSE }}
             transition={{ type: "spring", stiffness: 160, damping: 20 }}
-            className="fixed bottom-0 left-0 w-full h-[88vh] 
-                       bg-[#0f0f0f] rounded-t-3xl z-50 
-                       shadow-[0_-10px_40px_rgba(0,0,0,0.8)] 
-                       flex flex-col overflow-hidden"
+            className="
+              fixed bottom-0 left-0 w-full h-[88vh]
+              bg-[#0f0f0f] rounded-t-3xl z-50
+              shadow-[0_-15px_50px_rgba(0,0,0,0.85)]
+              flex flex-col overflow-hidden
+            "
           >
-
             {/* HANDLE */}
             <div className="flex justify-center py-2">
               <div className="w-10 h-1.5 bg-gray-500 rounded-full" />
             </div>
 
-            {/* 🔥 HEADER (sticky) */}
-            <div className="sticky top-0 z-10 bg-[#0f0f0f]/80 backdrop-blur-md">
+            {/* HEADER */}
+            <div className="sticky top-0 z-10 bg-[#0f0f0f]/90 backdrop-blur-md">
               <div className="px-5 py-3 flex items-center gap-3 border-b border-white/5">
                 <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-black text-sm font-semibold">
                   {songsData.length}
                 </div>
-                <h1 className="text-lg font-semibold tracking-tight">
-                  Your Library
-                </h1>
+                <h1 className="text-lg font-semibold">Your Library</h1>
               </div>
 
               {/* FILTER */}
@@ -100,7 +120,7 @@ const MobileLibrary = ({ open, setOpen }) => {
               </div>
             </div>
 
-            {/* 🔥 LIST */}
+            {/* LIST */}
             <div className="flex-1 overflow-y-auto px-4 pb-28 space-y-2">
               {songsData.map((song) => {
                 const isActive = track?._id === song._id;
@@ -116,7 +136,6 @@ const MobileLibrary = ({ open, setOpen }) => {
                         : "active:bg-white/5"
                     }`}
                   >
-                    {/* IMAGE */}
                     <div className="relative shrink-0">
                       <img
                         src={song.image}
@@ -130,7 +149,6 @@ const MobileLibrary = ({ open, setOpen }) => {
                       )}
                     </div>
 
-                    {/* TEXT */}
                     <div className="flex-1 overflow-hidden">
                       <p
                         className={`text-sm font-medium truncate ${
@@ -141,12 +159,11 @@ const MobileLibrary = ({ open, setOpen }) => {
                       >
                         {song.name}
                       </p>
-                      <p className="text-xs text-gray-400 truncate mt-[2px]">
+                      <p className="text-xs text-gray-400 truncate">
                         {song.desc}
                       </p>
                     </div>
 
-                    {/* ICON */}
                     <img
                       src={assets.play_icon}
                       className="w-4 opacity-40"
