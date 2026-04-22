@@ -82,9 +82,13 @@ export const loginUser = async (req, res, next) => {
 
     const { email, password } = value;
 
-    // Hardcoded Admin Check
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@tune.com";
-    const adminPass = process.env.ADMIN_PASSWORD || "900427";
+    // Use environment variables for Admin Credentials (no hardcoded fallbacks for security)
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPass = process.env.ADMIN_PASSWORD;
+
+    if (!adminEmail || !adminPass) {
+      console.warn("Missing ADMIN_EMAIL or ADMIN_PASSWORD in environment variables.");
+    }
 
     if (email === adminEmail && password === adminPass) {
       let user = await User.findOne({ email }).select("+role");
