@@ -126,7 +126,7 @@ const AddAlbum = () => {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className='bg-black-600 hover:bg-black-700 text-white py-3 px-10 rounded-xl font-semibold shadow-lg transition-all duration-200'
+        className='bg-grey-600 hover:bg-grey-700 text-white py-3 px-10 rounded-xl font-semibold shadow-lg transition-all duration-200'
         type='submit'
       >
         ADD
