@@ -50,7 +50,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
             {/* Header */}
             <div className="text-center mb-10">
               <h1 className="text-4xl font-bold text-white tracking-tight">
-                Admin Portal
+                Admin Panel
               </h1>
               <p className="text-gray-400 mt-2">
                 Secure access to Tunestream Management
@@ -123,7 +123,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
                     <span>Authenticating...</span>
                   </div>
                 ) : (
-                  'Log In to Dashboard'
+                  'Log In to Panel'
                 )}
               </button>
             </form>
