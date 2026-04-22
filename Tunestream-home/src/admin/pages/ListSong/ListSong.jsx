@@ -50,7 +50,14 @@ const ListSong = () => {
 
       <input
         placeholder="Search song..."
-        className="mb-4 p-2 border rounded w-full"
+        className=" mb-4 p-2 w-full rounded 
+  bg-transparent 
+  border border-gray-400/40 
+  text-white 
+  placeholder-gray-400
+  focus:outline-none 
+  focus:border-grey-500 
+  focus:ring-1 focus:ring-grey-500"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
