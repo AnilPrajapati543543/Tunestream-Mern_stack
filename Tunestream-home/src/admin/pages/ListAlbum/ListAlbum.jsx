@@ -34,7 +34,9 @@ const ListAlbum = () => {
     }
   };
 
-  useEffect(() => { fetchAlbums(); }, []);
+  useEffect(() => {
+    fetchAlbums();
+  }, []);
 
   const filtered = data.filter((i) =>
     i.name.toLowerCase().includes(search.toLowerCase())
@@ -46,73 +48,158 @@ const ListAlbum = () => {
   );
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Albums</h2>
+    <div className="p-6 space-y-5">
 
+      {/* HEADER */}
+      <h2 className="text-2xl font-semibold">Albums</h2>
+
+      {/* SEARCH */}
       <input
         placeholder="Search album..."
-        className=" mb-4 p-2 w-full rounded 
-  bg-transparent 
-  border border-gray-400/40 
-  text-white 
-  placeholder-gray-400
-  focus:outline-none 
-  focus:border-green-500 
-  focus:ring-1 focus:ring-green-500"
+        className="
+          w-full px-4 py-2 rounded-lg
+          bg-transparent border border-gray-500/40
+          text-white placeholder-gray-400
+          focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500
+        "
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <div className="border rounded overflow-hidden">
-        <div className="grid grid-cols-5 p-3 bg-gray-10 sticky top-0">
-          <b>Img</b><b>Name</b><b>Description</b><b>Color</b><b>Action</b>
+      {/* TABLE */}
+      <div className="border border-gray-600/40 rounded-xl overflow-hidden">
+
+        {/* HEADER */}
+        <div className="grid grid-cols-5 px-4 py-3 text-sm font-semibold bg-white/5 border-b border-gray-600/30">
+          <span>Image</span>
+          <span>Name</span>
+          <span>Description</span>
+          <span>Color</span>
+          <span className="text-center">Action</span>
         </div>
 
+        {/* BODY */}
         <div className="max-h-[60vh] overflow-y-auto">
-          {paginated.map((item) => (
-            <div key={item._id} className="grid grid-cols-5 p-3 border-b hover:bg-gray-50">
-              <img src={item.image} className="w-10" />
 
-              {editId === item._id ? (
-                <input defaultValue={item.name} className="border" />
-              ) : (
-                <p>{item.name}</p>
-              )}
+          {paginated.map((item) => {
+            const isEditing = editId === item._id;
 
-              {editId === item._id ? (
-                <input defaultValue={item.desc} className="border" />
-              ) : (
-                <p>{item.desc}</p>
-              )}
+            return (
+              <div
+                key={item._id}
+                className="
+                  grid grid-cols-5 items-center
+                  px-4 py-3
+                  border-b border-gray-700/40
+                  hover:bg-white/5 transition
+                "
+              >
+                {/* IMAGE */}
+                <img
+                  src={item.image}
+                  className="w-10 h-10 rounded object-cover"
+                  alt=""
+                />
 
-              <input type="color" defaultValue={item.bgColour} />
+                {/* NAME */}
+                {isEditing ? (
+                  <input
+                    defaultValue={item.name}
+                    className="bg-transparent border border-gray-500 px-2 py-1 rounded text-sm"
+                  />
+                ) : (
+                  <p className="truncate">{item.name}</p>
+                )}
 
-              <div className="flex gap-2">
-                <button onClick={() => setEditId(item._id)}>Edit</button>
-                <button onClick={() => setSelectedId(item._id)} className="text-red-500">Delete</button>
+                {/* DESC */}
+                {isEditing ? (
+                  <input
+                    defaultValue={item.desc}
+                    className="bg-transparent border border-gray-500 px-2 py-1 rounded text-sm"
+                  />
+                ) : (
+                  <p className="truncate text-gray-400 text-sm">
+                    {item.desc}
+                  </p>
+                )}
+
+                {/* COLOR */}
+                <input
+                  type="color"
+                  defaultValue={item.bgColour}
+                  className="w-8 h-8 border-none bg-transparent"
+                />
+
+                {/* ACTION */}
+                <div className="flex justify-center gap-3 text-sm">
+
+                  {isEditing ? (
+                    <button
+                      onClick={() => setEditId(null)}
+                      className="px-3 py-1 rounded bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setEditId(item._id)}
+                      className="px-3 py-1 rounded bg-white/10 hover:bg-white/20"
+                    >
+                      Edit
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => setSelectedId(item._id)}
+                    className="px-3 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex gap-2 mt-4">
-        {Array.from({ length: Math.ceil(filtered.length / itemsPerPage) }).map((_, i) => (
-          <button key={i} onClick={() => setPage(i+1)} className="px-3 py-1 border">
-            {i+1}
+      {/* PAGINATION */}
+      <div className="flex justify-center gap-2">
+        {Array.from({
+          length: Math.ceil(filtered.length / itemsPerPage),
+        }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`
+              px-3 py-1 rounded
+              ${page === i + 1
+                ? "bg-green-600 text-white"
+                : "bg-white/10 hover:bg-white/20"}
+            `}
+          >
+            {i + 1}
           </button>
         ))}
       </div>
 
-      {/* Modal */}
+      {/* MODAL */}
       {selectedId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded">
-            <p>Confirm delete?</p>
-            <div className="flex gap-3 mt-3">
-              <button onClick={removeAlbum} className="bg-red-500 text-white px-3 py-1">Yes</button>
-              <button onClick={() => setSelectedId(null)} className="border px-3 py-1">No</button>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#181818] p-6 rounded-xl space-y-4 shadow-xl">
+            <p className="text-white">Confirm delete?</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={removeAlbum}
+                className="px-4 py-1 bg-red-500 rounded text-white"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setSelectedId(null)}
+                className="px-4 py-1 bg-white/10 rounded"
+              >
+                No
+              </button>
             </div>
           </div>
         </div>
