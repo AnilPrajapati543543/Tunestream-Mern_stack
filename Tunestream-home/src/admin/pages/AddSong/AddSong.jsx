@@ -69,129 +69,129 @@ const AddSong = () => {
   }
 
   return (
-    <motion.form
-      onSubmit={onSubmitHandler}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className='flex flex-col gap-8 p-8 rounded-2xl 
-                 bg-white/5 backdrop-blur-md 
-                 border border-gray-700 
-                 shadow-lg hover:shadow-2xl 
-                 transition duration-300 
-                 text-gray-200 w-fit'
-    >
+   <motion.form
+  onSubmit={onSubmitHandler}
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  className='flex flex-col gap-6 p-10 rounded-2xl 
+             bg-white/5 backdrop-blur-md 
+             border border-gray-700 
+             shadow-lg hover:shadow-2xl 
+             transition duration-300 
+             text-gray-200 w-full max-w-2xl'
+>
 
-      {/* Upload Section */}
-      <div className='flex gap-10 flex-wrap'>
+  {/* Upload Section */}
+  <div className='flex gap-12 flex-wrap items-center'>
 
-        {/* Song Upload */}
-        <div className="flex flex-col gap-4">
-          <p className='font-medium'>Upload song</p>
-          <input
-            onChange={(e) => setSong(e.target.files[0])}
-            type="file"
-            id='song'
-            accept='audio/*'
-            hidden
-          />
-          <label htmlFor="song">
-            <img
-              className='w-24 h-24 object-cover cursor-pointer rounded-xl 
-                         border border-gray-500 
-                         shadow-md hover:shadow-xl 
-                         transition duration-300'
-              src={song ? assets.upload_added : assets.upload_song}
-              alt=""
-            />
-          </label>
-        </div>
-
-        {/* Image Upload */}
-        <div className="flex flex-col gap-4">
-          <p className='font-medium'>Upload Image</p>
-          <input
-            onChange={(e) => setImage(e.target.files[0])}
-            type="file"
-            id='image'
-            accept='image/*'
-            hidden
-          />
-          <label htmlFor="image">
-            <img
-              className='w-24 h-24 object-cover cursor-pointer rounded-xl 
-                         border border-gray-500 
-                         shadow-md hover:shadow-xl 
-                         transition duration-300'
-              src={image ? URL.createObjectURL(image) : assets.upload_area}
-              alt=""
-            />
-          </label>
-        </div>
-
-      </div>
-
-      {/* Song Name */}
-      <div className="flex flex-col gap-2">
-        <p className='font-medium'>Song name</p>
-        <input
-          className='bg-transparent border border-gray-500 rounded-lg p-3 
-                     w-[max(40vw,250px)] 
-                     shadow-sm focus:shadow-md 
-                     focus:border-green-500 outline-none transition'
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          type="text"
-          placeholder='Type here'
-          required
+    {/* Song Upload */}
+    <div className="flex flex-col gap-3 items-center">
+      <p className='font-medium text-sm'>Upload song</p>
+      <input
+        onChange={(e) => setSong(e.target.files[0])}
+        type="file"
+        id='song'
+        accept='audio/*'
+        hidden
+      />
+      <label htmlFor="song">
+        <img
+          className='w-24 h-24 object-cover cursor-pointer rounded-xl 
+                     border border-gray-500 
+                     shadow-md hover:shadow-xl transition'
+          src={song ? assets.upload_added : assets.upload_song}
+          alt=""
         />
-      </div>
+      </label>
+    </div>
 
-      {/* Description */}
-      <div className="flex flex-col gap-2">
-        <p className='font-medium'>Song description</p>
-        <input
-          className='bg-transparent border border-gray-500 rounded-lg p-3 
-                     w-[max(40vw,250px)] 
-                     shadow-sm focus:shadow-md 
-                     focus:border-green-500 outline-none transition'
-          onChange={(e) => setDesc(e.target.value)}
-          value={desc}
-          type="text"
-          placeholder='Type here'
-          required
+    {/* Image Upload */}
+    <div className="flex flex-col gap-3 items-center">
+      <p className='font-medium text-sm'>Upload Image</p>
+      <input
+        onChange={(e) => setImage(e.target.files[0])}
+        type="file"
+        id='image'
+        accept='image/*'
+        hidden
+      />
+      <label htmlFor="image">
+        <img
+          className='w-24 h-24 object-cover cursor-pointer rounded-xl 
+                     border border-gray-500 
+                     shadow-md hover:shadow-xl transition'
+          src={image ? URL.createObjectURL(image) : assets.upload_area}
+          alt=""
         />
-      </div>
+      </label>
+    </div>
 
-      {/* Album Select */}
-      <div className="flex flex-col gap-2">
-        <p className='font-medium'>Album</p>
-        <select
-          className='bg-transparent border border-gray-500 rounded-lg p-3 
-                     w-[180px] 
-                     shadow-sm focus:shadow-md 
-                     focus:border-green-500 outline-none transition'
-          onChange={(e) => setAlbum(e.target.value)}
-          value={album}
-        >
-          <option value="none">None</option>
-          {albumData.map((item, index) => (
-            <option key={index} value={item.name}>{item.name}</option>
-          ))}
-        </select>
-      </div>
+  </div>
 
-      {/* Submit */}
-      <button
-        className='bg-green-600 hover:bg-green-700 
-                   text-white py-3 px-10 rounded-xl 
-                   shadow-md hover:shadow-xl 
-                   transition duration-300'
-        type='submit'
+  {/* Inputs Container */}
+  <div className="flex flex-col gap-5">
+
+    {/* Song Name */}
+    <div className="flex flex-col gap-1">
+      <p className='font-medium text-sm'>Song name</p>
+      <input
+        className='bg-transparent border border-gray-500 rounded-lg p-3 
+                   w-full shadow-sm focus:shadow-md 
+                   focus:border-green-500 outline-none transition'
+        onChange={(e) => setName(e.target.value)}
+        value={name}
+        type="text"
+        placeholder='Type here'
+        required
+      />
+    </div>
+
+    {/* Description */}
+    <div className="flex flex-col gap-1">
+      <p className='font-medium text-sm'>Song description</p>
+      <input
+        className='bg-transparent border border-gray-500 rounded-lg p-3 
+                   w-full shadow-sm focus:shadow-md 
+                   focus:border-green-500 outline-none transition'
+        onChange={(e) => setDesc(e.target.value)}
+        value={desc}
+        type="text"
+        placeholder='Type here'
+        required
+      />
+    </div>
+
+    {/* Album Select */}
+    <div className="flex flex-col gap-1">
+      <p className='font-medium text-sm'>Album</p>
+      <select
+        className='bg-transparent border border-gray-500 rounded-lg p-3 
+                   w-full shadow-sm focus:shadow-md 
+                   focus:border-green-500 outline-none transition'
+        onChange={(e) => setAlbum(e.target.value)}
+        value={album}
       >
-        ADD
-      </button>
+        <option value="none">None</option>
+        {albumData.map((item, index) => (
+          <option key={index} value={item.name}>{item.name}</option>
+        ))}
+      </select>
+    </div>
 
-    </motion.form>
+  </div>
+
+  {/* Submit */}
+  <button
+    className='bg-green-600 hover:bg-green-700 
+               text-white py-3 rounded-xl 
+               shadow-md hover:shadow-xl 
+               transition duration-300 mt-2'
+    type='submit'
+  >
+    ADD SONG
+  </button>
+
+</motion.form>
   )
 }
 
