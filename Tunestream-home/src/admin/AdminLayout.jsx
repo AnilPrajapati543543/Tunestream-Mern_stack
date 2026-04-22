@@ -1,61 +1,92 @@
-import React, { useState, useEffect } from 'react'
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import AddSong from './pages/AddSong/AddSong';
-import ListSong from './pages/ListSong/ListSong';
-import AddAlbum from './pages/AddAlbum/AddAlbum';
-import ListAlbum from './pages/ListAlbum/ListAlbum';
-import Sidebar from './components/Sidebar/Sidebar';
-import Navbar from './components/Navbar/Navbar';
-import AdminLogin from './pages/AdminLogin';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { motion, AnimatePresence } from "framer-motion";
+
+import AddSong from "./pages/AddSong/AddSong";
+import ListSong from "./pages/ListSong/ListSong";
+import AddAlbum from "./pages/AddAlbum/AddAlbum";
+import ListAlbum from "./pages/ListAlbum/ListAlbum";
+import Sidebar from "./components/Sidebar/Sidebar";
+import Navbar from "./components/Navbar/Navbar";
+import AdminLogin from "./pages/AdminLogin";
+import { useAuth } from "../context/AuthContext";
 
 const AdminLayout = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    const saved = localStorage.getItem('darkMode')
-    if (saved) setDarkMode(saved === 'true')
-  }, [])
+    const saved = localStorage.getItem("darkMode");
+    if (saved !== null) setDarkMode(saved === "true");
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', darkMode)
-  }, [darkMode])
+    localStorage.setItem("darkMode", darkMode);
+  }, [darkMode]);
 
-  // Show loading while checking auth
+  /* ================= LOADING SCREEN ================= */
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#0f0f1a]">
-        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#0a0a0a] to-black">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <p className="text-gray-400 text-sm tracking-wide">
+            Verifying access...
+          </p>
+        </div>
       </div>
     );
   }
 
-  // Admin Auth Gate
-  if (!user || user.role !== 'admin') {
-    return <AdminLogin />;
+  /* ================= AUTH GATE ================= */
+  if (!user || user.role !== "admin") {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="login"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <AdminLogin />
+        </motion.div>
+      </AnimatePresence>
+    );
   }
 
+  /* ================= MAIN DASHBOARD ================= */
   return (
-    <div className={`flex min-h-screen w-full ${darkMode ? 'bg-[#0f0f1a] text-white' : 'bg-gray-100 text-gray-800'}`}>
+    <div
+      className={`flex min-h-screen w-full transition-colors duration-300 ${
+        darkMode
+          ? "bg-gradient-to-br from-[#0f0f0f] via-[#0a0a0a] to-black text-white"
+          : "bg-gray-100 text-gray-800"
+      }`}
+    >
       <ToastContainer />
 
       <Sidebar darkMode={darkMode} />
 
-      <div className='flex-1 flex flex-col overflow-hidden'>
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
         <div className="p-6 overflow-y-auto h-full">
-          <div className={`
-            rounded-2xl p-6 border shadow-xl
-            transition-all duration-300
-            ${darkMode 
-              ? 'bg-white/5 border-white/10' 
-              : 'bg-white border-gray-200'
-            }
-          `}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className={`
+              rounded-2xl p-6 border shadow-xl
+              transition-all duration-300
+              ${
+                darkMode
+                  ? "bg-white/5 border-white/10 backdrop-blur-xl"
+                  : "bg-white border-gray-200"
+              }
+            `}
+          >
             <Routes>
               <Route path="/" element={<Navigate to="list-songs" />} />
               <Route path="add-song" element={<AddSong />} />
@@ -63,11 +94,11 @@ const AdminLayout = () => {
               <Route path="add-album" element={<AddAlbum />} />
               <Route path="list-albums" element={<ListAlbum />} />
             </Routes>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default AdminLayout;
