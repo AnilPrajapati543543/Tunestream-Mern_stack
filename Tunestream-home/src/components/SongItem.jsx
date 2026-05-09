@@ -15,7 +15,7 @@ const SongItem = ({ name, image, desc, id }) => {
       onClick={() => playWithId(id)}
       whileHover={{ scale: 1.05, translateY: -5 }}
       whileTap={{ scale: 0.95 }}
-      className='w-[160px] md:w-[200px] flex-shrink-0 p-3 rounded-xl bg-[#181818] hover:bg-[#282828] cursor-pointer transition-all duration-300 group shadow-lg hover:shadow-black/60'
+      className='w-[160px] md:w-[200px] flex-shrink-0 p-3 rounded-xl bg-[#181818] hover:bg-[#282828] cursor-pointer transition-all duration-300 group shadow-lg hover:shadow-black/60 will-change-transform'
     >
 
       {/* IMAGE + PLAY BUTTON */}

@@ -45,19 +45,21 @@ const HorizontalSection = ({ title, data, renderItem }) => {
       <div
         ref={scrollRef}
         className="
-          flex gap-5 overflow-x-auto pb-4
-          scroll-smooth
+          flex gap-5 overflow-x-auto pb-6
+          snap-x snap-mandatory
           scrollbar-hide
+          hover:scrollbar-default
+          scroll-smooth
         "
         style={{
-          scrollBehavior: "smooth",
           WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none"
         }}
       >
         {data.map((item, index) => (
           <div
             key={index}
-            className="flex-shrink-0"
+            className="flex-shrink-0 snap-start"
           >
             {renderItem(item)}
           </div>

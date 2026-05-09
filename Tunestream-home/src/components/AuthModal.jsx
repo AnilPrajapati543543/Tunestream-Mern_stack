@@ -52,7 +52,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                 </button>
               </div>
               <div className="text-center mb-10">
-                <motion.h2 
+                <motion.h2
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-white text-3xl font-extrabold mb-3 tracking-tight"
@@ -63,7 +63,7 @@ const AuthModal = ({ isOpen, onClose }) => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                <button 
+                <button
                   onClick={() => { setSelectedRole('user'); setView('login'); }}
                   className="group flex flex-col items-center justify-center p-8 bg-white/5 hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/50 rounded-3xl transition-all duration-300"
                 >
@@ -74,12 +74,12 @@ const AuthModal = ({ isOpen, onClose }) => {
                   <p className="text-[10px] text-gray-500 mt-2 text-center leading-relaxed">Listen to unlimited high-quality music</p>
                 </button>
 
-                <button 
+                <button
                   onClick={() => { setSelectedRole('admin'); setView('login'); }}
                   className="group flex flex-col items-center justify-center p-8 bg-white/5 hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/50 rounded-3xl transition-all duration-300"
                 >
                   <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all">
-                    <span className="text-3xl">🎨</span>
+                    <span className="text-3xl">👨‍💼</span>
                   </div>
                   <span className="text-white font-bold text-lg">Artist</span>
                   <p className="text-[10px] text-gray-500 mt-2 text-center leading-relaxed">Upload tracks and manage your albums</p>
@@ -94,17 +94,15 @@ const AuthModal = ({ isOpen, onClose }) => {
                 <div className="flex bg-black/60 p-1 rounded-full shadow-inner border border-white/5">
                   <button
                     onClick={() => setView('login')}
-                    className={`px-5 py-2 rounded-full transition-all duration-300 text-xs font-bold ${
-                      view === 'login' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-400 hover:text-white'
-                    }`}
+                    className={`px-5 py-2 rounded-full transition-all duration-300 text-xs font-bold ${view === 'login' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-400 hover:text-white'
+                      }`}
                   >
                     Login
                   </button>
                   <button
                     onClick={() => setView('signup')}
-                    className={`px-5 py-2 rounded-full transition-all duration-300 text-xs font-bold ${
-                      view === 'signup' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-400 hover:text-white'
-                    }`}
+                    className={`px-5 py-2 rounded-full transition-all duration-300 text-xs font-bold ${view === 'signup' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-400 hover:text-white'
+                      }`}
                   >
                     Sign Up
                   </button>
@@ -113,19 +111,17 @@ const AuthModal = ({ isOpen, onClose }) => {
                 <div className="flex items-center gap-4">
                   {/* Role Toggle Switch */}
                   <div className="flex bg-white/5 p-1 rounded-full border border-white/10 shadow-lg">
-                    <button 
+                    <button
                       onClick={() => setSelectedRole('user')}
-                      className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${
-                        selectedRole === 'user' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-300'
-                      }`}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${selectedRole === 'user' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-300'
+                        }`}
                     >
                       User
                     </button>
-                    <button 
+                    <button
                       onClick={() => setSelectedRole('admin')}
-                      className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${
-                        selectedRole === 'admin' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-300'
-                      }`}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${selectedRole === 'admin' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-300'
+                        }`}
                     >
                       Admin
                     </button>
@@ -144,28 +140,28 @@ const AuthModal = ({ isOpen, onClose }) => {
               <div className="pb-8">
                 {selectedRole === 'admin' ? (
                   <div className="p-8 sm:p-12 text-center flex flex-col items-center">
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center text-4xl mb-6 shadow-inner"
                     >
-                      🎨
+                      👨‍💼
                     </motion.div>
                     <h3 className="text-white text-2xl font-bold mb-3">Artist & Admin Portal</h3>
                     <p className="text-gray-400 text-sm leading-relaxed mb-10 max-w-[280px]">
                       To manage your library, tracks, and collections, please switch to our professional Management Panel.
                     </p>
-                    
-                    <a 
-                      href="https://www-tunestream-admin.vercel.app" 
-                      target="_blank" 
+
+                    <a
+                      href="https://www-tunestream-admin.vercel.app"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="group relative flex items-center justify-center w-full bg-emerald-500 hover:bg-emerald-600 p-5 rounded-2xl text-white font-bold transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
                     >
                       <span className="mr-2">Enter Dashboard</span>
                       <span className="group-hover:translate-x-1 transition-transform">→</span>
                     </a>
-                    
+
                     <p className="text-[10px] font-medium text-gray-600 mt-6 uppercase tracking-[0.2em]">
                       Secure External Access
                     </p>

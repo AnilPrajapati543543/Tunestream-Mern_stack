@@ -18,6 +18,7 @@ const AlbumItem = ({ image, name, desc, id }) => {
         transition-all duration-300
         group
         shadow-lg hover:shadow-black/70
+        will-change-transform
       "
     >
       {/* IMAGE */}
