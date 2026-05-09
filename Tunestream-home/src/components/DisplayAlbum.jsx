@@ -11,7 +11,7 @@ const DisplayAlbum = ({ album }) => {
   const [albumData, setAlbumData] = useState(null)
   const [bgColor, setBgColor] = useState('#121212')
 
-  const { playWithId, albumsData, songsData, currentSong } = useContext(PlayerContext)
+  const { playWithId, albumsData, songsData, track: currentSong } = useContext(PlayerContext)
 
   useEffect(() => {
     if (albumsData.length > 0) {
@@ -118,14 +118,14 @@ const DisplayAlbum = ({ album }) => {
         {
           songsData
             .filter((item) => item.album === albumData.name) // ✅ FIXED
-            .map((item, index) => {
+            .map((item, index, albumSongs) => {
 
               const isPlaying = currentSong?._id === item._id
 
               return (
                 <motion.div
                   key={item._id}
-                  onClick={() => playWithId(item._id)}
+                  onClick={() => playWithId(item._id, albumSongs)}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03 }}
@@ -150,12 +150,6 @@ const DisplayAlbum = ({ album }) => {
                         alt=""
                       />
 
-                      {/* Hover Play */}
-                      <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition'>
-                        <div className='bg-black/70 p-2 rounded-full text-white text-xs'>
-                          ▶
-                        </div>
-                      </div>
                     </div>
 
                     <span className={isPlaying ? "text-green-400 font-semibold" : ""}>

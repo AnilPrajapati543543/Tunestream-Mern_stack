@@ -13,6 +13,8 @@ import connectCloudinary from "./src/config/cloudinary.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import songRouter from "./src/routes/songRoute.js";
 import albumRouter from "./src/routes/albumRoute.js";
+import historyRouter from "./src/routes/historyRoutes.js";
+import playlistRouter from "./src/routes/playlistRoutes.js";
 import errorMiddleware from "./src/middleware/errorMiddleware.js";
 
 // ================= CONFIG =================
@@ -110,6 +112,8 @@ app.use("/api/user", userRoutes);
 // Other routes
 app.use("/api/song", songRouter);
 app.use("/api/album", albumRouter);
+app.use("/api/history", historyRouter);
+app.use("/api/playlist", playlistRouter);
 
 // ================= 404 HANDLER =================
 app.use((req, res) => {

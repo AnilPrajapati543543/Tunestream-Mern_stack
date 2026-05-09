@@ -2,86 +2,115 @@ import React from "react";
 import { assets } from "../../assets/assets";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-
-const menuItems = [
-  { to: "/add-song", icon: assets.add_song, text: "Add Song" },
-  { to: "/list-songs", icon: assets.song_icon, text: "List Songs" },
-  { to: "/add-album", icon: assets.add_album, text: "Add Album" },
-  { to: "/list-albums", icon: assets.album_icon, text: "List Album" },
-];
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = ({ darkMode }) => {
+  const { user } = useAuth();
+
+  const menuItems = [
+    { to: "/add-song", icon: assets.add_song, text: "Add Song" },
+    { to: "/list-songs", icon: assets.song_icon, text: "List Songs" },
+    { to: "/add-album", icon: assets.add_album, text: "Add Album" },
+    { to: "/list-albums", icon: assets.album_icon, text: "List Album" },
+    ...(user?.role === 'admin' ? [{ to: "/linked-users", icon: assets.album_icon, text: "Linked Users" }] : []),
+    { to: "/report", icon: assets.song_icon, text: "Report" },
+  ];
+
   return (
-    <div
-      className={`
-        w-[230px] min-h-screen p-4 transition-all duration-300
-        ${darkMode ? "bg-[#1a1a2e]" : "bg-white border-r"}
-      `}
+    <aside
+      className="
+        w-[240px] min-h-screen p-6 transition-all duration-300
+        bg-[var(--surface-color)] border-r border-[var(--border-color)]
+        flex flex-col gap-8 shadow-sm z-20
+      "
     >
       {/* Logo */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex items-center gap-3 mb-10"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-3 px-2"
       >
-        <img src={assets.logo} className="w-10 drop-shadow-md" />
-        <h1
-          className={`font-semibold text-lg ${
-            darkMode ? "text-white" : "text-gray-800"
-          }`}
-        >
-          Tune<span className="text-gray-400">Stream</span>
+        <img src={assets.logo} className="w-9" alt="Logo" />
+        <h1 className="font-bold text-xl tracking-tight text-[var(--text-primary)]">
+          Tune<span className="text-[var(--accent-color)]">Stream</span>
         </h1>
       </motion.div>
 
-      {/* Menu */}
-      <div className="flex flex-col gap-2">
+
+      {/* Navigation */}
+      <nav className="flex flex-col gap-1.5 flex-1 mt-4">
+        <p className="px-3 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-3 opacity-40">
+          Management
+        </p>
         {menuItems.map((item, i) => (
-          <NavLink key={i} to={item.to}>
+          <NavLink key={i} to={item.to} className="group rounded-full">
             {({ isActive }) => (
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.96 }}
+                whileHover={{ x: 4 }}
                 className={`
-                  relative flex items-center gap-3 p-3 rounded-xl text-sm cursor-pointer
-                  transition-all duration-300
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white shadow-md"
-                      : darkMode
-                      ? "text-gray-300 hover:bg-white/10"
-                      : "text-gray-600 hover:bg-gray-100"
+                  flex items-center gap-4 px-5 py-4 rounded-full text-[14px] font-bold
+                  transition-all duration-300 relative overflow-hidden
+                  ${isActive
+                    ? "text-white shadow-lg shadow-emerald-500/20"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-color)] hover:text-[var(--text-primary)]"
                   }
                 `}
+                style={isActive ? { background: 'var(--accent-gradient)' } : {}}
               >
-                {/* Active indicator */}
-                {isActive && (
-                  <motion.div
-                    layoutId="active-pill"
-                    className="absolute left-0 top-0 h-full w-1 bg-purple-500 rounded-r"
-                  />
-                )}
-
-                {/* Icon */}
-                <motion.img
+                <img
                   src={item.icon}
-                  className="w-5"
-                  whileHover={{ rotate: 8 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`w-5 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'brightness-0 invert' : 'opacity-70'}`}
+                  alt={item.text}
                 />
-
-                {/* Text */}
-                <p>{item.text}</p>
+                <span className="relative z-10">{item.text}</span>
               </motion.div>
             )}
           </NavLink>
         ))}
-      </div>
-    </div>
+
+
+      </nav>
+
+      {/* Invite Code Card */}
+      {user?.role === 'admin' && user?.inviteCode && (
+        <div className="mt-auto">
+          <div className="p-6 rounded-3xl bg-[var(--bg-color)] border border-[var(--border-color)] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full -mr-12 -mt-12 transition-transform duration-500 group-hover:scale-150" />
+
+            <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-3 opacity-60">
+              Your Invite Code
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-black tracking-[0.3em] text-[var(--accent-color)]">
+                  {user.inviteCode}
+                </span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(user.inviteCode);
+                    toast.success("Code copied to clipboard!");
+                  }}
+                  className="w-8 h-8 flex items-center justify-center rounded-xl bg-[var(--surface-color)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all shadow-sm"
+                  title="Copy Code"
+                >
+                  <span className="text-xs">📄</span>
+                </button>
+              </div>
+
+              <div className="w-full bg-[var(--border-color)] h-1 rounded-full overflow-hidden">
+                <div className="bg-[var(--accent-color)] h-full w-[100%]" />
+              </div>
+            </div>
+
+            <p className="text-[10px] text-[var(--text-secondary)] mt-4 leading-relaxed opacity-60 font-medium">
+              Share this code to add users. <br />Max capacity: 6 seats.
+            </p>
+          </div>
+        </div>
+      )}
+
+    </aside>
   );
 };
 

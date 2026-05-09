@@ -72,6 +72,15 @@ const Signup = ({ switchToLogin, isModal }) => {
             }
           />
 
+          <input
+            className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+            placeholder="Invite Code (Optional)"
+            type="text"
+            onChange={(e) =>
+              setForm({ ...form, inviteCode: e.target.value })
+            }
+          />
+
           <div className="relative">
             <input
               className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"

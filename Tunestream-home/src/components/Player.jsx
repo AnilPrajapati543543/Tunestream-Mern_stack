@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets.js';
 import { PlayerContext } from '../context/PlayerContext';
 import VolumeControl from "./VolumeControl";
@@ -23,24 +23,26 @@ const Player = () => {
   if (!track) return null;
 
   return (
-    <div className='fixed bottom-16 md:bottom-0 md:relative h-[auto] min-h-[80px] md:h-[10%] w-full bg-black/95 text-white flex flex-col md:flex-row items-center justify-between px-4 md:px-6 border-t border-[#222] z-40 pb-2 md:pb-0'>
+    <div 
+      className='fixed bottom-16 md:bottom-0 md:relative h-[auto] min-h-[80px] md:h-[10%] w-full bg-black/95 text-white flex flex-col md:flex-row items-center justify-between px-4 md:px-6 border-t border-white/5 z-40 pb-2 md:pb-0 transition-all duration-300'
+    >
       
       {/* SONG INFO & MOBILE PLAY BUTTON */}
       <div className='flex items-center justify-between w-full md:w-[25%] py-2 md:py-0'>
         <div className='flex items-center gap-3'>
-          <img src={track.image} className='w-10 h-10 md:w-12 md:h-12 rounded object-cover' />
+          <img src={track.image} className='w-10 h-10 md:w-12 md:h-12 rounded shadow-lg object-cover' />
           <div className='overflow-hidden'>
             <p className='text-xs md:text-sm font-semibold truncate'>{track.name}</p>
-            <p className='text-[10px] md:text-xs text-gray-400 truncate'>{track.desc}</p>
+            <p className='text-[10px] md:text-xs text-gray-300 truncate'>{track.desc}</p>
           </div>
         </div>
         
         {/* Mobile-only Play/Pause button next to song info */}
         <div className='flex md:hidden items-center gap-4'>
-            <img onClick={previous} className='w-5' src={assets.prev_icon} alt="" />
+            <img onClick={previous} className='w-5 opacity-70 hover:opacity-100 cursor-pointer' src={assets.prev_icon} alt="" />
             <button
                 onClick={() => playStatus ? pause() : play()}
-                className="w-8 h-8 bg-white rounded-full flex items-center justify-center"
+                className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
             >
                 {playStatus ? (
                 <img src={assets.pause_icon} className="w-4 h-4 invert" />
@@ -48,7 +50,7 @@ const Player = () => {
                 <img src={assets.play_icon} className="w-4 h-4 invert ml-[2px]" />
                 )}
             </button>
-            <img onClick={next} className='w-5' src={assets.next_icon} alt="" />
+            <img onClick={next} className='w-5 opacity-70 hover:opacity-100 cursor-pointer' src={assets.next_icon} alt="" />
         </div>
       </div>
 
@@ -69,13 +71,13 @@ const Player = () => {
           />
           <img
             onClick={previous}
-            className='w-5 cursor-pointer hover:scale-110 transition'
+            className='w-5 cursor-pointer hover:scale-110 transition opacity-80 hover:opacity-100'
             src={assets.prev_icon}
             alt="previous"
           />
           <button
             onClick={() => playStatus ? pause() : play()}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition"
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition shadow-xl shadow-black/20"
           >
             {playStatus ? (
               <img src={assets.pause_icon} className="w-5 h-5 invert" />
@@ -85,7 +87,7 @@ const Player = () => {
           </button>
           <img
             onClick={next}
-            className='w-5 cursor-pointer hover:scale-110 transition'
+            className='w-5 cursor-pointer hover:scale-110 transition opacity-80 hover:opacity-100'
             src={assets.next_icon}
             alt="next"
           />
@@ -103,12 +105,12 @@ const Player = () => {
 
         {/* PROGRESS BAR */}
         <div className='flex items-center gap-2 w-full max-w-[500px]'>
-          <p className='text-[10px] md:text-xs text-gray-400 min-w-[30px]'>
+          <p className='text-[10px] md:text-xs text-gray-300 min-w-[35px] font-mono'>
             {String(time.currentTime.minute).padStart(2, '0')}:{String(time.currentTime.second).padStart(2, '0')}
           </p>
           <div
             onClick={seekSong}
-            className='flex-1 h-[3px] md:h-[4px] bg-gray-600 rounded-full cursor-pointer relative group'
+            className='flex-1 h-[3px] md:h-[4px] bg-white/10 rounded-full cursor-pointer relative group overflow-hidden'
           >
             <div
               className='h-full bg-emerald-500 rounded-full absolute left-0 top-0 transition-all duration-100'
@@ -117,7 +119,7 @@ const Player = () => {
               <div className='hidden group-hover:block w-3 h-3 bg-white rounded-full absolute -right-1.5 -top-[4px] md:-top-[4px] shadow-lg' />
             </div>
           </div>
-          <p className='text-[10px] md:text-xs text-gray-400 min-w-[30px]'>
+          <p className='text-[10px] md:text-xs text-gray-300 min-w-[35px] font-mono'>
             {String(time.totalTime.minute).padStart(2, '0')}:{String(time.totalTime.second).padStart(2, '0')}
           </p>
         </div>

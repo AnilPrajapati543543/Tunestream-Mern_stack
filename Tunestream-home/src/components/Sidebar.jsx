@@ -7,7 +7,7 @@ import { PlayerContext } from "../context/PlayerContext";
 const Sidebar = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const { songsData, playWithId, track, showLibrary } =
+  const { songsData, playWithId, track, showLibrary, playlists } =
     useContext(PlayerContext);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -156,6 +156,46 @@ const Sidebar = () => {
                 </motion.div>
               );
             })}
+        </div>
+
+        {/* CUSTOM PLAYLISTS */}
+        <div className="mt-4 pt-4 border-t border-[#282828] pb-4">
+          <div className={`px-4 mb-2 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}>
+             <AnimatePresence>
+              {!collapsed && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-xs font-bold text-gray-400 uppercase tracking-wider"
+                >
+                  Your Playlists
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className="px-2 space-y-1">
+            {playlists.map(playlist => (
+               <motion.div
+                 key={playlist._id}
+                 onClick={() => navigate(`/playlist/${playlist._id}`)}
+                 whileHover={{ scale: 1.02 }}
+                 className={`flex items-center gap-3 py-2 rounded-lg cursor-pointer hover:bg-[#1f1f1f] ${collapsed ? "justify-center" : "px-2"}`}
+               >
+                 <div className="w-10 h-10 bg-[#282828] rounded flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">🎶</span>
+                 </div>
+                 <AnimatePresence>
+                    {!collapsed && (
+                      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex flex-col overflow-hidden">
+                        <p className="text-sm font-medium text-white truncate">{playlist.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{playlist.songs.length} songs</p>
+                      </motion.div>
+                    )}
+                 </AnimatePresence>
+               </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>

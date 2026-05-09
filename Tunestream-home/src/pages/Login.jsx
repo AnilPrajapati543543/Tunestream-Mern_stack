@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
 
-const Login = ({ switchToSignup, isModal }) => {
+const Login = ({ switchToSignup, switchToForgot, isModal }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,6 +68,15 @@ const Login = ({ switchToSignup, isModal }) => {
               className="absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors"
             >
               {showPassword ? "Hide" : "Show"}
+            </span>
+          </div>
+          
+          <div className="flex justify-end">
+            <span 
+              className="text-sm text-gray-400 hover:text-emerald-400 cursor-pointer transition-colors"
+              onClick={switchToForgot}
+            >
+              Forgot password?
             </span>
           </div>
         </div>

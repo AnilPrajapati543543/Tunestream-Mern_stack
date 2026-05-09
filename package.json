@@ -7,7 +7,7 @@
     "dev:home": "npm run dev --prefix Tunestream-home",
     "dev:backend": "npm run dev --prefix Tunestream-backend",
     "dev:admin": "npm run dev --prefix Tunestream-admin",
-    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:home\"",
+    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:home\" \"npm run dev:admin\"",
     "install:home": "npm install --prefix Tunestream-home",
     "install:backend": "npm install --prefix Tunestream-backend",
     "install:admin": "npm install --prefix Tunestream-admin",
@@ -15,5 +15,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

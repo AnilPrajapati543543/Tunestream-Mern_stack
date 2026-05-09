@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
+import ForgotPassword from '../pages/ForgotPassword';
 import { X } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 
 const AuthModal = ({ isOpen, onClose }) => {
-  const [view, setView] = useState('login'); // 'login' or 'signup'
+  const [view, setView] = useState('login'); // 'login', 'signup', or 'forgot'
   const { isAuthenticated } = useAuth();
 
   // Close modal automatically on successful login
@@ -69,11 +70,15 @@ const AuthModal = ({ isOpen, onClose }) => {
           <div className="pb-8 -mt-16">
             {view === 'login' ? (
               <div className="scale-90 origin-top">
-                 <Login switchToSignup={() => setView('signup')} isModal />
+                 <Login switchToSignup={() => setView('signup')} switchToForgot={() => setView('forgot')} isModal />
+              </div>
+            ) : view === 'signup' ? (
+              <div className="scale-90 origin-top">
+                <Signup switchToLogin={() => setView('login')} isModal />
               </div>
             ) : (
               <div className="scale-90 origin-top">
-                <Signup switchToLogin={() => setView('login')} isModal />
+                <ForgotPassword switchToLogin={() => setView('login')} isModal />
               </div>
             )}
           </div>

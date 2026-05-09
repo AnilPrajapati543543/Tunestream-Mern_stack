@@ -1,13 +1,17 @@
 import React, { useContext } from 'react'
 import { PlayerContext } from '../context/PlayerContext'
 import { motion } from 'framer-motion'
+import PlaylistModal from './PlaylistModal';
 
 const SongItem = ({ name, image, desc, id }) => {
 
   const { playWithId } = useContext(PlayerContext)
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   return (
-    <motion.div
+    <>
+      <PlaylistModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} songId={id} />
+      <motion.div
       onClick={() => playWithId(id)}
       whileHover={{ scale: 1.05, translateY: -5 }}
       whileTap={{ scale: 0.95 }}
@@ -34,6 +38,14 @@ const SongItem = ({ name, image, desc, id }) => {
             </motion.div>
         </div>
 
+        {/* ADD TO PLAYLIST BTN */}
+        <div 
+          onClick={(e) => { e.stopPropagation(); setIsModalOpen(true); }}
+          className="absolute top-2 right-2 bg-black/50 hover:bg-black/80 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        >
+          <span className="text-white font-bold text-lg leading-none">+</span>
+        </div>
+
       </div>
 
       {/* TEXT */}
@@ -43,6 +55,7 @@ const SongItem = ({ name, image, desc, id }) => {
       </div>
 
     </motion.div>
+    </>
   )
 }
 

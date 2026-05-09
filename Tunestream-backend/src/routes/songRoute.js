@@ -6,11 +6,11 @@ import authorizeRoles from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-// Admin-only routes
+// Protected routes
 router.post(
   "/add",
   protect,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "user"),
   upload.fields([
     { name: "image", maxCount: 1 },
     { name: "audio", maxCount: 1 }
@@ -18,9 +18,9 @@ router.post(
   addSong
 );
 
-router.post("/remove", protect, authorizeRoles("admin"), removeSong);
+router.post("/remove", protect, authorizeRoles("admin", "user"), removeSong);
 
-// Public route
+// Protected routes
 router.get("/list", listSong);
 
 export default router;

@@ -1,8 +1,44 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  baseURL: `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api`,
   withCredentials: true 
 });
+
+// Token refresh handling
+let isRefreshing = false;
+
+instance.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Prevent infinite loop
+    if (originalRequest?.url.includes("/user/refresh")) {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return Promise.reject(error);
+      }
+
+      isRefreshing = true;
+
+      try {
+        await instance.get("/user/refresh");
+        isRefreshing = false;
+        return instance(originalRequest);
+      } catch (err) {
+        isRefreshing = false;
+        return Promise.reject(err);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default instance;

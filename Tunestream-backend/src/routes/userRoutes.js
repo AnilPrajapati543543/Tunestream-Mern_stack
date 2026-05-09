@@ -5,6 +5,10 @@ import {
   getMe,
   logoutUser,
   refreshToken,
+  getLinkedUsers,
+  forgotPassword,
+  resetPassword,
+  removeLinkedUser
 } from "../controllers/userController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -13,10 +17,16 @@ const router = express.Router();
 // AUTH
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/logout", logoutUser);
+router.post("/logout", protect, logoutUser);
 
 // SESSION
 router.get("/me", protect, getMe);
 router.get("/refresh", refreshToken);
+router.get("/linked", protect, getLinkedUsers);
+router.delete("/linked/:id", protect, removeLinkedUser);
+
+// PASSWORD RESET
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password/:token", resetPassword);
 
 export default router;

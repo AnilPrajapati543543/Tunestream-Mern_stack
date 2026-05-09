@@ -20,6 +20,31 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],
     default: "user"
+  },
+  adminId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  inviteCode: {
+    type: String,
+    default: null
+  },
+
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+
+  lastLogin: {
+    type: Date,
+    default: null
+  },
+  lastLogout: {
+    type: Date,
+    default: null
+  },
+  totalSessionTime: {
+    type: Number,
+    default: 0 // in seconds
   }
 
 }, { timestamps: true });

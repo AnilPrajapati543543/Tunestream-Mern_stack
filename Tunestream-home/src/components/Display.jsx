@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useContext, useMemo } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import DisplayHome from "./DisplayHome";
 import DisplayAlbum from "./DisplayAlbum";
+import DisplayPlaylist from "./DisplayPlaylist";
 import MobileSearch from "./MobileSearch";
 import MobileLibrary from "./MobileLibrary";
 import { PlayerContext } from "../context/PlayerContext";
@@ -54,6 +55,7 @@ const Display = () => {
           path="/album/:id"
           element={<DisplayAlbum album={currentAlbum} />}
         />
+        <Route path="/playlist/:id" element={<DisplayPlaylist />} />
       </Routes>
     </div>
   );

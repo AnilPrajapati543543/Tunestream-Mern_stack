@@ -11,6 +11,8 @@ const PlayerContextProvider = (props) => {
 
     const [songsData, setSongsData] = useState([]);
     const [albumsData, setAlbumData] = useState([]);
+    const [playlists, setPlaylists] = useState([]);
+    const [playQueue, setPlayQueue] = useState([]);
     const [track, setTrack] = useState(null);
     const [playStatus, setPlayStatus] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -47,50 +49,52 @@ const PlayerContextProvider = (props) => {
     const loopToggle = () => setIsLooping(prev => !prev);
 
     //  SELECT SONG
-    const playWithId = (id) => {
+    const playWithId = (id, queue = null) => {
         if (!isAuthenticated) {
             setIsAuthModalOpen(true);
             return;
         }
-        const t = songsData.find(i => i._id === id);
+        const activeQueue = queue || songsData;
+        setPlayQueue(activeQueue);
+        const t = activeQueue.find(i => i._id === id);
         if (t) setTrack(t);
     };
 
     //  PREVIOUS
     const previous = () => {
-        if (!track || songsData.length === 0) return;
+        if (!track || playQueue.length === 0) return;
 
         if (isShuffling) {
-            const randomIndex = Math.floor(Math.random() * songsData.length);
-            setTrack(songsData[randomIndex]);
+            const randomIndex = Math.floor(Math.random() * playQueue.length);
+            setTrack(playQueue[randomIndex]);
             return;
         }
 
-        const i = songsData.findIndex(s => s._id === track._id);
+        const i = playQueue.findIndex(s => s._id === track._id);
 
         if (i > 0) {
-            setTrack(songsData[i - 1]);
+            setTrack(playQueue[i - 1]);
         } else {
-            setTrack(songsData[songsData.length - 1]);
+            setTrack(playQueue[playQueue.length - 1]);
         }
     };
 
     //  NEXT
     const next = () => {
-        if (!track || songsData.length === 0) return;
+        if (!track || playQueue.length === 0) return;
 
         if (isShuffling) {
-            const randomIndex = Math.floor(Math.random() * songsData.length);
-            setTrack(songsData[randomIndex]);
+            const randomIndex = Math.floor(Math.random() * playQueue.length);
+            setTrack(playQueue[randomIndex]);
             return;
         }
 
-        const i = songsData.findIndex(s => s._id === track._id);
+        const i = playQueue.findIndex(s => s._id === track._id);
 
-        if (i < songsData.length - 1) {
-            setTrack(songsData[i + 1]);
+        if (i < playQueue.length - 1) {
+            setTrack(playQueue[i + 1]);
         } else {
-            setTrack(songsData[0]); // loop playlist
+            setTrack(playQueue[0]); // loop playlist
         }
     };
 
@@ -167,7 +171,7 @@ const PlayerContextProvider = (props) => {
     useEffect(() => {
         const load = async () => {
             try {
-                // Use the configured API instance
+                // Fetch public songs and albums
                 const [s, a] = await Promise.all([
                     API.get("/song/list"),
                     API.get("/album/list")
@@ -175,7 +179,8 @@ const PlayerContextProvider = (props) => {
 
                 if (s.data.success) {
                     setSongsData(s.data.songs);
-                    if (s.data.songs.length > 0) {
+                    setPlayQueue(s.data.songs);
+                    if (s.data.songs.length > 0 && !track) {
                         setTrack(s.data.songs[0]);
                     }
                 }
@@ -184,12 +189,20 @@ const PlayerContextProvider = (props) => {
                     setAlbumData(a.data.albums);
                 }
 
+                // Fetch private playlists only if authenticated
+                if (isAuthenticated) {
+                    const p = await API.get("/playlist/list");
+                    if (p.data.success) {
+                        setPlaylists(p.data.playlists);
+                    }
+                }
+
             } catch (err) {
                 console.error("API Fetch Error:", err);
             }
         };
         load();
-    }, []);
+    }, [isAuthenticated]);
 
     // CONTEXT VALUE
     const value = {
@@ -207,7 +220,10 @@ const PlayerContextProvider = (props) => {
         volume,
         changeVolume,
         songsData,
+        playQueue,
         albumsData,
+        playlists,
+        setPlaylists,
         lyricsData,
         shuffleToggle,
         loopToggle,

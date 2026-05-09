@@ -6,18 +6,18 @@ import Display from "./components/Display.jsx";
 import NowPlayingCard from "./components/NowPlayingCard.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import BottomNav from "./components/BottomNav.jsx";
-import AdminLayout from "./admin/AdminLayout.jsx";
 import { PlayerContext } from "./context/PlayerContext";
 import { useAuth } from "./context/AuthContext";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 export const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const App = () => {
   const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen } = useContext(PlayerContext);
   const { user, loading: authLoading } = useAuth();
-
-  // Determine if we are on an admin route to change layout
-  const isAdminPage = window.location.pathname.startsWith('/admin');
 
   if (authLoading) return (
     <div className="h-screen flex items-center justify-center bg-black text-white">
@@ -31,9 +31,7 @@ const App = () => {
   return (
     <div className="h-screen bg-black overflow-hidden selection:bg-emerald-500/30">
       <Routes>
-        {/* Admin Panel Route */}
-        <Route path="/admin/*" element={<AdminLayout />} />
-
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         {/* Home App Route */}
         <Route path="*" element={
           <div className="h-screen flex flex-col bg-gradient-to-br from-black via-[#121212] to-black overflow-hidden">
@@ -41,6 +39,7 @@ const App = () => {
               isOpen={isAuthModalOpen} 
               onClose={() => setIsAuthModalOpen(false)} 
             />
+            <ToastContainer theme="dark" position="bottom-right" />
 
             <div className="flex h-[90%] overflow-hidden relative">
               <div className="hidden md:flex h-full">
