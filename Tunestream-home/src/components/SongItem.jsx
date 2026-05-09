@@ -27,16 +27,6 @@ const SongItem = ({ name, image, desc, id }) => {
           alt={name}
         />
 
-        {/* PLAY BUTTON OVERLAY */}
-        <div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileHover={{ scale: 1.1 }}
-                className='bg-[#1db954] w-12 h-12 rounded-full flex items-center justify-center shadow-2xl opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-3 transition-all duration-300 transform'
-            >
-                <span className='text-black text-xl ml-1'>▶</span>
-            </motion.div>
-        </div>
 
         {/* ADD TO PLAYLIST BTN */}
         <div 
