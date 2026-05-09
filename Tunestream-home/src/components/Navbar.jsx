@@ -40,20 +40,20 @@ const Navbar = () => {
       {/* LEFT SIDE */}
       <div className="flex items-center gap-2">
         {user ? (
-          <p className="text-xs md:text-base text-gray-300">
+          <p className="text-[10px] sm:text-xs md:text-base text-gray-300">
             Welcome, <span className="text-white font-semibold">{user.name}</span>
           </p>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button 
               onClick={() => setIsAuthModalOpen(true)}
-              className="px-3 py-1.5 text-xs md:text-sm font-semibold text-gray-400 hover:text-white transition-colors"
+              className="px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs md:text-sm font-semibold text-gray-400 hover:text-white transition-colors"
             >
               Sign up
             </button>
             <button 
               onClick={() => setIsAuthModalOpen(true)}
-              className="px-6 md:px-8 py-2 md:py-2.5 bg-white text-black rounded-full font-bold text-xs md:text-sm hover:scale-105 active:scale-95 transition-all"
+              className="px-4 sm:px-6 md:px-8 py-1.5 sm:py-2 md:py-2.5 bg-white text-black rounded-full font-bold text-[10px] sm:text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-lg"
             >
               Log in
             </button>
@@ -66,7 +66,7 @@ const Navbar = () => {
         {user ? (
           <button
             onClick={handleLogout}
-            className="relative overflow-hidden bg-emerald-800 hover:bg-emerald-900 active:scale-95 transition-all duration-200 px-5 py-1.5 rounded-full text-sm font-medium shadow-md"
+            className="relative overflow-hidden bg-emerald-800 hover:bg-emerald-900 active:scale-95 transition-all duration-200 px-3 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium shadow-md"
           >
             Logout
 

@@ -96,8 +96,31 @@ body {
   background: var(--surface-color);
   border: 1px solid var(--border-color);
   backdrop-filter: blur(12px);
-  border-radius: 2.5rem; /* More rounded */
+  border-radius: 1.5rem; /* Default for mobile */
   box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08), 0 10px 15px -10px rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 768px) {
+  .glass-panel {
+    border-radius: 2.5rem; /* Larger for desktop */
+  }
+}
+
+/* Custom Scrollbar for Mobile */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* ===== PREMIUM UI ELEMENTS ===== */

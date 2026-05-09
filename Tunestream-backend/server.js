@@ -30,6 +30,8 @@ const port = process.env.PORT || 4000;
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
+  "https://tunestream.com",
+  "https://admin.tunestream.com",
   "https://tunestream-mern-stack.vercel.app",
   "https://tunestream-mern-stack-admin.vercel.app",
   "http://localhost:5173",

@@ -39,7 +39,7 @@ const AdminLogin = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="glass-panel p-10 md:p-12"
+          className="glass-panel p-6 sm:p-10 md:p-12"
         >
           {/* Logo Area */}
           <div className="text-center mb-10">
@@ -49,7 +49,7 @@ const AdminLogin = () => {
             <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
               Admin <span className="logo-text">Access</span>
             </h1>
-            <p className="text-[var(--text-secondary)] mt-2 font-medium opacity-60">
+            <p className="text-[var(--text-secondary)] mt-2 font-medium opacity-60 text-sm sm:text-base">
               TuneStream Management Panel
             </p>
           </div>

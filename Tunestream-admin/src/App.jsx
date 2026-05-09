@@ -20,6 +20,7 @@ export const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -58,17 +59,17 @@ const App = () => {
     <div className={`h-screen flex transition-colors duration-300 overflow-hidden ${darkMode ? 'dark' : ''}`}>
       <ToastContainer theme={darkMode ? "dark" : "light"} />
 
-      <Sidebar darkMode={darkMode} />
+      <Sidebar darkMode={darkMode} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       <div className="flex-1 flex flex-col min-w-0 bg-[var(--bg-color)] h-full">
         
-        <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+        <Navbar darkMode={darkMode} setDarkMode={setDarkMode} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 p-4 md:p-8 overflow-hidden glow-bg relative">
 
-          <div className="glass-panel p-6 md:p-10 h-full flex flex-col">
+          <div className="glass-panel p-4 sm:p-6 md:p-10 h-full flex flex-col overflow-hidden">
 
-            <div className="animate-page flex-1 h-full">
+            <div className="animate-page flex-1 h-full overflow-y-auto">
               <Routes>
                 <Route path="/" element={<ListSong />} />
                 <Route path="/add-song" element={<AddSong />} />

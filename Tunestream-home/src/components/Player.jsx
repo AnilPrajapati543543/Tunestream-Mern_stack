@@ -24,33 +24,33 @@ const Player = () => {
 
   return (
     <div 
-      className='fixed bottom-16 md:bottom-0 md:relative h-[auto] min-h-[80px] md:h-[10%] w-full bg-black/95 text-white flex flex-col md:flex-row items-center justify-between px-4 md:px-6 border-t border-white/5 z-40 pb-2 md:pb-0 transition-all duration-300'
+      className='fixed bottom-16 md:bottom-0 md:relative h-auto min-h-[70px] md:h-[10%] w-full bg-black/95 backdrop-blur-lg text-white flex flex-col md:flex-row items-center justify-between px-3 md:px-6 border-t border-white/5 z-40 transition-all duration-300'
     >
       
       {/* SONG INFO & MOBILE PLAY BUTTON */}
-      <div className='flex items-center justify-between w-full md:w-[25%] py-2 md:py-0'>
-        <div className='flex items-center gap-3'>
-          <img src={track.image} className='w-10 h-10 md:w-12 md:h-12 rounded shadow-lg object-cover' />
-          <div className='overflow-hidden'>
-            <p className='text-xs md:text-sm font-semibold truncate'>{track.name}</p>
-            <p className='text-[10px] md:text-xs text-gray-300 truncate'>{track.desc}</p>
+      <div className='flex items-center justify-between w-full md:w-[30%] py-1.5 md:py-0'>
+        <div className='flex items-center gap-2.5 md:gap-3'>
+          <img src={track.image} className='w-9 h-9 md:w-12 md:h-12 rounded shadow-lg object-cover' />
+          <div className='overflow-hidden max-w-[120px] sm:max-w-[180px] md:max-w-none'>
+            <p className='text-[11px] md:text-sm font-bold truncate tracking-tight'>{track.name}</p>
+            <p className='text-[9px] md:text-xs text-gray-400 truncate opacity-80'>{track.desc}</p>
           </div>
         </div>
         
         {/* Mobile-only Play/Pause button next to song info */}
-        <div className='flex md:hidden items-center gap-4'>
-            <img onClick={previous} className='w-5 opacity-70 hover:opacity-100 cursor-pointer' src={assets.prev_icon} alt="" />
+        <div className='flex md:hidden items-center gap-3 sm:gap-4'>
+            <img onClick={previous} className='w-4 sm:w-5 opacity-60 hover:opacity-100 cursor-pointer active:scale-75 transition' src={assets.prev_icon} alt="prev" />
             <button
                 onClick={() => playStatus ? pause() : play()}
-                className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
+                className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
             >
                 {playStatus ? (
-                <img src={assets.pause_icon} className="w-4 h-4 invert" />
+                <img src={assets.pause_icon} className="w-4 h-4 invert" alt="pause" />
                 ) : (
-                <img src={assets.play_icon} className="w-4 h-4 invert ml-[2px]" />
+                <img src={assets.play_icon} className="w-4 h-4 invert ml-[2px]" alt="play" />
                 )}
             </button>
-            <img onClick={next} className='w-5 opacity-70 hover:opacity-100 cursor-pointer' src={assets.next_icon} alt="" />
+            <img onClick={next} className='w-4 sm:w-5 opacity-60 hover:opacity-100 cursor-pointer active:scale-75 transition' src={assets.next_icon} alt="next" />
         </div>
       </div>
 

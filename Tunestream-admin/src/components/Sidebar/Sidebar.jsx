@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 
-const Sidebar = ({ darkMode }) => {
+const Sidebar = ({ darkMode, isOpen, setIsOpen }) => {
   const { user } = useAuth();
 
   const menuItems = [
@@ -17,13 +17,31 @@ const Sidebar = ({ darkMode }) => {
   ];
 
   return (
-    <aside
-      className="
-        w-[240px] min-h-screen p-6 transition-all duration-300
-        bg-[var(--surface-color)] border-r border-[var(--border-color)]
-        flex flex-col gap-8 shadow-sm z-20
-      "
-    >
+    <>
+      {/* Mobile Overlay */}
+      <div 
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-30 transition-opacity duration-300 md:hidden ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsOpen(false)}
+      />
+
+      <aside
+        className={`
+          fixed md:static inset-y-0 left-0 w-[260px] md:w-[240px] p-6 transition-all duration-300 transform
+          bg-[var(--surface-color)] border-r border-[var(--border-color)]
+          flex flex-col gap-8 shadow-2xl md:shadow-sm z-40
+          ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="md:hidden absolute top-4 right-4 p-2 rounded-xl hover:bg-[var(--bg-color)] text-[var(--text-secondary)]"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
       {/* Logo */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -111,6 +129,7 @@ const Sidebar = ({ darkMode }) => {
       )}
 
     </aside>
+    </>
   );
 };
 
