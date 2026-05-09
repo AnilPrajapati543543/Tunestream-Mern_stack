@@ -27,6 +27,17 @@ const SongItem = ({ name, image, desc, id }) => {
           alt={name}
         />
 
+        {/* BOTTOM-RIGHT PLAY BUTTON */}
+        <div className='absolute inset-0 pointer-events-none'>
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileHover={{ scale: 1.1 }}
+                className='absolute bottom-2 right-2 bg-emerald-500 w-11 h-11 rounded-full flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-auto'
+            >
+                <span className='text-black text-xl ml-1'>▶</span>
+            </motion.div>
+        </div>
+
 
         {/* ADD TO PLAYLIST BTN */}
         <div 
