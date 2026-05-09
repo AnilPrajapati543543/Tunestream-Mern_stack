@@ -32,6 +32,8 @@ const allowedOrigins = [
   process.env.ADMIN_URL,
   "https://tunestream.com",
   "https://admin.tunestream.com",
+  "https://tunestream-home.vercel.app",
+  "https://tunestream-admin.vercel.app",
   "https://tunestream-mern-stack.vercel.app",
   "https://tunestream-mern-stack-admin.vercel.app",
   "http://localhost:5173",
