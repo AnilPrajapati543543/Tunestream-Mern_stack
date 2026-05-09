@@ -151,13 +151,18 @@ const AdminSignup = () => {
             </motion.button>
           </form>
 
-          <div className="mt-8 text-center">
+          <div className="mt-8 text-center space-y-3">
             <p className="text-sm text-[var(--text-secondary)]">
               Already have an account?{' '}
               <Link to="/login" className="text-[var(--accent-color)] hover:underline font-bold transition-all">
                 Sign In
               </Link>
             </p>
+            <div className="pt-2 border-t border-[var(--border-color)]">
+               <a href="https://www-tunestream-home.vercel.app" className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center gap-1">
+                 ← Back to Listener Portal
+               </a>
+            </div>
           </div>
 
         </motion.div>
