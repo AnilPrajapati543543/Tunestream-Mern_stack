@@ -14,7 +14,6 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   role: Joi.string().valid("user", "admin").optional(),
-  adminSecret: Joi.string().optional(),
   inviteCode: Joi.string().optional(),
 });
 
@@ -44,7 +43,7 @@ export const registerUser = async (req, res, next) => {
     const { error, value } = registerSchema.validate(req.body);
     if (error) return next(new ApiError(400, error.details[0].message));
 
-    const { name, email, password, role, adminSecret, inviteCode: reqInviteCode } = req.body;
+    const { name, email, password, role, inviteCode: reqInviteCode } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -56,9 +55,6 @@ export const registerUser = async (req, res, next) => {
     let finalInviteCode = null;
 
     if (role === "admin") {
-      if (adminSecret !== process.env.ADMIN_SIGNUP_SECRET) {
-        return next(new ApiError(401, "Invalid admin secret code"));
-      }
       finalRole = "admin";
       // Generate a simple 6-character uppercase invite code for the admin
       finalInviteCode = Math.random().toString(36).slice(-6).toUpperCase();

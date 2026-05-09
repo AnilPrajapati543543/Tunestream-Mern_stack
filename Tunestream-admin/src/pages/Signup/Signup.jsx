@@ -9,8 +9,7 @@ const AdminSignup = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    adminSecret: ''
+    password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -116,21 +115,6 @@ const AdminSignup = () => {
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest px-1">
-                Admin Secret Code
-              </label>
-              <input
-                type="password"
-                name="adminSecret"
-                required
-                value={formData.adminSecret}
-                onChange={handleChange}
-                placeholder="Secret code"
-                className="premium-input w-full border-dashed"
-              />
             </div>
 
             <motion.button

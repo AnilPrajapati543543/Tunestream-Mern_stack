@@ -2,6 +2,7 @@ import express from "express";
 import { addSong, listSong, removeSong } from "../controllers/songController.js";
 import upload from "../middleware/multer.js";
 import protect from "../middleware/authMiddleware.js";
+import optionalProtect from "../middleware/optionalAuth.js";
 import authorizeRoles from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
@@ -20,7 +21,7 @@ router.post(
 
 router.post("/remove", protect, authorizeRoles("admin", "user"), removeSong);
 
-// Protected routes
-router.get("/list", listSong);
+// Optional Protected routes
+router.get("/list", optionalProtect, listSong);
 
 export default router;
