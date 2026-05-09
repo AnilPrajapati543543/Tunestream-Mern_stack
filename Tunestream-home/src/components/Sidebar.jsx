@@ -16,10 +16,10 @@ const Sidebar = () => {
     <motion.div
       animate={{ width: collapsed ? 80 : 280 }}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="h-full flex flex-col text-white bg-black/30 backdrop-blur-xl border-r border-white/10 shadow-lg"
+      className="h-full flex flex-col text-white bg-black/40 backdrop-blur-3xl border-r border-white/5 shadow-[20px_0_40px_-20px_rgba(16,185,129,0.15)] z-20"
     >
       {/* TOP */}
-      <div className="bg-[#121212] rounded-xl p-3 flex flex-col gap-4">
+      <div className="bg-[#121212] rounded-2xl p-3 flex flex-col gap-4 shadow-xl border border-white/5 m-2">
         {/* COLLAPSE BTN */}
         <div className={`flex ${collapsed ? "justify-center" : "justify-end"}`}>
           <motion.button
@@ -79,7 +79,7 @@ const Sidebar = () => {
       </div>
 
       {/* LIBRARY */}
-      <div className="bg-[#121212] flex-1 rounded-xl flex flex-col overflow-hidden mt-3">
+      <div className="bg-[#121212] flex-1 rounded-2xl flex flex-col overflow-hidden mt-1 m-2 shadow-xl border border-white/5">
         {/* HEADER */}
         <div
           onClick={showLibrary}
@@ -117,12 +117,12 @@ const Sidebar = () => {
                   key={song._id}
                   onClick={() => playWithId(song._id)}
                   whileHover={{ scale: 1.02 }}
-                  className={`flex items-center gap-3 py-2 rounded-lg cursor-pointer
+                  className={`flex items-center gap-3 py-2 rounded-lg cursor-pointer transition-all duration-300
                   ${collapsed ? "justify-center" : "px-2"}
                   ${
                     isActive
-                      ? "border border-emerald-400 shadow-[0_0_10px_rgba(29,185,84,0.4)]"
-                      : "hover:bg-[#1f1f1f]"
+                      ? "bg-emerald-500/10 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                      : "hover:bg-white/5"
                   }`}
                 >
                   <img
