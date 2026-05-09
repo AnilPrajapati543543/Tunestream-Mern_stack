@@ -89,38 +89,54 @@ const AuthModal = ({ isOpen, onClose }) => {
           ) : (
             <>
               {/* Header Row */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
-                <div className="flex bg-black/40 p-1 rounded-full">
+              <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-6 border-b border-white/5 bg-white/[0.03] gap-4">
+                {/* Auth Toggle */}
+                <div className="flex bg-black/60 p-1 rounded-full shadow-inner border border-white/5">
                   <button
                     onClick={() => setView('login')}
-                    className={`px-5 py-1.5 rounded-full transition-all text-xs font-bold ${
-                      view === 'login' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:text-white'
+                    className={`px-5 py-2 rounded-full transition-all duration-300 text-xs font-bold ${
+                      view === 'login' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-400 hover:text-white'
                     }`}
                   >
                     Login
                   </button>
                   <button
                     onClick={() => setView('signup')}
-                    className={`px-5 py-1.5 rounded-full transition-all text-xs font-bold ${
-                      view === 'signup' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:text-white'
+                    className={`px-5 py-2 rounded-full transition-all duration-300 text-xs font-bold ${
+                      view === 'signup' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-400 hover:text-white'
                     }`}
                   >
                     Sign Up
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setView('role_selection')}
-                    className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-emerald-500 font-bold transition-colors"
-                  >
-                    Change Role
-                  </button>
+                <div className="flex items-center gap-4">
+                  {/* Role Toggle Switch */}
+                  <div className="flex bg-white/5 p-1 rounded-full border border-white/10 shadow-lg">
+                    <button 
+                      onClick={() => setSelectedRole('user')}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${
+                        selectedRole === 'user' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-300'
+                      }`}
+                    >
+                      User
+                    </button>
+                    <button 
+                      onClick={() => setSelectedRole('admin')}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${
+                        selectedRole === 'admin' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-300'
+                      }`}
+                    >
+                      Admin
+                    </button>
+                  </div>
+
+                  {/* Close Icon */}
                   <button
                     onClick={onClose}
-                    className="p-1.5 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                    className="p-2 rounded-full bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-90 shadow-sm"
                   >
-                    <X size={16} />
+                    <X size={18} />
                   </button>
                 </div>
               </div>
