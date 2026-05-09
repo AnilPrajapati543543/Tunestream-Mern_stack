@@ -57,18 +57,27 @@ const NowPlayingCard = () => {
           className="h-full p-2 flex overflow-hidden"
         >
           <motion.div
-            className="w-full rounded-2xl p-4 flex flex-col text-white overflow-hidden relative transition-all duration-700"
+            className="w-full rounded-[2rem] p-5 flex flex-col text-white overflow-hidden relative border border-white/10"
+            animate={{
+              boxShadow: [
+                `0 20px 40px -10px ${bgColor}`,
+                `0 20px 60px -5px ${bgColor.replace('0.5', '0.7')}`,
+                `0 20px 40px -10px ${bgColor}`
+              ]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
             style={{
               background: `linear-gradient(135deg, ${bgColor}, #09090a)`,
-              boxShadow: `0 20px 40px -10px ${bgColor}`
             }}
             whileHover={{
-              boxShadow:
-                "0 20px 50px rgba(0,0,0,0.8), inset 0 0 50px rgba(255,255,255,0.08)",
+              scale: 1.01,
             }}
-            transition={{ duration: 0.3 }}
           >
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-2xl rounded-2xl" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-3xl rounded-2xl" />
 
             {/* HEADER */}
             <div className="flex justify-end relative z-10">
@@ -88,7 +97,10 @@ const NowPlayingCard = () => {
                 src={track.image}
                 whileHover={{ scale: 1.04 }}
                 transition={{ duration: 0.3 }}
-                className="rounded-xl w-full h-[200px] object-cover shadow-2xl"
+                className="rounded-2xl w-full h-[220px] object-cover"
+                animate={{
+                    boxShadow: `0 15px 30px -10px ${bgColor.replace('0.5', '1')}`
+                }}
                 alt="track"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
