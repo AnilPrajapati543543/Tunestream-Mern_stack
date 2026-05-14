@@ -86,14 +86,14 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
         <div className="space-y-5">
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
-            placeholder="Email"
+            placeholder="Email (Optional if phone provided)"
             type="email"
             onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
-            placeholder="Phone Number"
+            placeholder="Phone Number (Optional if email provided)"
             type="tel"
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
