@@ -11,17 +11,18 @@ import sendEmail from "../utils/sendEmail.js";
 // ================= JOI VALIDATION =================
 const registerSchema = Joi.object({
   name: Joi.string().min(3).required(),
-  email: Joi.string().email().required(),
+  email: Joi.string().email().optional(),
   password: Joi.string().min(6).required(),
   phoneNumber: Joi.string().min(10).optional(),
   role: Joi.string().valid("user", "admin").optional(),
   inviteCode: Joi.string().optional(),
-});
+}).or('email', 'phoneNumber');
 
 const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
+  email: Joi.string().email().optional(),
+  phoneNumber: Joi.string().min(10).optional(),
   password: Joi.string().min(6).required(),
-});
+}).or('email', 'phoneNumber');
 
 // ================= TOKEN GENERATION =================
 const generateAccessToken = (user) =>
@@ -44,11 +45,16 @@ export const registerUser = async (req, res, next) => {
     const { error, value } = registerSchema.validate(req.body);
     if (error) return next(new ApiError(400, error.details[0].message));
 
-    const { name, email, password, role, inviteCode: reqInviteCode } = req.body;
+    const { name, email, phoneNumber, password, role, inviteCode: reqInviteCode } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ 
+      $or: [
+        { email: email || "___non_existent___" }, 
+        { phoneNumber: phoneNumber || "___non_existent___" }
+      ] 
+    });
     if (existingUser) {
-      return next(new ApiError(400, "User already exists"));
+      return next(new ApiError(400, "User with this email or phone already exists"));
     }
 
     let finalRole = "user";
@@ -81,12 +87,13 @@ export const registerUser = async (req, res, next) => {
 
     const user = await User.create({
       name,
-      email,
+      email: email || undefined,
+      phoneNumber: phoneNumber || undefined,
       password: hashedPassword,
       role: finalRole,
       adminId: finalAdminId,
       inviteCode: finalInviteCode,
-      lastLogin: new Date() // Set lastLogin on registration
+      lastLogin: new Date() 
     });
 
     if (finalAdminId) {
@@ -127,11 +134,17 @@ export const loginUser = async (req, res, next) => {
     const { error, value } = loginSchema.validate(req.body);
     if (error) return next(new ApiError(400, error.details[0].message));
 
-    const { email, password } = value;
+    const { email, phoneNumber, password } = value;
 
-    const user = await User.findOne({ email }).select("+password +role");
+    const user = await User.findOne({
+      $or: [
+        { email: email || "___non_existent___" },
+        { phoneNumber: phoneNumber || "___non_existent___" }
+      ]
+    }).select("+password +role");
+
     if (!user) {
-      return next(new ApiError(401, "Invalid email or password"));
+      return next(new ApiError(401, "Invalid credentials"));
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

@@ -34,6 +34,11 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if ((!email && !phoneNumber) || !password) {
+      return alert("Password and either Email or Phone are required");
+    }
+
     setLoading(true);
 
     try {
@@ -83,7 +88,6 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
             placeholder="Email"
             type="email"
-            required
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -91,7 +95,6 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
             placeholder="Phone Number"
             type="tel"
-            required
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
 

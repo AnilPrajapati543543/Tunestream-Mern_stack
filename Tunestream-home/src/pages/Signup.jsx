@@ -36,8 +36,8 @@ const Signup = ({ switchToLogin, isModal }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.email || !form.password) {
-      return alert("All fields required");
+    if (!form.name || (!form.email && !form.phoneNumber) || !form.password) {
+      return alert("Name, Password, and either Email or Phone are required");
     }
 
     try {
@@ -96,9 +96,8 @@ const Signup = ({ switchToLogin, isModal }) => {
 
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
-            placeholder="Email"
+            placeholder="Email (Optional if phone provided)"
             type="email"
-            required
             onChange={(e) =>
               setForm({ ...form, email: e.target.value })
             }
@@ -106,9 +105,8 @@ const Signup = ({ switchToLogin, isModal }) => {
 
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
-            placeholder="Phone Number"
+            placeholder="Phone Number (Optional if email provided)"
             type="tel"
-            required
             onChange={(e) =>
               setForm({ ...form, phoneNumber: e.target.value })
             }
