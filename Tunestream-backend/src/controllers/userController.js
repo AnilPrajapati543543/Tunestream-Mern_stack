@@ -424,6 +424,8 @@ export const resetPassword = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
 // ================= OTP LOGIC =================
 export const sendOTP = async (req, res, next) => {
   try {
