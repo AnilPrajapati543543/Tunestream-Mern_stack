@@ -12,16 +12,20 @@ const Signup = ({ switchToLogin, isModal }) => {
     password: "",
   });
 
+  const [method, setMethod] = useState("email"); // 'email' or 'phone'
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState("");
 
   const sendOTPHandler = async () => {
-    if (!form.email && !form.phoneNumber) return alert("Email or Phone required");
+    if (method === "email" && !form.email) return toast.error("Email is required");
+    if (method === "phone" && !form.phoneNumber) return toast.error("Phone Number is required");
+    
     try {
       setLoading(true);
-      const res = await API.post("/user/send-otp", { email: form.email, phoneNumber: form.phoneNumber });
+      const payload = method === "email" ? { email: form.email } : { phoneNumber: form.phoneNumber };
+      const res = await API.post("/user/send-otp", payload);
       if (res.data.success) {
         setShowOTP(true);
         toast.success("OTP sent!");
@@ -36,25 +40,30 @@ const Signup = ({ switchToLogin, isModal }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!form.name || (!form.email && !form.phoneNumber) || !form.password) {
-      return alert("Name, Password, and either Email or Phone are required");
+    if (!form.name || !form.password || (method === "email" && !form.email) || (method === "phone" && !form.phoneNumber)) {
+      return alert("Please fill all required fields");
     }
 
     try {
       setLoading(true);
 
       // Verify OTP first
-      const verifyRes = await API.post("/user/verify-otp", { 
-        email: form.email, 
-        phoneNumber: form.phoneNumber, 
-        otp 
-      });
+      const verifyPayload = method === "email" 
+        ? { email: form.email, otp } 
+        : { phoneNumber: form.phoneNumber, otp };
+
+      const verifyRes = await API.post("/user/verify-otp", verifyPayload);
 
       if (!verifyRes.data.success) {
         return toast.error("Invalid OTP");
       }
 
-      const res = await API.post("/user/register", form);
+      // Final registration (clear the other field if not used)
+      const finalForm = { ...form };
+      if (method === "email") finalForm.phoneNumber = "";
+      else finalForm.email = "";
+
+      const res = await API.post("/user/register", finalForm);
 
       if (res.data.success) {
         toast.success("Signup success");
@@ -83,6 +92,24 @@ const Signup = ({ switchToLogin, isModal }) => {
           Create Account
         </h2>
 
+        {/* METHOD TOGGLE */}
+        <div className="flex bg-white/5 rounded-full p-1 mb-8 border border-white/10">
+          <button
+            type="button"
+            onClick={() => { setMethod("email"); setShowOTP(false); }}
+            className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${method === 'email' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Email
+          </button>
+          <button
+            type="button"
+            onClick={() => { setMethod("phone"); setShowOTP(false); }}
+            className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${method === 'phone' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Phone
+          </button>
+        </div>
+
         <div className="space-y-5">
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
@@ -94,23 +121,31 @@ const Signup = ({ switchToLogin, isModal }) => {
             }
           />
 
-          <input
-            className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
-            placeholder="Email (Optional if phone provided)"
-            type="email"
-            onChange={(e) =>
-              setForm({ ...form, email: e.target.value })
-            }
-          />
-
-          <input
-            className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
-            placeholder="Phone Number (Optional if email provided)"
-            type="tel"
-            onChange={(e) =>
-              setForm({ ...form, phoneNumber: e.target.value })
-            }
-          />
+          {method === "email" ? (
+            <motion.input
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+              placeholder="Email Address"
+              type="email"
+              required
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+          ) : (
+            <motion.input
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+              placeholder="Phone Number (e.g. +91...)"
+              type="tel"
+              required
+              onChange={(e) =>
+                setForm({ ...form, phoneNumber: e.target.value })
+              }
+            />
+          )}
 
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"

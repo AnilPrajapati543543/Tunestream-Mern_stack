@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import Joi from "joi";
 import { sendAccessToken, sendRefreshToken } from "../utils/sendToken.js";
+import { sendSMS } from "../utils/sendSMS.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 
@@ -448,10 +449,10 @@ export const sendOTP = async (req, res, next) => {
     }
 
     if (phoneNumber) {
-      console.log(`\n--- [DEVELOPMENT] MOCK SMS ---`);
-      console.log(`To: ${phoneNumber}`);
-      console.log(`OTP: ${otp}`);
-      console.log(`------------------------------\n`);
+      await sendSMS({
+        phoneNumber,
+        message: `Your TuneStream verification code is: ${otp}. It expires in 5 minutes.`
+      });
     }
 
     // Temporary storage for verification
