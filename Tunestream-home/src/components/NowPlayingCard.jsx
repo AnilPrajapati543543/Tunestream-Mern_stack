@@ -79,6 +79,20 @@ const NowPlayingCard = () => {
           >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-3xl rounded-2xl" />
 
+            {/* Background Video (Only if available) */}
+            {track.videoUrl && (
+              <video
+                key={track.videoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover opacity-30 z-0"
+              >
+                <source src={track.videoUrl} type="video/mp4" />
+              </video>
+            )}
+
             {/* HEADER */}
             <div className="flex justify-end relative z-10">
               <motion.button

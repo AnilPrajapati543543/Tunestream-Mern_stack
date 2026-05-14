@@ -1,16 +1,37 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import API from "../api/axios";
+import OTPInput from "../components/OTPInput";
+import { toast } from "react-toastify";
 
 const Signup = ({ switchToLogin, isModal }) => {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phoneNumber: "",
     password: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [otp, setOtp] = useState("");
+
+  const sendOTPHandler = async () => {
+    if (!form.email && !form.phoneNumber) return alert("Email or Phone required");
+    try {
+      setLoading(true);
+      const res = await API.post("/user/send-otp", { email: form.email, phoneNumber: form.phoneNumber });
+      if (res.data.success) {
+        setShowOTP(true);
+        toast.success("OTP sent!");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -22,10 +43,21 @@ const Signup = ({ switchToLogin, isModal }) => {
     try {
       setLoading(true);
 
+      // Verify OTP first
+      const verifyRes = await API.post("/user/verify-otp", { 
+        email: form.email, 
+        phoneNumber: form.phoneNumber, 
+        otp 
+      });
+
+      if (!verifyRes.data.success) {
+        return toast.error("Invalid OTP");
+      }
+
       const res = await API.post("/user/register", form);
 
       if (res.data.success) {
-        alert("Signup success");
+        toast.success("Signup success");
         switchToLogin();
       }
     } catch (err) {
@@ -74,6 +106,16 @@ const Signup = ({ switchToLogin, isModal }) => {
 
           <input
             className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+            placeholder="Phone Number"
+            type="tel"
+            required
+            onChange={(e) =>
+              setForm({ ...form, phoneNumber: e.target.value })
+            }
+          />
+
+          <input
+            className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
             placeholder="Invite Code (Optional)"
             type="text"
             onChange={(e) =>
@@ -100,11 +142,22 @@ const Signup = ({ switchToLogin, isModal }) => {
           </div>
         </div>
 
+        </div>
+        
+        {showOTP && (
+          <div className="mt-8">
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center mb-4">Enter 6-Digit Code</p>
+            <OTPInput value={otp} onChange={setOtp} />
+          </div>
+        )}
+
         <button 
+          type="button"
+          onClick={showOTP ? submitHandler : sendOTPHandler}
           disabled={loading}
           className="w-full bg-emerald-500 hover:bg-emerald-600 p-4 rounded-full text-white font-bold mt-8 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50"
         >
-          {loading ? "Creating account..." : "Sign Up"}
+          {loading ? "Processing..." : (showOTP ? "Verify & Sign Up" : "Send OTP")}
         </button>
 
         <p className="text-gray-400 mt-6 text-center">

@@ -13,6 +13,7 @@ const registerSchema = Joi.object({
   name: Joi.string().min(3).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+  phoneNumber: Joi.string().min(10).optional(),
   role: Joi.string().valid("user", "admin").optional(),
   inviteCode: Joi.string().optional(),
 });
@@ -407,6 +408,73 @@ export const resetPassword = async (req, res, next) => {
         role: user.role,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+// ================= OTP LOGIC =================
+export const sendOTP = async (req, res, next) => {
+  try {
+    const { email, phoneNumber } = req.body;
+
+    if (!email && !phoneNumber) {
+      return next(new ApiError(400, "Email or Phone Number is required"));
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+    if (email) {
+      await sendEmail({
+        email,
+        subject: "TuneStream OTP Verification",
+        message: `Your verification code is: ${otp}. It expires in 5 minutes.`,
+        html: `<div style="font-family: sans-serif; text-align: center;"><h2>Verify your account</h2><p>Your OTP is:</p><h1 style="color: #10b981; letter-spacing: 5px;">${otp}</h1><p>Expires in 5 minutes.</p></div>`
+      });
+    }
+
+    if (phoneNumber) {
+      console.log(`\n--- [DEVELOPMENT] MOCK SMS ---`);
+      console.log(`To: ${phoneNumber}`);
+      console.log(`OTP: ${otp}`);
+      console.log(`------------------------------\n`);
+    }
+
+    // Temporary storage for verification
+    // In a real app, you'd save this to a pre-registration collection or session
+    // For now, we'll return success and the frontend will send it back for verification
+    // OR we save it to the user if they exist
+    const user = await User.findOne({ $or: [{ email }, { phoneNumber }] });
+    if (user) {
+      user.otp = otp;
+      user.otpExpires = otpExpires;
+      await user.save({ validateBeforeSave: false });
+    }
+
+    res.json({ success: true, message: "OTP sent successfully", devOtp: (process.env.NODE_ENV !== 'production' ? otp : undefined) });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const verifyOTP = async (req, res, next) => {
+  try {
+    const { email, phoneNumber, otp } = req.body;
+
+    const user = await User.findOne({
+      $or: [{ email }, { phoneNumber }],
+      otp,
+      otpExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return next(new ApiError(400, "Invalid or expired OTP"));
+    }
+
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    res.json({ success: true, message: "OTP verified" });
   } catch (err) {
     next(err);
   }

@@ -17,7 +17,7 @@ const logHistory = async (user, action, itemName, itemType) => {
 // ADD SONG
 const addSong = async (req, res, next) => {
   try {
-    const { name, desc, album, songUrl, imageUrl } = req.body;
+    const { name, desc, album, songUrl, imageUrl, videoUrl } = req.body;
     const audioFile = req.files?.audio?.[0];
     const imageFile = req.files?.image?.[0];
 
@@ -63,6 +63,7 @@ const addSong = async (req, res, next) => {
       image: finalImageUrl,
       file: finalAudioUrl,
       duration,
+      videoUrl: videoUrl || null,
       userId: req.user._id
     };
 

@@ -12,3 +12,19 @@
   background: #333;
   border-radius: 10px;
 }
+
+@layer utilities {
+  .spotify-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .spotify-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .album-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -21,17 +21,21 @@ const sendEmail = async (options) => {
 
   try {
     const info = await transporter.sendMail(message);
-    console.log('Message sent: %s', info.messageId);
+    console.log('✅ Email sent: %s', info.messageId);
+    return true;
   } catch (error) {
-    console.error("Error sending email: ", error);
-    // Even if it fails (e.g. invalid credentials), we don't want to crash the app, 
-    // but we should probably throw an error so the controller knows it failed.
-    // For local testing without SMTP, we'll just log the message.
-    console.log("--- MOCK EMAIL ---");
-    console.log("To:", options.email);
-    console.log("Subject:", options.subject);
-    console.log("Message:", options.message);
-    console.log("------------------");
+    console.error("❌ Error sending email: ", error.message);
+    
+    // For local development without SMTP credentials, we'll log the OTP/Link to the console
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("\n--- [DEVELOPMENT] MOCK EMAIL ---");
+      console.log("To:", options.email);
+      console.log("Subject:", options.subject);
+      console.log("Content:", options.message || "HTML Content Sent");
+      console.log("-------------------------------\n");
+      return true;
+    }
+    return false;
   }
 };
 
