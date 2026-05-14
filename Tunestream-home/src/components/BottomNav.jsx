@@ -1,26 +1,27 @@
 import React from "react";
 import { assets } from "../assets/assets";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Home, Search, Library } from "lucide-react";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const navItems = [
-    { name: "Home", icon: assets.home_icon, path: "/" },
-    { name: "Search", icon: assets.search_icon, path: "/search" },
-    { name: "Library", icon: assets.stack_icon, path: "/library" },
+    { name: "Home", icon: <Home className="w-6 h-6" />, path: "/" },
+    { name: "Search", icon: <Search className="w-6 h-6" />, path: "/search" },
+    { name: "Library", icon: <Library className="w-6 h-6" />, path: "/library" },
   ];
 
   return (
     <div
       className="
         md:hidden fixed bottom-0 left-0 right-0
-        bg-black/90 backdrop-blur-xl
-        border-t border-white/10
-        h-16 z-50
-        px-2
-        flex items-center justify-between
+        bg-black/80 backdrop-blur-3xl
+        border-t border-white/5
+        h-[70px] z-50
+        px-4
+        flex items-center justify-around
         safe-area-bottom
       "
     >
@@ -33,43 +34,41 @@ const BottomNav = () => {
             onClick={() => navigate(item.path)}
             className={`
               flex flex-col items-center justify-center
-              flex-1 py-1 rounded-xl
-              transition-all duration-200
-              active:scale-95
+              w-16 h-full gap-1
+              transition-all duration-300
               ${
                 isActive
                   ? "text-white"
-                  : "text-gray-400"
+                  : "text-gray-500 hover:text-gray-300"
               }
             `}
           >
-            {/* ICON WRAP */}
+            {/* ICON */}
             <div
               className={`
-                relative flex items-center justify-center
-                w-10 h-10 rounded-xl
-                transition-all duration-200
-                ${isActive ? "bg-white/10" : ""}
+                transition-transform duration-300
+                ${isActive ? "scale-110" : "scale-100"}
               `}
             >
-              <img
-                src={item.icon}
-                alt={item.name}
-                className={`w-6 h-6 transition ${
-                  isActive ? "opacity-100" : "opacity-70"
-                }`}
-              />
+              {React.cloneElement(item.icon, {
+                className: `w-6 h-6 ${isActive ? "fill-white" : ""}`
+              })}
             </div>
 
             {/* LABEL */}
             <span
               className={`
-                text-[10px] mt-0.5 font-semibold tracking-wide
-                ${isActive ? "text-white" : "text-gray-400"}
+                text-[10px] font-bold tracking-tighter
+                ${isActive ? "text-white" : "text-gray-500"}
               `}
             >
               {item.name}
             </span>
+            
+            {/* ACTIVE DOT */}
+            {isActive && (
+              <div className="absolute bottom-1 w-1 h-1 bg-emerald-500 rounded-full" />
+            )}
           </button>
         );
       })}

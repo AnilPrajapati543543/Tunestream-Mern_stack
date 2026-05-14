@@ -41,9 +41,9 @@ const Display = () => {
     <div
       ref={displayRef}
       className="
-        flex-1 m-1 md:m-2 px-3 sm:px-6 pt-4 rounded-2xl
-        bg-white/5 backdrop-blur-lg
-        border border-white/10 text-white
+        flex-1 m-0 md:m-2 px-3 sm:px-6 pt-2 md:pt-4 rounded-none md:rounded-2xl
+        bg-black md:bg-white/5 backdrop-blur-lg
+        md:border border-white/10 text-white
         overflow-y-auto scroll-smooth
       "
     >
