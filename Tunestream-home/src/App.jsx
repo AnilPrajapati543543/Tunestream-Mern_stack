@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import ResetPassword from "./pages/ResetPassword.jsx";
+import OnboardingGesture from "./components/OnboardingGesture.jsx";
 
 export const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
@@ -40,6 +41,8 @@ const App = () => {
               onClose={() => setIsAuthModalOpen(false)} 
             />
             <ToastContainer theme="dark" position="bottom-right" />
+            
+            <OnboardingGesture />
 
             <div className="flex h-[90%] overflow-hidden relative">
               <div className="hidden md:flex h-full">

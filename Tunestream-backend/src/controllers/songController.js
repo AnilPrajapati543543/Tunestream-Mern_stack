@@ -17,34 +17,51 @@ const logHistory = async (user, action, itemName, itemType) => {
 // ADD SONG
 const addSong = async (req, res, next) => {
   try {
-    const { name, desc, album } = req.body;
+    const { name, desc, album, songUrl, imageUrl } = req.body;
     const audioFile = req.files?.audio?.[0];
     const imageFile = req.files?.image?.[0];
 
-    if (!name || !desc || !album || !audioFile || !imageFile) {
-      throw new ApiError(400, "All fields are required");
+    if (!name || !desc || !album) {
+      throw new ApiError(400, "Name, description, and album are required");
+    }
+    
+    if (!audioFile && !songUrl) {
+      throw new ApiError(400, "Either an audio file or a song URL is required");
     }
 
-    const audioUpload = await cloudinary.uploader.upload(
-      audioFile.path,
-      { resource_type: "video" }
-    );
+    let finalAudioUrl = "";
+    let finalImageUrl = "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg";
+    let duration = "3:00";
 
-    const imageUpload = await cloudinary.uploader.upload(
-      imageFile.path,
-      { resource_type: "image" }
-    );
+    if (audioFile) {
+      const audioUpload = await cloudinary.uploader.upload(
+        audioFile.path,
+        { resource_type: "video" }
+      );
+      finalAudioUrl = audioUpload.secure_url;
+      duration = `${Math.floor(audioUpload.duration / 60)}:${Math.floor(
+        audioUpload.duration % 60
+      )}`;
+    } else {
+      finalAudioUrl = songUrl;
+    }
 
-    const duration = `${Math.floor(audioUpload.duration / 60)}:${Math.floor(
-      audioUpload.duration % 60
-    )}`;
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(
+        imageFile.path,
+        { resource_type: "image" }
+      );
+      finalImageUrl = imageUpload.secure_url;
+    } else if (imageUrl) {
+      finalImageUrl = imageUrl;
+    }
 
     const songData = {
       name,
       desc,
       album,
-      image: imageUpload.secure_url,
-      file: audioUpload.secure_url,
+      image: finalImageUrl,
+      file: finalAudioUrl,
       duration,
       userId: req.user._id
     };
