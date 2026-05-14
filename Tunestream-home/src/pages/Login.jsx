@@ -122,9 +122,6 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
           </div>
         </div>
 
-          </div>
-        </div>
-
         {showOTP && (
           <div className="mt-8">
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center mb-4">Enter 6-Digit Code</p>
