@@ -6,11 +6,13 @@ const sendEmail = async (options) => {
     service: 'gmail',
     host: "smtp.gmail.com",
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false, 
     auth: {
       user: process.env.GMAIL_USER || process.env.SMTP_USER, 
       pass: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS,
     },
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
   });
 
   const message = {

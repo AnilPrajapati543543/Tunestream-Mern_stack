@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import Otp from "../models/otpModel.js";
 import historyModel from "../models/historyModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -445,13 +446,12 @@ export const sendOTP = async (req, res, next) => {
       html: `<div style="font-family: sans-serif; text-align: center;"><h2>Verify your account</h2><p>Your OTP is:</p><h1 style="color: #10b981; letter-spacing: 5px;">${otp}</h1><p>Expires in 5 minutes.</p></div>`
     });
 
-    // Temporary storage for verification
-    const user = await User.findOne({ email });
-    if (user) {
-      user.otp = otp;
-      user.otpExpires = otpExpires;
-      await user.save({ validateBeforeSave: false });
-    }
+    // Save OTP to specialized collection (works for both Login and Signup)
+    await Otp.findOneAndUpdate(
+      { email },
+      { otp, createdAt: Date.now() },
+      { upsert: true, new: true }
+    );
 
     res.json({ success: true, message: "OTP sent successfully", devOtp: (process.env.NODE_ENV !== 'production' ? otp : undefined) });
   } catch (err) {
@@ -463,19 +463,14 @@ export const verifyOTP = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
 
-    const user = await User.findOne({ 
-      email,
-      otp,
-      otpExpires: { $gt: Date.now() }
-    });
+    const validOtp = await Otp.findOne({ email, otp });
 
-    if (!user) {
+    if (!validOtp) {
       return next(new ApiError(400, "Invalid or expired OTP"));
     }
 
-    user.otp = undefined;
-    user.otpExpires = undefined;
-    await user.save({ validateBeforeSave: false });
+    // Delete OTP once used
+    await Otp.deleteOne({ _id: validOtp._id });
 
     res.json({ success: true, message: "OTP verified" });
   } catch (err) {
