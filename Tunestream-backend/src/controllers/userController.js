@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import Joi from "joi";
 import { sendAccessToken, sendRefreshToken } from "../utils/sendToken.js";
-import { sendSMS } from "../utils/sendSMS.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 
@@ -430,36 +429,24 @@ export const resetPassword = async (req, res, next) => {
 // ================= OTP LOGIC =================
 export const sendOTP = async (req, res, next) => {
   try {
-    const { email, phoneNumber } = req.body;
+    const { email } = req.body;
 
-    if (!email && !phoneNumber) {
-      return next(new ApiError(400, "Email or Phone Number is required"));
+    if (!email) {
+      return next(new ApiError(400, "Email is required"));
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = Date.now() + 5 * 60 * 1000; // 5 minutes
 
-    if (email) {
-      await sendEmail({
-        email,
-        subject: "TuneStream OTP Verification",
-        message: `Your verification code is: ${otp}. It expires in 5 minutes.`,
-        html: `<div style="font-family: sans-serif; text-align: center;"><h2>Verify your account</h2><p>Your OTP is:</p><h1 style="color: #10b981; letter-spacing: 5px;">${otp}</h1><p>Expires in 5 minutes.</p></div>`
-      });
-    }
-
-    if (phoneNumber) {
-      await sendSMS({
-        phoneNumber,
-        message: `Your TuneStream verification code is: ${otp}. It expires in 5 minutes.`
-      });
-    }
+    await sendEmail({
+      email,
+      subject: "TuneStream OTP Verification",
+      message: `Your verification code is: ${otp}. It expires in 5 minutes.`,
+      html: `<div style="font-family: sans-serif; text-align: center;"><h2>Verify your account</h2><p>Your OTP is:</p><h1 style="color: #10b981; letter-spacing: 5px;">${otp}</h1><p>Expires in 5 minutes.</p></div>`
+    });
 
     // Temporary storage for verification
-    // In a real app, you'd save this to a pre-registration collection or session
-    // For now, we'll return success and the frontend will send it back for verification
-    // OR we save it to the user if they exist
-    const user = await User.findOne({ $or: [{ email }, { phoneNumber }] });
+    const user = await User.findOne({ email });
     if (user) {
       user.otp = otp;
       user.otpExpires = otpExpires;
@@ -474,10 +461,9 @@ export const sendOTP = async (req, res, next) => {
 
 export const verifyOTP = async (req, res, next) => {
   try {
-    const { email, phoneNumber, otp } = req.body;
+    const { email, otp } = req.body;
 
-    const user = await User.findOne({
-      $or: [{ email }, { phoneNumber }],
+    const user = await User.findOne({ email });
       otp,
       otpExpires: { $gt: Date.now() }
     });

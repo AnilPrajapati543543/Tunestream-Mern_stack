@@ -11,23 +11,32 @@ const Signup = ({ switchToLogin, isModal }) => {
     phoneNumber: "",
     password: "",
   });
-
-  const [method, setMethod] = useState("email"); // 'email' or 'phone'
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+
+  // Countdown timer for Resend OTP
+  React.useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   const sendOTPHandler = async () => {
-    if (method === "email" && !form.email) return toast.error("Email is required");
-    if (method === "phone" && !form.phoneNumber) return toast.error("Phone Number is required");
+    if (!form.email) return toast.error("Email is required");
     
     try {
       setLoading(true);
-      const payload = method === "email" ? { email: form.email } : { phoneNumber: form.phoneNumber };
-      const res = await API.post("/user/send-otp", payload);
+      const res = await API.post("/user/send-otp", { email: form.email });
       if (res.data.success) {
         setShowOTP(true);
+        setResendTimer(30); // Start 30s countdown
         toast.success("OTP sent!");
       }
     } catch (err) {
@@ -40,7 +49,7 @@ const Signup = ({ switchToLogin, isModal }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.password || (method === "email" && !form.email) || (method === "phone" && !form.phoneNumber)) {
+    if (!form.name || !form.password || !form.email) {
       return alert("Please fill all required fields");
     }
 
@@ -48,20 +57,15 @@ const Signup = ({ switchToLogin, isModal }) => {
       setLoading(true);
 
       // Verify OTP first
-      const verifyPayload = method === "email" 
-        ? { email: form.email, otp } 
-        : { phoneNumber: form.phoneNumber, otp };
-
-      const verifyRes = await API.post("/user/verify-otp", verifyPayload);
+      const verifyRes = await API.post("/user/verify-otp", { email: form.email, otp });
 
       if (!verifyRes.data.success) {
         return toast.error("Invalid OTP");
       }
 
-      // Final registration (clear the other field if not used)
+      // Final registration
       const finalForm = { ...form };
-      if (method === "email") finalForm.phoneNumber = "";
-      else finalForm.email = "";
+      delete finalForm.phoneNumber;
 
       const res = await API.post("/user/register", finalForm);
 
@@ -85,64 +89,32 @@ const Signup = ({ switchToLogin, isModal }) => {
       onSubmit={submitHandler}
       className={`${isModal ? "bg-transparent border-none p-4 shadow-none w-full" : "backdrop-blur-xl bg-white/5 border border-white/10 p-12 rounded-2xl shadow-2xl w-96 z-10"}`}
     >
-      <h2 className="text-white text-3xl font-black mb-6 tracking-tight text-center">
+      <h2 className="text-white text-3xl font-black mb-8 tracking-tight text-center">
         Create Account
       </h2>
 
-        {/* METHOD TOGGLE */}
-        <div className="flex bg-[#1f1f1f] rounded-full p-1 mb-6 shadow-inner">
-          <button
-            type="button"
-            onClick={() => { setMethod("email"); setShowOTP(false); }}
-            className={`flex-1 py-2.5 rounded-full text-xs font-bold transition-all ${method === 'email' ? 'bg-[#121212] text-white shadow-[0_2px_8px_rgba(0,0,0,0.5)]' : 'text-gray-400 hover:text-white'}`}
-          >
-            Email
-          </button>
-          <button
-            type="button"
-            onClick={() => { setMethod("phone"); setShowOTP(false); }}
-            className={`flex-1 py-2.5 rounded-full text-xs font-bold transition-all ${method === 'phone' ? 'bg-[#121212] text-white shadow-[0_2px_8px_rgba(0,0,0,0.5)]' : 'text-gray-400 hover:text-white'}`}
-          >
-            Phone
-          </button>
-        </div>
+      <div className="space-y-5">
+        <input
+          className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
+          placeholder="Name"
+          type="text"
+          required
+          onChange={(e) =>
+            setForm({ ...form, name: e.target.value })
+          }
+        />
 
-        <div className="space-y-4">
-          <input
-            className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
-            placeholder="Name"
-            type="text"
-            required
-            onChange={(e) =>
-              setForm({ ...form, name: e.target.value })
-            }
-          />
-
-          {method === "email" ? (
-            <motion.input
-              initial={{ opacity: 0, x: -5 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
-              placeholder="Email Address"
-              type="email"
-              required
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
-            />
-          ) : (
-            <motion.input
-              initial={{ opacity: 0, x: 5 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
-              placeholder="Phone Number (e.g. +91...)"
-              type="tel"
-              required
-              onChange={(e) =>
-                setForm({ ...form, phoneNumber: e.target.value })
-              }
-            />
-          )}
+        <motion.input
+          initial={{ opacity: 0, x: -5 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
+          placeholder="Email Address"
+          type="email"
+          required
+          onChange={(e) =>
+            setForm({ ...form, email: e.target.value })
+          }
+        />
 
           <input
             className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
@@ -173,9 +145,26 @@ const Signup = ({ switchToLogin, isModal }) => {
         </div>
 
         {showOTP && (
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-center">
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center mb-4">Enter 6-Digit Code</p>
             <OTPInput value={otp} onChange={setOtp} />
+            
+            <div className="mt-6 text-sm text-gray-400">
+              {resendTimer > 0 ? (
+                <p>Resend code in <span className="font-mono text-emerald-400">{resendTimer}s</span></p>
+              ) : (
+                <p>
+                  Didn't receive code?{" "}
+                  <button 
+                    type="button"
+                    onClick={sendOTPHandler}
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-4 transition-colors"
+                  >
+                    Resend OTP
+                  </button>
+                </p>
+              )}
+            </div>
           </div>
         )}
 
