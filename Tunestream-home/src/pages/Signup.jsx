@@ -76,21 +76,18 @@ const Signup = ({ switchToLogin, isModal }) => {
     }
   };
 
-  return (
-    <div className={`${isModal ? "p-0" : "min-h-screen"} flex items-center justify-center bg-gradient-to-br from-black via-black to-emerald-900 relative overflow-hidden`}>
-      {/* Decorative Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl opacity-50"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-green-500/10 rounded-full blur-3xl opacity-50"></div>
 
-      <motion.form
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        onSubmit={submitHandler}
-        className={`${isModal ? "bg-transparent border-none p-4 shadow-none" : "backdrop-blur-xl bg-white/5 border border-white/10 p-12 rounded-2xl shadow-2xl"} w-96 z-10`}
-      >
-        <h2 className="text-white text-3xl font-black mb-6 tracking-tight text-center">
-          Create Account
-        </h2>
+
+  const formContent = (
+    <motion.form
+      initial={isModal ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      onSubmit={submitHandler}
+      className={`${isModal ? "bg-transparent border-none p-4 shadow-none w-full" : "backdrop-blur-xl bg-white/5 border border-white/10 p-12 rounded-2xl shadow-2xl w-96 z-10"}`}
+    >
+      <h2 className="text-white text-3xl font-black mb-6 tracking-tight text-center">
+        Create Account
+      </h2>
 
         {/* METHOD TOGGLE */}
         <div className="flex bg-[#1f1f1f] rounded-full p-1 mb-6 shadow-inner">
@@ -191,16 +188,28 @@ const Signup = ({ switchToLogin, isModal }) => {
           {loading ? "Processing..." : (showOTP ? "Verify & Sign Up" : "Send OTP")}
         </button>
 
-        <p className="text-gray-400 text-sm mt-6 text-center font-medium">
-          Already have an account?{" "}
-          <span 
-            onClick={switchToLogin} 
-            className="text-emerald-400 hover:text-emerald-300 cursor-pointer font-semibold underline underline-offset-4"
-          >
-            Sign In
-          </span>
-        </p>
-      </motion.form>
+      <p className="text-gray-400 text-sm mt-6 text-center font-medium">
+        Already have an account?{" "}
+        <span 
+          onClick={switchToLogin} 
+          className="text-emerald-400 hover:text-emerald-300 cursor-pointer font-semibold underline underline-offset-4"
+        >
+          Sign In
+        </span>
+      </p>
+    </motion.form>
+  );
+
+  if (isModal) {
+    return formContent;
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-black to-emerald-900 relative overflow-hidden">
+      {/* Decorative Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl opacity-50"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-green-500/10 rounded-full blur-3xl opacity-50"></div>
+      {formContent}
     </div>
   );
 };
