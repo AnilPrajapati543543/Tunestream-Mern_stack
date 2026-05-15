@@ -463,7 +463,8 @@ export const verifyOTP = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ 
+      email,
       otp,
       otpExpires: { $gt: Date.now() }
     });

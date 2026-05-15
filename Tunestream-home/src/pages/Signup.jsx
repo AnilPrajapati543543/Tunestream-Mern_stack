@@ -8,7 +8,6 @@ const Signup = ({ switchToLogin, isModal }) => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    phoneNumber: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
