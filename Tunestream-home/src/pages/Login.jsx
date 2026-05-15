@@ -81,34 +81,34 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
         onSubmit={submitHandler}
         className={`${isModal ? "bg-transparent border-none p-4 shadow-none" : "backdrop-blur-xl bg-white/5 border border-white/10 p-12 rounded-2xl shadow-2xl"} w-96 z-10`}
       >
-        <h2 className="text-white text-3xl font-bold mb-8 text-center">
+        <h2 className="text-white text-3xl font-black mb-6 tracking-tight text-center">
           Sign In
         </h2>
 
         {/* METHOD TOGGLE */}
-        <div className="flex bg-white/5 rounded-full p-1 mb-8 border border-white/10">
+        <div className="flex bg-[#1f1f1f] rounded-full p-1 mb-6 shadow-inner">
           <button
             type="button"
             onClick={() => { setMethod("email"); setShowOTP(false); }}
-            className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${method === 'email' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            className={`flex-1 py-2.5 rounded-full text-xs font-bold transition-all ${method === 'email' ? 'bg-[#121212] text-white shadow-[0_2px_8px_rgba(0,0,0,0.5)]' : 'text-gray-400 hover:text-white'}`}
           >
             Email
           </button>
           <button
             type="button"
             onClick={() => { setMethod("phone"); setShowOTP(false); }}
-            className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${method === 'phone' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            className={`flex-1 py-2.5 rounded-full text-xs font-bold transition-all ${method === 'phone' ? 'bg-[#121212] text-white shadow-[0_2px_8px_rgba(0,0,0,0.5)]' : 'text-gray-400 hover:text-white'}`}
           >
             Phone
           </button>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           {method === "email" ? (
             <motion.input
-              initial={{ opacity: 0, x: -10 }}
+              initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 1, x: 0 }}
-              className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+              className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
               placeholder="Email Address"
               type="email"
               required
@@ -116,9 +116,9 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
             />
           ) : (
             <motion.input
-              initial={{ opacity: 0, x: 10 }}
+              initial={{ opacity: 0, x: 5 }}
               animate={{ opacity: 1, x: 0 }}
-              className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+              className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
               placeholder="Phone Number (e.g. +91...)"
               type="tel"
               required
@@ -128,7 +128,7 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
 
           <div className="relative">
             <input
-              className="w-full p-4 rounded-full bg-white/10 text-white border border-white/10 focus:border-emerald-500 outline-none transition-all placeholder:text-gray-400"
+              className="w-full p-3.5 rounded-md bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-500 text-sm font-medium"
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               required
@@ -137,7 +137,7 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
 
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-wider"
             >
               {showPassword ? "Hide" : "Show"}
             </span>
@@ -164,12 +164,12 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
           type="button"
           onClick={showOTP ? submitHandler : sendOTPHandler}
           disabled={loading}
-          className="w-full bg-emerald-500 hover:bg-emerald-600 p-4 rounded-full text-white font-bold mt-8 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+          className="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] p-3.5 rounded-full text-black text-sm font-bold mt-8 transition-all disabled:opacity-50"
         >
           {loading ? "Processing..." : (showOTP ? "Verify & Sign In" : "Send OTP")}
         </button>
 
-        <p className="text-gray-400 mt-6 text-center">
+        <p className="text-gray-400 text-sm mt-6 text-center font-medium">
           New here?{" "}
           <span 
             className="text-emerald-400 hover:text-emerald-300 cursor-pointer font-semibold underline underline-offset-4"

@@ -1,13 +1,15 @@
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
-  // Use environment variables or fallback to Mailtrap for testing
+  // Use Gmail SMTP for real-world OTP delivery
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io",
-    port: process.env.SMTP_PORT || 2525,
+    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
     auth: {
-      user: process.env.SMTP_USER || "test_user", // Replace with real credentials in .env
-      pass: process.env.SMTP_PASS || "test_pass",
+      user: process.env.GMAIL_USER || process.env.SMTP_USER, 
+      pass: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS,
     },
   });
 
