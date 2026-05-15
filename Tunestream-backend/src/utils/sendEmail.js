@@ -4,14 +4,11 @@ const sendEmail = async (options) => {
   // Use Gmail SMTP for real-world OTP delivery
   const transporter = nodemailer.createTransport({
     service: 'gmail',
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, 
     auth: {
       user: process.env.GMAIL_USER || process.env.SMTP_USER, 
       pass: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS,
     },
-    connectionTimeout: 10000, // 10 seconds
+    connectionTimeout: 10000, 
     greetingTimeout: 10000,
   });
 
