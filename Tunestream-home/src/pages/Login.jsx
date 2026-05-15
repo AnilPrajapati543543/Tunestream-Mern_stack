@@ -81,9 +81,9 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
       initial={isModal ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       onSubmit={submitHandler}
-      className={`${isModal ? "bg-transparent border-none p-4 shadow-none w-full" : "backdrop-blur-xl bg-white/5 border border-white/10 p-12 rounded-2xl shadow-2xl w-96 z-10"}`}
+      className={`${isModal ? "bg-transparent border-none p-4 shadow-none w-full" : "backdrop-blur-xl bg-white/5 border border-white/10 sm:p-12 p-8 rounded-2xl shadow-2xl w-[92%] max-w-[400px] z-10"}`}
     >
-        <h2 className="text-white text-3xl font-black mb-8 tracking-tight text-center">
+        <h2 className="text-white sm:text-3xl text-2xl font-black sm:mb-8 mb-6 tracking-tight text-center">
           Sign In
         </h2>
 

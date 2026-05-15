@@ -26,12 +26,13 @@ const OTPInput = ({ value, onChange, length = 6 }) => {
   };
 
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex sm:gap-2 gap-1.5 justify-center">
       {Array.from({ length }).map((_, i) => (
         <motion.input
           key={i}
           ref={(el) => (inputs.current[i] = el)}
           type="text"
+          inputMode="numeric"
           maxLength="1"
           value={value[i] || ''}
           onChange={(e) => handleChange(e, i)}
@@ -39,7 +40,7 @@ const OTPInput = ({ value, onChange, length = 6 }) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="w-12 h-14 bg-white/5 border border-white/10 rounded-xl text-center text-white text-2xl font-bold focus:border-emerald-500 focus:bg-emerald-500/10 outline-none transition-all shadow-lg"
+          className="sm:w-12 sm:h-14 w-10 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-white sm:text-2xl text-xl font-bold focus:border-emerald-500 focus:bg-emerald-500/10 outline-none transition-all shadow-lg"
         />
       ))}
     </div>
