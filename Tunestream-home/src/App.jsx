@@ -16,6 +16,13 @@ import OnboardingGesture from "./components/OnboardingGesture.jsx";
 
 export const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
+const ArtistRedirect = () => {
+  React.useEffect(() => {
+    window.location.href = import.meta.env.VITE_ADMIN_URL || "https://www-tunestream-admin.vercel.app";
+  }, []);
+  return null;
+};
+
 const App = () => {
   const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen } = useContext(PlayerContext);
   const { user, loading: authLoading } = useAuth();
@@ -32,6 +39,7 @@ const App = () => {
   return (
     <div className="h-screen bg-black overflow-hidden selection:bg-emerald-500/30">
       <Routes>
+        <Route path="/artist" element={<ArtistRedirect />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         {/* Home App Route */}
         <Route path="*" element={
