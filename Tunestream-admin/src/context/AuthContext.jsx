@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password, otp) => {
-    const res = await axios.post("/user/login", { email, password, otp });
+  const login = async (email, password) => {
+    const res = await axios.post("/user/login", { email, password });
     if (res.data.success) {
       if (res.data.user.role !== 'admin') {
         throw new Error("Access denied. Admin role required.");

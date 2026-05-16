@@ -40,11 +40,8 @@ export const registerUser = async (req, res, next) => {
       return next(new ApiError(400, "User with this email already exists"));
     }
 
-    // 2. Verify OTP
-    const validOtp = await Otp.findOne({ email, otp });
-    if (!validOtp) {
-      return next(new ApiError(400, "Invalid or expired OTP"));
-    }
+    // 2. [OTP Removed]
+
 
     let finalRole = "user";
     let finalAdminId = null;
@@ -79,8 +76,8 @@ export const registerUser = async (req, res, next) => {
       lastLogin: new Date() 
     });
 
-    // 3. Delete OTP after successful creation
-    await Otp.deleteOne({ _id: validOtp._id });
+    // 3. [OTP Removed]
+
 
     if (finalAdminId) {
       await historyModel.create({
@@ -134,14 +131,8 @@ export const loginUser = async (req, res, next) => {
       return next(new ApiError(401, "Invalid email or password"));
     }
 
-    // 3. Verify OTP
-    const validOtp = await Otp.findOne({ email, otp });
-    if (!validOtp) {
-      return next(new ApiError(400, "Invalid or expired OTP"));
-    }
+    // 3. [OTP Removed]
 
-    // 4. Delete OTP after successful login
-    await Otp.deleteOne({ _id: validOtp._id });
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);

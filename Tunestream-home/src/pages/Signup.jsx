@@ -12,52 +12,18 @@ const Signup = ({ switchToLogin, isModal }) => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [resendTimer, setResendTimer] = useState(0);
-
-  // Countdown timer for Resend OTP
-  React.useEffect(() => {
-    let interval;
-    if (resendTimer > 0) {
-      interval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [resendTimer]);
-
-  const sendOTPHandler = async () => {
-    if (!form.email) return toast.error("Email is required");
-    
-    try {
-      setLoading(true);
-      const res = await API.post("/user/send-otp", { email: form.email, type: 'signup' });
-      if (res.data.success) {
-        setShowOTP(true);
-        setResendTimer(30); // Start 30s countdown
-        toast.success("OTP sent!");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.password || !form.email || !otp) {
-      return toast.error("Please fill all required fields, including OTP");
+    if (!form.name || !form.password || !form.email) {
+      return toast.error("Please fill all required fields");
     }
 
     try {
       setLoading(true);
 
       const res = await API.post("/user/register", {
-        ...form,
-        otp
+        ...form
       });
 
       if (res.data.success) {
@@ -135,38 +101,14 @@ const Signup = ({ switchToLogin, isModal }) => {
           </div>
         </div>
 
-        {showOTP && (
-          <div className="mt-8 flex flex-col items-center">
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center mb-4">Enter 6-Digit Code</p>
-            <OTPInput value={otp} onChange={setOtp} />
-            
-            <div className="mt-6 text-sm text-gray-400">
-              {resendTimer > 0 ? (
-                <p>Resend code in <span className="font-mono text-emerald-400">{resendTimer}s</span></p>
-              ) : (
-                <p>
-                  Didn't receive code?{" "}
-                  <button 
-                    type="button"
-                    onClick={sendOTPHandler}
-                    className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-4 transition-colors"
-                  >
-                    Resend OTP
-                  </button>
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
         <button 
-          type="button"
-          onClick={showOTP ? submitHandler : sendOTPHandler}
+          type="submit"
           disabled={loading}
           className="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] p-3.5 rounded-full text-black text-sm font-bold mt-8 transition-all disabled:opacity-50"
         >
-          {loading ? "Processing..." : (showOTP ? "Verify & Sign Up" : "Send OTP")}
+          {loading ? "Processing..." : "Sign Up"}
         </button>
+
 
       <p className="text-gray-400 text-sm mt-6 text-center font-medium">
         Already have an account?{" "}

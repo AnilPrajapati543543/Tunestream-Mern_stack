@@ -1,64 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from '../../utils/axios';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import OTPInput from '../../components/OTPInput';
-
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [resendTimer, setResendTimer] = useState(0);
 
   const { login } = useAuth();
 
-  useEffect(() => {
-    let interval;
-    if (resendTimer > 0) {
-      interval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [resendTimer]);
-
-  const sendOTPHandler = async () => {
-    if (!email) return toast.error("Email is required");
-    setLoading(true);
-    try {
-      const res = await axios.post("/user/send-otp", { email, type: 'login' });
-      if (res.data.success) {
-        setShowOTP(true);
-        setResendTimer(30);
-        toast.success("OTP sent!");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!showOTP) {
-        return sendOTPHandler();
-    }
 
-    if (!otp) {
-        return toast.error("Please enter OTP");
+    if (!email || !password) {
+      return toast.error("Please fill all required fields");
     }
 
     setLoading(true);
 
     try {
-      await login(email, password, otp);
+      await login(email, password);
       toast.success('Admin access granted');
     } catch (error) {
       toast.error(error.response?.data?.message || error.message || 'Login failed');
@@ -68,50 +33,48 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-[var(--bg-color)] relative overflow-hidden transition-colors duration-500`}>
-
+    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
       {/* Decorative Glows */}
-      <div className="absolute w-[600px] h-[600px] bg-indigo-500/10 blur-[150px] rounded-full -top-40 -left-40 animate-pulse"></div>
-      <div className="absolute w-[400px] h-[400px] bg-rose-500/5 blur-[100px] rounded-full -bottom-20 -right-20"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl opacity-50"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-green-500/10 rounded-full blur-3xl opacity-50"></div>
 
       <div className="max-w-md w-full mx-4 z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="glass-panel p-6 sm:p-10 md:p-12"
+          className="backdrop-blur-xl bg-white/5 border border-white/10 p-8 sm:p-12 rounded-3xl shadow-2xl"
         >
           {/* Logo Area */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] mb-6 shadow-2xl shadow-indigo-500/20" style={{ background: 'var(--accent-gradient)' }}>
-              <span className="text-white text-4xl font-black">T</span>
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-emerald-500/20 mb-6 shadow-2xl shadow-emerald-500/20 border border-emerald-500/20">
+              <span className="text-emerald-500 text-4xl font-black italic">T</span>
             </div>
-            <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
-              Admin <span className="logo-text">Access</span>
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              Admin <span className="text-emerald-500">Access</span>
             </h1>
-            <p className="text-[var(--text-secondary)] mt-2 font-medium opacity-60 text-sm sm:text-base">
+            <p className="text-gray-400 mt-2 font-medium opacity-60 text-sm">
               TuneStream Management Panel
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-widest px-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] px-1">
                 Email Address
               </label>
               <input
                 type="email"
                 required
                 value={email}
-                disabled={showOTP}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@tunestream.com"
-                className="premium-input w-full disabled:opacity-50"
+                className="w-full p-4 rounded-xl bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-600 font-medium"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-widest px-1">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] px-1">
                 Password
               </label>
               <div className="relative">
@@ -119,77 +82,48 @@ const AdminLogin = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  disabled={showOTP}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="premium-input w-full pr-12 disabled:opacity-50"
+                  className="w-full p-4 rounded-xl bg-[#121212] text-white border border-[#333] focus:border-emerald-500 hover:border-[#555] outline-none transition-all placeholder:text-gray-600 font-medium pr-14"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--accent-color)] transition-colors"
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase text-gray-500 hover:text-white transition-colors tracking-widest"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
-              <div className="flex justify-end pt-2">
-                <Link to="/forgot-password" className="text-xs text-[var(--text-secondary)] hover:text-[var(--accent-color)] transition-colors">
+              <div className="flex justify-end pt-1">
+                <Link to="/forgot-password" weights="500" className="text-xs text-gray-500 hover:text-emerald-400 transition-colors">
                   Forgot password?
                 </Link>
               </div>
             </div>
 
-            {showOTP && (
-              <div className="mt-8 flex flex-col items-center">
-                <p className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest text-center mb-4 opacity-50">Enter 6-Digit Code</p>
-                <OTPInput value={otp} onChange={setOtp} />
-                
-                <div className="mt-6 text-sm text-[var(--text-secondary)]">
-                  {resendTimer > 0 ? (
-                    <p>Resend code in <span className="font-mono text-[var(--accent-color)]">{resendTimer}s</span></p>
-                  ) : (
-                    <p>
-                      Didn't receive code?{" "}
-                      <button 
-                        type="button"
-                        onClick={sendOTPHandler}
-                        className="text-[var(--accent-color)] hover:opacity-80 font-semibold underline underline-offset-4 transition-colors"
-                      >
-                        Resend OTP
-                      </button>
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <motion.button
+            <button
               type="submit"
               disabled={loading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="premium-button w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] py-4 rounded-2xl text-black text-sm font-black mt-4 transition-all shadow-xl shadow-emerald-500/20 disabled:opacity-50"
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-3">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>{showOTP ? 'Verifying...' : 'Processing...'}</span>
+                  <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                  <span>Processing...</span>
                 </div>
-              ) : (
-                showOTP ? 'Verify & Sign In' : 'Send OTP'
-              )}
-            </motion.button>
+              ) : "Enter Dashboard"}
+            </button>
           </form>
 
-          <div className="mt-10 text-center space-y-3">
-            <p className="text-sm text-[var(--text-secondary)]">
+          <div className="mt-10 text-center space-y-4">
+            <p className="text-sm text-gray-400">
               Need an admin account?{' '}
-              <Link to="/signup" className="text-[var(--accent-color)] hover:underline font-bold transition-all">
+              <Link to="/signup" className="text-emerald-400 hover:text-emerald-300 font-bold transition-all underline underline-offset-4 decoration-2">
                 Create Account
               </Link>
             </p>
-            <div className="pt-2 border-t border-[var(--border-color)]">
-               <a href={import.meta.env.VITE_HOME_URL || "https://tunestream-mern-stack.vercel.app"} className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center gap-1">
+            <div className="pt-6 border-t border-white/5">
+               <a href={import.meta.env.VITE_HOME_URL || "https://www-tunestream-home.vercel.app"} className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors flex items-center justify-center gap-2">
                  ← Back to Listener Portal
                </a>
             </div>

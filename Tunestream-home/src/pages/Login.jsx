@@ -10,46 +10,11 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [resendTimer, setResendTimer] = useState(0);
-
-  // Countdown timer for Resend OTP
-  React.useEffect(() => {
-    let interval;
-    if (resendTimer > 0) {
-      interval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [resendTimer]);
-
-  const { setUser } = useAuth();
-
-  const sendOTPHandler = async () => {
-    if (!email) return toast.error("Email is required");
-
-    try {
-      setLoading(true);
-      const res = await API.post("/user/send-otp", { email, type: 'login' });
-      if (res.data.success) {
-        setShowOTP(true);
-        setResendTimer(30); // Start 30s countdown
-        toast.success("OTP sent!");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!email || !password || !otp) {
-      return toast.error("Please fill all required fields, including OTP");
+    if (!email || !password) {
+      return toast.error("Please fill all required fields");
     }
 
     setLoading(true);
@@ -57,14 +22,13 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
     try {
       const res = await API.post("/user/login", {
         email,
-        password,
-        otp
+        password
       });
 
       setUser(res.data.user);
       toast.success("Welcome back!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Invalid credentials or OTP");
+      toast.error(error.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
@@ -119,38 +83,14 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
           </div>
         </div>
 
-        {showOTP && (
-          <div className="mt-8 flex flex-col items-center">
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center mb-4">Enter 6-Digit Code</p>
-            <OTPInput value={otp} onChange={setOtp} />
-            
-            <div className="mt-6 text-sm text-gray-400">
-              {resendTimer > 0 ? (
-                <p>Resend code in <span className="font-mono text-emerald-400">{resendTimer}s</span></p>
-              ) : (
-                <p>
-                  Didn't receive code?{" "}
-                  <button 
-                    type="button"
-                    onClick={sendOTPHandler}
-                    className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-4 transition-colors"
-                  >
-                    Resend OTP
-                  </button>
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
         <button 
-          type="button"
-          onClick={showOTP ? submitHandler : sendOTPHandler}
+          type="submit"
           disabled={loading}
           className="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] p-3.5 rounded-full text-black text-sm font-bold mt-8 transition-all disabled:opacity-50"
         >
-          {loading ? "Processing..." : (showOTP ? "Verify & Sign In" : "Send OTP")}
+          {loading ? "Processing..." : "Sign In"}
         </button>
+
 
       <p className="text-gray-400 text-sm mt-6 text-center font-medium">
         New here?{" "}
