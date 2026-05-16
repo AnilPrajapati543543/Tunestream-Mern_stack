@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL || "https://tunestream-mern-stack.vercel.app"}/api`,
+  baseURL: `${import.meta.env.VITE_API_URL || "https://tunestream-backend.vercel.app"}/api`,
   withCredentials: true 
 });
 

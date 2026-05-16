@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ResetPassword from "./pages/ResetPassword.jsx";
 import OnboardingGesture from "./components/OnboardingGesture.jsx";
 
-export const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
+export const url = import.meta.env.VITE_API_URL || "https://tunestream-backend.vercel.app";
 
 const ArtistRedirect = () => {
   React.useEffect(() => {

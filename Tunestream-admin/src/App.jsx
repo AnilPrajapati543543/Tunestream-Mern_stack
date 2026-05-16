@@ -16,7 +16,7 @@ import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
 import { useAuth } from './context/AuthContext';
 
-export const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
+export const url = import.meta.env.VITE_API_URL || "https://tunestream-backend.vercel.app";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false)
