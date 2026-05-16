@@ -32,7 +32,7 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
 
     try {
       setLoading(true);
-      const res = await API.post("/user/send-otp", { email });
+      const res = await API.post("/user/send-otp", { email, type: 'login' });
       if (res.data.success) {
         setShowOTP(true);
         setResendTimer(30); // Start 30s countdown
@@ -48,23 +48,17 @@ const Login = ({ switchToSignup, switchToForgot, isModal }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      return alert("Please fill all required fields");
+    if (!email || !password || !otp) {
+      return toast.error("Please fill all required fields, including OTP");
     }
 
     setLoading(true);
 
     try {
-      // Verify OTP first
-      const verifyRes = await API.post("/user/verify-otp", { email, otp });
-
-      if (!verifyRes.data.success) {
-        return toast.error("Invalid OTP");
-      }
-
       const res = await API.post("/user/login", {
         email,
         password,
+        otp
       });
 
       setUser(res.data.user);

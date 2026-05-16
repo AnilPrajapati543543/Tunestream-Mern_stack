@@ -32,7 +32,7 @@ const Signup = ({ switchToLogin, isModal }) => {
     
     try {
       setLoading(true);
-      const res = await API.post("/user/send-otp", { email: form.email });
+      const res = await API.post("/user/send-otp", { email: form.email, type: 'signup' });
       if (res.data.success) {
         setShowOTP(true);
         setResendTimer(30); // Start 30s countdown
@@ -48,32 +48,24 @@ const Signup = ({ switchToLogin, isModal }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.password || !form.email) {
-      return alert("Please fill all required fields");
+    if (!form.name || !form.password || !form.email || !otp) {
+      return toast.error("Please fill all required fields, including OTP");
     }
 
     try {
       setLoading(true);
 
-      // Verify OTP first
-      const verifyRes = await API.post("/user/verify-otp", { email: form.email, otp });
-
-      if (!verifyRes.data.success) {
-        return toast.error("Invalid OTP");
-      }
-
-      // Final registration
-      const finalForm = { ...form };
-      delete finalForm.phoneNumber;
-
-      const res = await API.post("/user/register", finalForm);
+      const res = await API.post("/user/register", {
+        ...form,
+        otp
+      });
 
       if (res.data.success) {
-        toast.success("Signup success");
+        toast.success("Signup success! Please sign in.");
         switchToLogin();
       }
     } catch (err) {
-      alert(err.response?.data?.message || "Signup failed");
+      toast.error(err.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }

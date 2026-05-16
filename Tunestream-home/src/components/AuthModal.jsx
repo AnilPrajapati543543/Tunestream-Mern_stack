@@ -153,7 +153,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                     </p>
 
                     <a
-                      href="https://www-tunestream-admin.vercel.app"
+                      href={import.meta.env.VITE_ADMIN_URL || "http://localhost:5174"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative flex items-center justify-center w-full bg-emerald-500 hover:bg-emerald-600 p-5 rounded-2xl text-white font-bold transition-all shadow-xl shadow-emerald-500/20 active:scale-95"

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '../../utils/axios';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import OTPInput from '../../components/OTPInput';
 
 
 const AdminLogin = () => {
@@ -11,14 +12,53 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
+
   const { login } = useAuth();
+
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const sendOTPHandler = async () => {
+    if (!email) return toast.error("Email is required");
+    setLoading(true);
+    try {
+      const res = await axios.post("/user/send-otp", { email, type: 'login' });
+      if (res.data.success) {
+        setShowOTP(true);
+        setResendTimer(30);
+        toast.success("OTP sent!");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!showOTP) {
+        return sendOTPHandler();
+    }
+
+    if (!otp) {
+        return toast.error("Please enter OTP");
+    }
+
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, otp);
       toast.success('Admin access granted');
     } catch (error) {
       toast.error(error.response?.data?.message || error.message || 'Login failed');
@@ -63,9 +103,10 @@ const AdminLogin = () => {
                 type="email"
                 required
                 value={email}
+                disabled={showOTP}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@tunestream.com"
-                className="premium-input w-full"
+                className="premium-input w-full disabled:opacity-50"
               />
             </div>
 
@@ -78,9 +119,10 @@ const AdminLogin = () => {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
+                  disabled={showOTP}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="premium-input w-full pr-12"
+                  className="premium-input w-full pr-12 disabled:opacity-50"
                 />
                 <button
                   type="button"
@@ -97,6 +139,30 @@ const AdminLogin = () => {
               </div>
             </div>
 
+            {showOTP && (
+              <div className="mt-8 flex flex-col items-center">
+                <p className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest text-center mb-4 opacity-50">Enter 6-Digit Code</p>
+                <OTPInput value={otp} onChange={setOtp} />
+                
+                <div className="mt-6 text-sm text-[var(--text-secondary)]">
+                  {resendTimer > 0 ? (
+                    <p>Resend code in <span className="font-mono text-[var(--accent-color)]">{resendTimer}s</span></p>
+                  ) : (
+                    <p>
+                      Didn't receive code?{" "}
+                      <button 
+                        type="button"
+                        onClick={sendOTPHandler}
+                        className="text-[var(--accent-color)] hover:opacity-80 font-semibold underline underline-offset-4 transition-colors"
+                      >
+                        Resend OTP
+                      </button>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <motion.button
               type="submit"
               disabled={loading}
@@ -107,10 +173,10 @@ const AdminLogin = () => {
               {loading ? (
                 <div className="flex items-center justify-center gap-3">
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Verifying Access...</span>
+                  <span>{showOTP ? 'Verifying...' : 'Processing...'}</span>
                 </div>
               ) : (
-                'Sign In'
+                showOTP ? 'Verify & Sign In' : 'Send OTP'
               )}
             </motion.button>
           </form>
@@ -123,7 +189,7 @@ const AdminLogin = () => {
               </Link>
             </p>
             <div className="pt-2 border-t border-[var(--border-color)]">
-               <a href="https://www-tunestream-home.vercel.app" className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center gap-1">
+               <a href={import.meta.env.VITE_HOME_URL || "http://localhost:5173"} className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center gap-1">
                  ← Back to Listener Portal
                </a>
             </div>

@@ -8,22 +8,8 @@ import Joi from "joi";
 import { sendAccessToken, sendRefreshToken } from "../utils/sendToken.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
+import { registerSchema, loginSchema } from "../validators/authValidator.js";
 
-// ================= JOI VALIDATION =================
-const registerSchema = Joi.object({
-  name: Joi.string().min(3).required(),
-  email: Joi.string().email().optional(),
-  password: Joi.string().min(6).required(),
-  phoneNumber: Joi.string().min(10).optional(),
-  role: Joi.string().valid("user", "admin").optional(),
-  inviteCode: Joi.string().optional(),
-}).or('email', 'phoneNumber');
-
-const loginSchema = Joi.object({
-  email: Joi.string().email().optional(),
-  phoneNumber: Joi.string().min(10).optional(),
-  password: Joi.string().min(6).required(),
-}).or('email', 'phoneNumber');
 
 // ================= TOKEN GENERATION =================
 const generateAccessToken = (user) =>
@@ -43,19 +29,21 @@ const generateRefreshToken = (user) =>
 // ================= REGISTER =================
 export const registerUser = async (req, res, next) => {
   try {
-    const { error, value } = registerSchema.validate(req.body);
+    const { error } = registerSchema.validate(req.body);
     if (error) return next(new ApiError(400, error.details[0].message));
 
-    const { name, email, phoneNumber, password, role, inviteCode: reqInviteCode } = req.body;
+    const { name, email, password, role, inviteCode: reqInviteCode, otp } = req.body;
 
-    const existingUser = await User.findOne({ 
-      $or: [
-        { email: email || "___non_existent___" }, 
-        { phoneNumber: phoneNumber || "___non_existent___" }
-      ] 
-    });
+    // 1. Check if user already exists
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return next(new ApiError(400, "User with this email or phone already exists"));
+      return next(new ApiError(400, "User with this email already exists"));
+    }
+
+    // 2. Verify OTP
+    const validOtp = await Otp.findOne({ email, otp });
+    if (!validOtp) {
+      return next(new ApiError(400, "Invalid or expired OTP"));
     }
 
     let finalRole = "user";
@@ -64,22 +52,17 @@ export const registerUser = async (req, res, next) => {
 
     if (role === "admin") {
       finalRole = "admin";
-      // Generate a simple 6-character uppercase invite code for the admin
       finalInviteCode = Math.random().toString(36).slice(-6).toUpperCase();
     } else {
-      // It's a regular user, check if they provided an invite code to join an admin's group
       if (reqInviteCode) {
         const adminUser = await User.findOne({ inviteCode: reqInviteCode, role: "admin" });
         if (!adminUser) {
            return next(new ApiError(400, "Invalid invite code"));
         }
-
-        // Enforce the 6-user limit per admin
         const count = await User.countDocuments({ adminId: adminUser._id });
         if (count >= 6) {
            return next(new ApiError(400, "This admin has reached the maximum limit of 6 users"));
         }
-
         finalAdminId = adminUser._id;
       }
     }
@@ -88,14 +71,16 @@ export const registerUser = async (req, res, next) => {
 
     const user = await User.create({
       name,
-      email: email || undefined,
-      phoneNumber: phoneNumber || undefined,
+      email,
       password: hashedPassword,
       role: finalRole,
       adminId: finalAdminId,
       inviteCode: finalInviteCode,
       lastLogin: new Date() 
     });
+
+    // 3. Delete OTP after successful creation
+    await Otp.deleteOne({ _id: validOtp._id });
 
     if (finalAdminId) {
       await historyModel.create({
@@ -132,41 +117,44 @@ export const registerUser = async (req, res, next) => {
 // ================= LOGIN =================
 export const loginUser = async (req, res, next) => {
   try {
-    const { error, value } = loginSchema.validate(req.body);
+    const { error } = loginSchema.validate(req.body);
     if (error) return next(new ApiError(400, error.details[0].message));
 
-    const { email, phoneNumber, password } = value;
+    const { email, password, otp } = req.body;
 
-    const user = await User.findOne({
-      $or: [
-        { email: email || "___non_existent___" },
-        { phoneNumber: phoneNumber || "___non_existent___" }
-      ]
-    }).select("+password +role");
-
+    // 1. Check if user exists
+    const user = await User.findOne({ email }).select("+password +role");
     if (!user) {
       return next(new ApiError(401, "Invalid credentials"));
     }
 
+    // 2. Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return next(new ApiError(401, "Invalid email or password"));
     }
 
+    // 3. Verify OTP
+    const validOtp = await Otp.findOne({ email, otp });
+    if (!validOtp) {
+      return next(new ApiError(400, "Invalid or expired OTP"));
+    }
+
+    // 4. Delete OTP after successful login
+    await Otp.deleteOne({ _id: validOtp._id });
+
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    // Update last login
     user.lastLogin = new Date();
     await user.save();
 
-    // Set cookies
     sendAccessToken(res, accessToken);
     sendRefreshToken(res, refreshToken);
 
     return res.json({
       success: true,
-      accessToken, // Include token in body
+      accessToken,
       user: {
         id: user._id,
         name: user.name,
@@ -238,14 +226,16 @@ export const logoutUser = async (req, res, next) => {
 
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
+      path: "/",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
+      path: "/",
     });
 
     return res.json({
@@ -430,30 +420,50 @@ export const resetPassword = async (req, res, next) => {
 // ================= OTP LOGIC =================
 export const sendOTP = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, type } = req.body; // type: 'signup', 'login', 'forgot'
 
     if (!email) {
       return next(new ApiError(400, "Email is required"));
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = Date.now() + 5 * 60 * 1000; // 5 minutes
+    // Check user existence based on type
+    const user = await User.findOne({ email });
+    if (type === 'signup' && user) {
+      return next(new ApiError(400, "User already exists with this email"));
+    }
+    if ((type === 'login' || type === 'forgot') && !user) {
+      return next(new ApiError(404, "User not found with this email"));
+    }
 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    if (process.env.NODE_ENV !== 'production') {
+       console.log(`[DEV] OTP for ${email}: ${otp}`);
+    }
+    
     await sendEmail({
       email,
-      subject: "TuneStream OTP Verification",
+      subject: `TuneStream ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Verification'} Code`,
       message: `Your verification code is: ${otp}. It expires in 5 minutes.`,
-      html: `<div style="font-family: sans-serif; text-align: center;"><h2>Verify your account</h2><p>Your OTP is:</p><h1 style="color: #10b981; letter-spacing: 5px;">${otp}</h1><p>Expires in 5 minutes.</p></div>`
+      html: `
+        <div style="font-family: sans-serif; text-align: center; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #10b981;">Verify your account</h2>
+          <p>You are requesting a code for <strong>${type || 'verification'}</strong>.</p>
+          <p>Your OTP is:</p>
+          <h1 style="color: #10b981; letter-spacing: 5px; background: #f9f9f9; padding: 10px; border-radius: 5px;">${otp}</h1>
+          <p style="color: #666; font-size: 12px;">Expires in 5 minutes.</p>
+        </div>
+      `
     });
 
-    // Save OTP to specialized collection (works for both Login and Signup)
+    // Save OTP to specialized collection
     await Otp.findOneAndUpdate(
       { email },
       { otp, createdAt: Date.now() },
       { upsert: true, new: true }
     );
 
-    res.json({ success: true, message: "OTP sent successfully", devOtp: (process.env.NODE_ENV !== 'production' ? otp : undefined) });
+    res.json({ success: true, message: "OTP sent successfully" });
   } catch (err) {
     next(err);
   }

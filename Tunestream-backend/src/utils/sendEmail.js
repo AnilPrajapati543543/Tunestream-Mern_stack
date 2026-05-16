@@ -12,8 +12,11 @@ const sendEmail = async (options) => {
     greetingTimeout: 10000,
   });
 
+  const fromEmail = process.env.GMAIL_USER || process.env.FROM_EMAIL || 'noreply@tunestream.com';
+  const fromName = process.env.FROM_NAME || 'Tunestream';
+
   const message = {
-    from: `${process.env.FROM_NAME || 'Tunestream'} <${process.env.FROM_EMAIL || 'noreply@tunestream.com'}>`,
+    from: `"${fromName}" <${fromEmail}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,

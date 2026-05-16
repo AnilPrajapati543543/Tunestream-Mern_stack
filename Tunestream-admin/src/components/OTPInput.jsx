@@ -1,0 +1,50 @@
+import React, { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+const OTPInput = ({ value, onChange, length = 6 }) => {
+  const inputs = useRef([]);
+
+  const handleChange = (e, index) => {
+    const val = e.target.value;
+    if (isNaN(val)) return;
+
+    const newValue = value.split('');
+    newValue[index] = val.slice(-1); // Only take last character
+    const combined = newValue.join('');
+    onChange(combined);
+
+    // Focus next input
+    if (val && index < length - 1) {
+      inputs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && !value[index] && index > 0) {
+      inputs.current[index - 1].focus();
+    }
+  };
+
+  return (
+    <div className="flex sm:gap-2 gap-1.5 justify-center">
+      {Array.from({ length }).map((_, i) => (
+        <motion.input
+          key={i}
+          ref={(el) => (inputs.current[i] = el)}
+          type="text"
+          inputMode="numeric"
+          maxLength="1"
+          value={value[i] || ''}
+          onChange={(e) => handleChange(e, i)}
+          onKeyDown={(e) => handleKeyDown(e, i)}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.05 }}
+          className="sm:w-12 sm:h-14 w-10 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-[var(--text-primary)] sm:text-2xl text-xl font-bold focus:border-[var(--accent-color)] focus:bg-[var(--accent-color)]/10 outline-none transition-all shadow-lg"
+        />
+      ))}
+    </div>
+  );
+};
+
+export default OTPInput;

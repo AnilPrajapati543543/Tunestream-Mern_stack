@@ -15,14 +15,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false 
   },
-  phoneNumber: {
-    type: String,
-    sparse: true,
-    unique: true
-  },
-  otp: String,
-  otpExpires: Date,
-
   role: {
     type: String,
     enum: ["user", "admin"],
