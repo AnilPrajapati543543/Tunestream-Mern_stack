@@ -56,7 +56,14 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      const isAllowed = allowedOrigins.some(o => origin === o || (typeof o === 'string' && origin.startsWith(o)));
+      const isAllowed = allowedOrigins.some(o => {
+        if (!o) return false;
+        // Exact match or match without trailing slash
+        const normalizedOrigin = origin.replace(/\/$/, "");
+        const normalizedO = o.replace(/\/$/, "");
+        return normalizedOrigin === normalizedO || normalizedOrigin.startsWith(normalizedO);
+      });
+      
       const isLocal = origin.includes("localhost") || origin.includes("127.0.0.1");
 
       if (isAllowed || isLocal) {
@@ -133,6 +140,10 @@ app.use((req, res) => {
 app.use(errorMiddleware);
 
 // ================= START SERVER =================
-app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
-});
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+  });
+}
+
+export default app;

@@ -189,7 +189,7 @@ const AdminLogin = () => {
               </Link>
             </p>
             <div className="pt-2 border-t border-[var(--border-color)]">
-               <a href={import.meta.env.VITE_HOME_URL || "http://localhost:5173"} className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center gap-1">
+               <a href={import.meta.env.VITE_HOME_URL || "https://tunestream-mern-stack.vercel.app"} className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center gap-1">
                  ← Back to Listener Portal
                </a>
             </div>
