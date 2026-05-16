@@ -1,9 +1,11 @@
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
-  // Use Gmail SMTP for real-world OTP delivery
+  // Use explicit Gmail SMTP settings for maximum deliverability
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // use SSL
     auth: {
       user: process.env.GMAIL_USER || process.env.SMTP_USER, 
       pass: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS,
