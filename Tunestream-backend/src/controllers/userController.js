@@ -1,5 +1,4 @@
 import User from "../models/userModel.js";
-import Otp from "../models/otpModel.js";
 import historyModel from "../models/historyModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -408,73 +407,4 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
-// ================= OTP LOGIC =================
-export const sendOTP = async (req, res, next) => {
-  try {
-    const { email, type } = req.body; // type: 'signup', 'login', 'forgot'
-
-    if (!email) {
-      return next(new ApiError(400, "Email is required"));
-    }
-
-    // Check user existence based on type
-    const user = await User.findOne({ email });
-    if (type === 'signup' && user) {
-      return next(new ApiError(400, "User already exists with this email"));
-    }
-    if ((type === 'login' || type === 'forgot') && !user) {
-      return next(new ApiError(404, "User not found with this email"));
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    if (process.env.NODE_ENV !== 'production') {
-       console.log(`[DEV] OTP for ${email}: ${otp}`);
-    }
-    
-    await sendEmail({
-      email,
-      subject: `TuneStream ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Verification'} Code`,
-      message: `Your verification code is: ${otp}. It expires in 5 minutes.`,
-      html: `
-        <div style="font-family: sans-serif; text-align: center; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-          <h2 style="color: #10b981;">Verify your account</h2>
-          <p>You are requesting a code for <strong>${type || 'verification'}</strong>.</p>
-          <p>Your OTP is:</p>
-          <h1 style="color: #10b981; letter-spacing: 5px; background: #f9f9f9; padding: 10px; border-radius: 5px;">${otp}</h1>
-          <p style="color: #666; font-size: 12px;">Expires in 5 minutes.</p>
-        </div>
-      `
-    });
-
-    // Save OTP to specialized collection
-    await Otp.findOneAndUpdate(
-      { email },
-      { otp, createdAt: Date.now() },
-      { upsert: true, new: true }
-    );
-
-    res.json({ success: true, message: "OTP sent successfully" });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const verifyOTP = async (req, res, next) => {
-  try {
-    const { email, otp } = req.body;
-
-    const validOtp = await Otp.findOne({ email, otp });
-
-    if (!validOtp) {
-      return next(new ApiError(400, "Invalid or expired OTP"));
-    }
-
-    // Delete OTP once used
-    await Otp.deleteOne({ _id: validOtp._id });
-
-    res.json({ success: true, message: "OTP verified" });
-  } catch (err) {
-    next(err);
-  }
-};
+

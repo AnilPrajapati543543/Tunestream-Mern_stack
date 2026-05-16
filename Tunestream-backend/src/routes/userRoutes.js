@@ -8,9 +8,7 @@ import {
   getLinkedUsers,
   forgotPassword,
   resetPassword,
-  removeLinkedUser,
-  sendOTP,
-  verifyOTP
+  removeLinkedUser
 } from "../controllers/userController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -20,8 +18,7 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", protect, logoutUser);
-router.post("/send-otp", sendOTP);
-router.post("/verify-otp", verifyOTP);
+
 
 // SESSION
 router.get("/me", protect, getMe);
