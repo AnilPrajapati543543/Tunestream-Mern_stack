@@ -16,14 +16,15 @@ const AddSong = () => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [albumData, setAlbumData] = useState([]);
-  
-  const [uploadMode, setUploadMode] = useState("file"); // "file" or "link"
-  const [songUrl, setSongUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
 
   const onSubmitHandler = async (e) => {
 
     e.preventDefault();
+
+    if (!song) {
+      toast.error("Please select an audio file to upload");
+      return;
+    }
 
     setLoading(true);
     setUploadProgress(0);
@@ -35,14 +36,8 @@ const AddSong = () => {
       formData.append("name", name);
       formData.append("desc", desc);
       formData.append("album", album);
-
-      if (uploadMode === "file") {
-        formData.append("image", image);
-        formData.append("audio", song);
-      } else {
-        formData.append("songUrl", songUrl);
-        formData.append("imageUrl", imageUrl);
-      }
+      formData.append("image", image);
+      formData.append("audio", song);
 
       const response = await axios.post(`/song/add`, formData, {
         withCredentials: true,
@@ -58,8 +53,6 @@ const AddSong = () => {
         setAlbum("none");
         setImage(false);
         setSong(false);
-        setSongUrl("");
-        setImageUrl("");
       }
       else {
         toast.error("Something went wrong");
@@ -133,74 +126,39 @@ const AddSong = () => {
 
       <form onSubmit={onSubmitHandler} className='flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar pb-6'>
         
-        {/* Mode Toggle */}
-        <div className="flex gap-4 bg-[var(--surface-color)] p-1 rounded-full w-fit">
-          <button
-            type="button"
-            className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${uploadMode === 'file' ? 'bg-[var(--accent-color)] text-white' : 'text-[var(--text-secondary)] hover:text-white'}`}
-            onClick={() => setUploadMode('file')}
-          >
-            Upload Files
-          </button>
-          <button
-            type="button"
-            className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${uploadMode === 'link' ? 'bg-[var(--accent-color)] text-white' : 'text-[var(--text-secondary)] hover:text-white'}`}
-            onClick={() => {
-              setUploadMode('link');
-              if (!name) setName("Quick Linked Audio");
-              if (!desc) setDesc("Added via URL paste.");
-            }}
-          >
-            Paste URL
-          </button>
-        </div>
-
         {/* Upload Section */}
-        {uploadMode === "file" ? (
-          <div className='flex flex-col lg:flex-row gap-8'>
-            <div className="flex flex-col gap-3">
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Source Audio</p>
-              <input onChange={(e) => setSong(e.target.files[0])} type="file" id='song' accept='audio/*' hidden />
-              <label htmlFor="song" className="cursor-pointer transition-all hover:scale-[1.02] active:scale-95">
-                <div className="w-36 h-36 rounded-[2rem] bg-[var(--bg-color)] p-4 border-2 border-dashed border-[var(--border-color)] flex flex-col items-center justify-center gap-2 group relative overflow-hidden text-center">
-                  <img className='w-12 h-12 object-contain opacity-40 group-hover:opacity-100 transition-opacity' src={song ? assets.upload_added : assets.upload_song} alt="Upload" />
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-secondary)] truncate w-full px-2">
-                    {song ? song.name : "Audio"}
-                  </p>
-                  {song && <div className="absolute top-2 right-2 w-2 h-2 bg-[var(--accent-color)] rounded-full animate-pulse" />}
-                </div>
-              </label>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Cover Art</p>
-              <input onChange={(e) => setImage(e.target.files[0])} type="file" id='image' accept='image/*' hidden />
-              <label htmlFor="image" className="cursor-pointer transition-all hover:scale-[1.02] active:scale-95">
-                <div className="w-36 h-36 rounded-[2rem] bg-[var(--bg-color)] border-2 border-dashed border-[var(--border-color)] overflow-hidden flex items-center justify-center group relative">
-                  {image ? (
-                    <img className="w-full h-full object-cover" src={URL.createObjectURL(image)} alt="Preview" />
-                  ) : (
-                    <div className="flex flex-col items-center gap-2 opacity-40 group-hover:opacity-100 transition-opacity text-center">
-                      <img className="w-10 h-10" src={assets.upload_area} alt="" />
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Thumb</span>
-                    </div>
-                  )}
-                </div>
-              </label>
-            </div>
+        <div className='flex flex-col lg:flex-row gap-8'>
+          <div className="flex flex-col gap-3">
+            <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Source Audio (Required)</p>
+            <input onChange={(e) => setSong(e.target.files[0])} type="file" id='song' accept='audio/*' hidden />
+            <label htmlFor="song" className="cursor-pointer transition-all hover:scale-[1.02] active:scale-95">
+              <div className="w-36 h-36 rounded-[2rem] bg-[var(--bg-color)] p-4 border-2 border-dashed border-[var(--border-color)] flex flex-col items-center justify-center gap-2 group relative overflow-hidden text-center">
+                <img className='w-12 h-12 object-contain opacity-40 group-hover:opacity-100 transition-opacity' src={song ? assets.upload_added : assets.upload_song} alt="Upload" />
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-secondary)] truncate w-full px-2">
+                  {song ? song.name : "Audio"}
+                </p>
+                {song && <div className="absolute top-2 right-2 w-2 h-2 bg-[var(--accent-color)] rounded-full animate-pulse" />}
+              </div>
+            </label>
           </div>
-        ) : (
-          <div className='flex flex-col gap-6 w-full max-w-5xl'>
-            <div className="flex flex-col gap-2">
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Direct Audio URL</p>
-              <input className='premium-input' onChange={(e) => setSongUrl(e.target.value)} value={songUrl} type="url" placeholder='https://example.com/audio.mp3' required={uploadMode === 'link'} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Cover Image URL (Optional)</p>
-              <input className='premium-input' onChange={(e) => setImageUrl(e.target.value)} value={imageUrl} type="url" placeholder='https://example.com/image.jpg' />
-            </div>
+          
+          <div className="flex flex-col gap-3">
+            <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Cover Art</p>
+            <input onChange={(e) => setImage(e.target.files[0])} type="file" id='image' accept='image/*' hidden />
+            <label htmlFor="image" className="cursor-pointer transition-all hover:scale-[1.02] active:scale-95">
+              <div className="w-36 h-36 rounded-[2rem] bg-[var(--bg-color)] border-2 border-dashed border-[var(--border-color)] overflow-hidden flex items-center justify-center group relative">
+                {image ? (
+                  <img className="w-full h-full object-cover" src={URL.createObjectURL(image)} alt="Preview" />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 opacity-40 group-hover:opacity-100 transition-opacity text-center">
+                    <img className="w-10 h-10" src={assets.upload_area} alt="" />
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Thumb</span>
+                  </div>
+                )}
+              </div>
+            </label>
           </div>
-        )}
+        </div>
 
         {/* Info Section */}
         <div className="grid md:grid-cols-2 gap-6 w-full max-w-5xl">

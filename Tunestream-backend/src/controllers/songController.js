@@ -14,32 +14,10 @@ const logHistory = async (user, action, itemName, itemType) => {
   } catch (_) {}
 };
 
-// ── Helper: format URL to direct link ──────────────────────────────────────────
-const formatDirectUrl = (url) => {
-  if (!url) return url;
-  
-  let formattedUrl = url;
-
-  if (formattedUrl.startsWith('http://')) {
-      formattedUrl = formattedUrl.replace('http://', 'https://');
-  }
-
-  const gDriveMatch = formattedUrl.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);
-  if (gDriveMatch) {
-      return `https://drive.google.com/uc?export=download&id=${gDriveMatch[1]}`;
-  }
-  
-  if (formattedUrl.includes('dropbox.com')) {
-      return formattedUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('dl=0', 'dl=1');
-  }
-  
-  return formattedUrl;
-};
-
 // ADD SONG
 const addSong = async (req, res, next) => {
   try {
-    const { name, desc, album, songUrl, imageUrl, videoUrl } = req.body;
+    const { name, desc, album, videoUrl } = req.body;
     const audioFile = req.files?.audio?.[0];
     const imageFile = req.files?.image?.[0];
 
@@ -47,26 +25,20 @@ const addSong = async (req, res, next) => {
       throw new ApiError(400, "Name, description, and album are required");
     }
     
-    if (!audioFile && !songUrl) {
-      throw new ApiError(400, "Either an audio file or a song URL is required");
+    if (!audioFile) {
+      throw new ApiError(400, "Audio file is required");
     }
 
-    let finalAudioUrl = "";
+    const audioUpload = await cloudinary.uploader.upload(
+      audioFile.path,
+      { resource_type: "video" }
+    );
+    const finalAudioUrl = audioUpload.secure_url;
+    const duration = `${Math.floor(audioUpload.duration / 60)}:${Math.floor(
+      audioUpload.duration % 60
+    )}`;
+
     let finalImageUrl = "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg";
-    let duration = "3:00";
-
-    if (audioFile) {
-      const audioUpload = await cloudinary.uploader.upload(
-        audioFile.path,
-        { resource_type: "video" }
-      );
-      finalAudioUrl = audioUpload.secure_url;
-      duration = `${Math.floor(audioUpload.duration / 60)}:${Math.floor(
-        audioUpload.duration % 60
-      )}`;
-    } else {
-      finalAudioUrl = formatDirectUrl(songUrl);
-    }
 
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(
@@ -74,8 +46,6 @@ const addSong = async (req, res, next) => {
         { resource_type: "image" }
       );
       finalImageUrl = imageUpload.secure_url;
-    } else if (imageUrl) {
-      finalImageUrl = formatDirectUrl(imageUrl);
     }
 
     const songData = {
