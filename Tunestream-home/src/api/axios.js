@@ -1,6 +1,10 @@
 import axios from "axios";
 
-export const url = import.meta.env.VITE_API_URL || "https://www-tunestream.onrender.com";
+let baseUrl = import.meta.env.VITE_API_URL || "https://www-tunestream.onrender.com";
+if (baseUrl.includes("tunestream-backend.vercel.app")) {
+  baseUrl = "https://www-tunestream.onrender.com";
+}
+export const url = baseUrl;
 
 const API = axios.create({
   baseURL: `${url}/api`,
