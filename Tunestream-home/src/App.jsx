@@ -13,7 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import ResetPassword from "./pages/ResetPassword.jsx";
 import OnboardingGesture from "./components/OnboardingGesture.jsx";
-import UnifiedAudioPlayer from "./components/UnifiedAudioPlayer.jsx";
 
 export const url = import.meta.env.VITE_API_URL || "https://tunestream-backend.vercel.app";
 
@@ -26,7 +25,7 @@ const ArtistRedirect = () => {
 
 const App = () => {
   const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen } = useContext(PlayerContext);
-  const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   if (authLoading) return (
     <div className="h-screen flex items-center justify-center bg-black text-white">
@@ -66,13 +65,7 @@ const App = () => {
             <Player />
             <BottomNav />
 
-            {track && (
-              <UnifiedAudioPlayer 
-                track={track} 
-                audioRef={audioRef} 
-                isAuthenticated={isAuthenticated} 
-              />
-            )}
+            {track && <audio ref={audioRef} src={track.file} preload="auto" />}
           </div>
         } />
       </Routes>
