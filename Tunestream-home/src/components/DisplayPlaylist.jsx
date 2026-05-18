@@ -116,19 +116,19 @@ const DisplayPlaylist = () => {
 
       {/* ── HEADER ── */}
       <div
-        className='relative px-6 pt-20 pb-10'
+        className='relative px-4 md:px-6 pt-10 md:pt-20 pb-6 md:pb-10'
         style={{ background: `linear-gradient(to bottom, #166230, #121212)` }}
       >
-        <div className='flex flex-col md:flex-row items-end gap-6'>
+        <div className='flex flex-col items-center md:items-end md:flex-row gap-4 md:gap-6'>
 
-          <div className='w-44 h-44 bg-emerald-600 rounded-lg shadow-2xl flex items-center justify-center flex-shrink-0'>
-            <span className='text-6xl'>🎶</span>
+          <div className='w-32 h-32 md:w-44 md:h-44 bg-emerald-600 rounded-lg shadow-2xl flex items-center justify-center flex-shrink-0'>
+            <span className='text-4xl md:text-6xl'>🎶</span>
           </div>
 
           <motion.div style={{ opacity: titleOpacity }} className='flex-1'>
             <p className='text-sm text-gray-300'>Custom Playlist</p>
 
-            <h2 className='text-5xl md:text-7xl font-bold leading-tight truncate'>
+            <h2 className='text-2xl md:text-7xl font-bold leading-tight truncate text-center md:text-left'>
               {playlistData.name}
             </h2>
 

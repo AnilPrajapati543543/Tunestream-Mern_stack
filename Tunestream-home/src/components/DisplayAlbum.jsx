@@ -126,17 +126,17 @@ const DisplayAlbum = ({ album }) => {
 
       {/* HEADER */}
       <div
-        className='relative px-6 pt-20 pb-10'
+        className='relative px-4 md:px-6 pt-10 md:pt-20 pb-6 md:pb-10'
         style={{
           background: `linear-gradient(to bottom, ${bgColor}, #121212)`
         }}
       >
-        <div className='flex flex-col md:flex-row items-end gap-6'>
+        <div className='flex flex-col items-center md:items-end md:flex-row gap-4 md:gap-6'>
 
           {/* Album Image */}
           <motion.img
             style={{ scale: imageScale, y: imageY }}
-            className='w-44 rounded-lg shadow-2xl'
+            className='w-32 md:w-44 rounded-lg shadow-2xl'
             src={albumData.image}
             alt=""
           />
@@ -145,11 +145,11 @@ const DisplayAlbum = ({ album }) => {
           <motion.div style={{ opacity: titleOpacity }} className='flex-1'>
             <p className='text-[10px] md:text-sm text-gray-400 font-bold uppercase tracking-widest'>Album</p>
 
-            <h2 className='text-3xl md:text-7xl font-black leading-tight mt-2 mb-2'>
+            <h2 className='text-2xl md:text-7xl font-black leading-tight mt-1 md:mt-2 mb-1 md:mb-2 text-center md:text-left'>
               {albumData.name}
             </h2>
 
-            <p className='text-gray-400 text-sm mt-1 max-w-[500px] line-clamp-2 md:line-clamp-none'>
+            <p className='text-gray-400 text-xs md:text-sm mt-1 max-w-[500px] line-clamp-2 md:line-clamp-none text-center md:text-left'>
               {albumData.desc}
             </p>
 
@@ -168,7 +168,7 @@ const DisplayAlbum = ({ album }) => {
       </div>
 
       {/* TABLE HEADER */}
-      <div className='grid grid-cols-4 mt-6 mb-4 px-6 text-gray-400 text-[10px] uppercase font-bold tracking-widest'>
+      <div className='grid grid-cols-3 md:grid-cols-4 mt-4 md:mt-6 mb-3 md:mb-4 px-4 md:px-6 text-gray-400 text-[10px] uppercase font-bold tracking-widest'>
         <p className="col-span-2 sm:col-span-1"><b className='mr-4'>#</b>Title</p>
         <p className="hidden sm:block">Album</p>
         <p className='hidden sm:block'>Date Added</p>
@@ -177,8 +177,8 @@ const DisplayAlbum = ({ album }) => {
         </div>
       </div>
 
-      <hr className='border-gray-700 mx-6' />      {/* SONG LIST */}
-      <div className='px-4 mt-2'>
+      <hr className='border-gray-700 mx-4 md:mx-6' />      {/* SONG LIST */}
+      <div className='px-2 md:px-4 mt-2'>
         {(() => {
           const albumSongs = songsData
             .filter((item) => (item.album === albumData.name || addedIds.includes(item._id)) && !excludedIds.includes(item._id));
@@ -200,14 +200,14 @@ const DisplayAlbum = ({ album }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03 }}
                     className={`
-                      grid grid-cols-4 gap-2 p-3 items-center rounded-xl cursor-pointer transition-all group
+                      grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-2 p-2 md:p-3 items-center rounded-xl cursor-pointer transition-all group
                       ${isPlaying
                         ? "bg-white/10 shadow-lg"
                         : "hover:bg-white/5"}
                     `}
                   >
                     {/* Title */}
-                    <div className='flex items-center col-span-3 sm:col-span-1 overflow-hidden'>
+                    <div className='flex items-center col-span-2 md:col-span-1 overflow-hidden'>
                       <span className='mr-4 w-4 text-gray-500 font-bold text-xs hidden sm:inline'>
                         {index + 1}
                       </span>

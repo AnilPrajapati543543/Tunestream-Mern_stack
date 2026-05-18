@@ -12,8 +12,8 @@ const AlbumItem = ({ image, name, desc, id }) => {
       whileHover={{ scale: 1.04, y: -6 }}
       whileTap={{ scale: 0.97 }}
       className="
-        w-[160px] md:w-[200px] flex-shrink-0
-        p-3 rounded-xl
+        w-[140px] md:w-[200px] flex-shrink-0
+        p-2.5 md:p-3 rounded-xl
         bg-[#181818] hover:bg-[#222]
         cursor-pointer
         transition-all duration-300

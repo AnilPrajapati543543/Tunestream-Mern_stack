@@ -26,7 +26,7 @@ const HorizontalSection = ({ title, data, renderItem }) => {
   if (!data || data.length === 0) return null;
 
   return (
-    <section className="mb-10 relative group">
+    <section className="mb-6 md:mb-10 relative group">
       {/* Title + Buttons */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl md:text-2xl font-black tracking-tight hover:underline cursor-pointer">{title}</h1>
@@ -166,7 +166,7 @@ const DisplayHome = () => {
       <Navbar />
 
       {/* CATEGORY CHIPS */}
-      <div className="flex gap-2 px-4 md:px-6 pt-1 pb-4">
+      <div className="flex gap-2 px-3 md:px-6 pt-1 pb-3 md:pb-4 overflow-x-auto no-scrollbar">
         {["All", "Music", "Podcasts"].map(cat => (
           <button 
             key={cat}
@@ -181,7 +181,7 @@ const DisplayHome = () => {
         ))}
       </div>
 
-      <div className="px-4 md:px-6 py-2 overflow-y-auto flex-1 custom-scrollbar">
+      <div className="px-3 md:px-6 py-1 md:py-2 overflow-y-auto flex-1 custom-scrollbar">
 
         {loading ? (
           <div className="space-y-8">
@@ -205,38 +205,38 @@ const DisplayHome = () => {
           <>
             {/* GREETING & QUICK TILES GRID */}
             <section className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-4">{greeting}</h2>
+              <h2 className="text-xl md:text-3xl font-black tracking-tight mb-3 md:mb-4">{greeting}</h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3.5">
                 {quickTiles.map((tile, idx) => (
                   <motion.div
                     key={`${tile.id}-${idx}`}
                     onClick={() => handleTileClick(tile)}
                     whileHover={{ scale: 1.015 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group flex items-center bg-white/5 hover:bg-white/10 transition duration-300 rounded-md overflow-hidden cursor-pointer relative pr-16 select-none"
+                    className="group flex items-center bg-white/5 hover:bg-white/10 transition duration-300 rounded-md overflow-hidden cursor-pointer relative pr-0 md:pr-16 select-none"
                   >
                     {/* Visual */}
                     {tile.isLiked ? (
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                        <Heart fill="white" className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" size={24} />
+                      <div className="w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <Heart fill="white" className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" size={16} />
                       </div>
                     ) : (
                       <img 
                         src={tile.image} 
                         alt={tile.name} 
-                        className="w-20 h-20 object-cover flex-shrink-0"
+                        className="w-12 h-12 md:w-20 md:h-20 object-cover flex-shrink-0"
                       />
                     )}
 
                     {/* Meta */}
-                    <div className="pl-4 pr-2 py-2 overflow-hidden flex-1">
-                      <p className="text-sm font-black text-white truncate tracking-tight">{tile.name}</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">{tile.desc || "Playlist"}</p>
+                    <div className="pl-2 md:pl-4 pr-1 md:pr-2 py-1.5 md:py-2 overflow-hidden flex-1 min-w-0">
+                      <p className="text-[11px] md:text-sm font-black text-white truncate tracking-tight">{tile.name}</p>
+                      <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 hidden md:block">{tile.desc || "Playlist"}</p>
                     </div>
 
                     {/* Floating Play Button */}
-                    <div className="absolute right-4 inset-y-0 flex items-center justify-center">
+                    <div className="absolute right-2 md:right-4 inset-y-0 hidden md:flex items-center justify-center">
                       <button
                         onClick={(e) => handleTilePlayClick(e, tile)}
                         className="w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center shadow-lg transition duration-300 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 scale-90 hover:scale-105 active:scale-95"

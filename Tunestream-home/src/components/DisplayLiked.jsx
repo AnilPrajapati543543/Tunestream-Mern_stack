@@ -46,12 +46,12 @@ const DisplayLiked = () => {
 
       {/* HEADER BANNER */}
       <div 
-        className='relative px-6 pt-16 pb-8 bg-gradient-to-b from-[#4f46e5]/40 to-[#121212]'
+        className='relative px-4 md:px-6 pt-10 md:pt-16 pb-6 md:pb-8 bg-gradient-to-b from-[#4f46e5]/40 to-[#121212]'
       >
         <div className='flex flex-col md:flex-row items-end gap-6 relative z-10'>
           {/* Big Purple Heart Badge */}
-          <div className='w-40 h-40 bg-gradient-to-br from-[#4f46e5] via-[#6366f1] to-[#818cf8] rounded-2xl shadow-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group border border-white/10'>
-            <Heart size={72} fill="white" className='text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:scale-110 transition duration-500' />
+          <div className='w-28 h-28 md:w-40 md:h-40 bg-gradient-to-br from-[#4f46e5] via-[#6366f1] to-[#818cf8] rounded-2xl shadow-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group border border-white/10'>
+            <Heart size={48} fill="white" className='text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:scale-110 transition duration-500 md:w-[72px] md:h-[72px]' />
             <div className='absolute -right-6 -bottom-6 w-20 h-20 bg-white/10 rounded-full blur-xl' />
           </div>
 
@@ -59,7 +59,7 @@ const DisplayLiked = () => {
             <p className='text-[10px] md:text-xs text-[#a5b4fc] font-black uppercase tracking-widest'>
               Playlist
             </p>
-            <h1 className='text-4xl md:text-7xl font-black leading-tight mt-2 mb-3 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent'>
+            <h1 className='text-2xl md:text-7xl font-black leading-tight mt-1 md:mt-2 mb-2 md:mb-3 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent'>
               Liked Songs
             </h1>
             
@@ -76,10 +76,10 @@ const DisplayLiked = () => {
       </div>
 
       {/* SONGS GRID LIST */}
-      <div className='px-6 mt-6'>
+      <div className='px-3 md:px-6 mt-4 md:mt-6'>
         
         {/* TABLE HEADERS */}
-        <div className='grid grid-cols-4 mt-6 mb-4 px-3 text-gray-400 text-[10px] uppercase font-bold tracking-widest border-b border-white/5 pb-3'>
+        <div className='grid grid-cols-3 md:grid-cols-4 mt-4 md:mt-6 mb-3 md:mb-4 px-2 md:px-3 text-gray-400 text-[10px] uppercase font-bold tracking-widest border-b border-white/5 pb-3'>
           <p className="col-span-3 sm:col-span-1"><b className='mr-4'>#</b>Title</p>
           <p className="hidden sm:block">Album</p>
           <p className='hidden sm:block'>Date Liked</p>
@@ -115,7 +115,7 @@ const DisplayLiked = () => {
                     transition={{ delay: index * 0.02 }}
                     onClick={() => handlePlayLiked(item._id)}
                     className={`
-                      grid grid-cols-4 gap-2 p-3 items-center rounded-xl cursor-pointer transition-all duration-200 group
+                      grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-2 p-2 md:p-3 items-center rounded-xl cursor-pointer transition-all duration-200 group
                       ${isPlaying ? "bg-white/10 shadow-lg shadow-black/10 border border-white/5" : "hover:bg-white/5"}
                     `}
                   >

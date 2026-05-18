@@ -33,13 +33,13 @@ const Player = () => {
 
   return (
     <div 
-      className='fixed bottom-16 md:bottom-0 md:relative h-auto min-h-[70px] md:h-[10%] w-full bg-black/95 backdrop-blur-lg text-white flex flex-col md:flex-row items-center justify-between px-3 md:px-6 border-t border-white/5 z-40 transition-all duration-300'
+      className='fixed bottom-[70px] md:bottom-0 md:relative h-auto min-h-[56px] md:min-h-[70px] md:h-[10%] w-full bg-black/95 backdrop-blur-lg text-white flex flex-col md:flex-row items-center justify-between px-3 md:px-6 border-t border-white/5 z-40 transition-all duration-300'
     >
       
       {/* SONG INFO & MOBILE PLAY BUTTON */}
-      <div className='flex items-center justify-between w-full md:w-[30%] py-1.5 md:py-0'>
+      <div className='flex items-center justify-between w-full md:w-[30%] py-1 md:py-0'>
         <div className='flex items-center gap-2.5 md:gap-3'>
-          <img src={track.image} className='w-9 h-9 md:w-12 md:h-12 rounded shadow-lg object-cover' />
+          <img src={track.image} className='w-10 h-10 md:w-12 md:h-12 rounded-md shadow-lg object-cover' />
           <div className='overflow-hidden max-w-[120px] sm:max-w-[180px] md:max-w-none'>
             <p className='text-[11px] md:text-sm font-bold truncate tracking-tight'>{track.name}</p>
             <p className='text-[9px] md:text-xs text-gray-400 truncate opacity-80'>{track.desc}</p>
@@ -113,7 +113,7 @@ const Player = () => {
         </div>
 
         {/* PROGRESS BAR */}
-        <div className='flex items-center gap-2 w-full max-w-[500px]'>
+        <div className='flex items-center gap-2 w-full max-w-[500px] pb-1 md:pb-0'>
           <p className='text-[10px] md:text-xs text-gray-300 min-w-[35px] font-mono'>
             {String(time.currentTime.minute).padStart(2, '0')}:{String(time.currentTime.second).padStart(2, '0')}
           </p>

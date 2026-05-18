@@ -54,14 +54,14 @@ const DisplayQueue = () => {
     <div className='text-white pb-32 min-h-screen relative overflow-hidden bg-gradient-to-b from-[#193220] via-[#121212] to-[#121212]'>
       <Navbar />
 
-      <div className='px-6 pt-10 relative z-10'>
+      <div className='px-3 md:px-6 pt-6 md:pt-10 relative z-10'>
         {/* PAGE HEADER */}
         <div className='flex items-center gap-4 mb-8 mt-4'>
           <div className='w-14 h-14 bg-emerald-500 rounded-xl flex items-center justify-center shadow-xl shadow-emerald-500/20'>
             <ListMusic size={28} className='text-black' />
           </div>
           <div>
-            <h1 className='text-3xl md:text-4xl font-black tracking-tight'>Play Queue</h1>
+            <h1 className='text-2xl md:text-4xl font-black tracking-tight'>Play Queue</h1>
             <p className='text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider'>
               Manage your active session stream
             </p>
@@ -79,10 +79,10 @@ const DisplayQueue = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => playStatus ? pause() : play()}
-              className='flex items-center justify-between p-4 bg-white/10 hover:bg-white/15 rounded-2xl border border-white/5 shadow-2xl backdrop-blur-md relative overflow-hidden group cursor-pointer transition'
+              className='flex items-center justify-between p-3 md:p-4 bg-white/10 hover:bg-white/15 rounded-2xl border border-white/5 shadow-2xl backdrop-blur-md relative overflow-hidden group cursor-pointer transition'
             >
               <div className='flex items-center gap-4 min-w-0 z-10'>
-                <div className='relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden shadow-lg shadow-black/40 border border-white/10'>
+                <div className='relative flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden shadow-lg shadow-black/40 border border-white/10'>
                   <img src={currentSong.image} className='w-full h-full object-cover' alt="" />
                   
                   {playStatus && (
@@ -95,10 +95,10 @@ const DisplayQueue = () => {
                 </div>
 
                 <div className='min-w-0'>
-                  <h3 className='text-lg font-black text-white truncate tracking-tight group-hover:text-emerald-400 transition-colors'>
+                  <h3 className='text-base md:text-lg font-black text-white truncate tracking-tight group-hover:text-emerald-400 transition-colors'>
                     {currentSong.name}
                   </h3>
-                  <p className='text-sm text-gray-300 truncate mt-0.5 opacity-90 font-medium'>
+                  <p className='text-xs md:text-sm text-gray-300 truncate mt-0.5 opacity-90 font-medium'>
                     {currentSong.desc || "No details available"}
                   </p>
                 </div>
@@ -125,7 +125,7 @@ const DisplayQueue = () => {
                     e.stopPropagation();
                     playStatus ? pause() : play();
                   }}
-                  className="w-12 h-12 rounded-full bg-white hover:scale-105 active:scale-95 text-black flex items-center justify-center shadow-lg transition"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white hover:scale-105 active:scale-95 text-black flex items-center justify-center shadow-lg transition"
                 >
                   {playStatus ? (
                     <Pause size={18} fill="black" className="text-black" />

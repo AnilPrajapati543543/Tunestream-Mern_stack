@@ -43,7 +43,7 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         {/* Home App Route */}
         <Route path="*" element={
-          <div className="h-screen flex flex-col bg-black overflow-hidden p-2 gap-2 text-white">
+          <div className="h-screen flex flex-col bg-black overflow-hidden p-0 md:p-2 gap-0 md:gap-2 text-white">
             <AuthModal 
               isOpen={isAuthModalOpen} 
               onClose={() => setIsAuthModalOpen(false)} 
