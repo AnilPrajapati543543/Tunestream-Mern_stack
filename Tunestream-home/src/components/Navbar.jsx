@@ -10,6 +10,7 @@ const Navbar = () => {
   const { setIsAuthModalOpen } = useContext(PlayerContext);
 
   const [ripple, setRipple] = useState({ x: 0, y: 0, show: false });
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async (e) => {
     try {
@@ -25,12 +26,20 @@ const Navbar = () => {
         setRipple({ x: 0, y: 0, show: false });
       }, 500);
 
+      // Trigger quantum portal animation
+      setIsLoggingOut(true);
+
+      // Wait 2.0s for the portal effect to rotate
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       await API.post("/user/logout");
       localStorage.removeItem("accessToken");
       setUser(null);
+      setIsLoggingOut(false);
       navigate("/");
     } catch (error) {
       console.error("Logout failed");
+      setIsLoggingOut(false);
     }
   };
 
@@ -93,6 +102,38 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-black z-[9999] flex flex-col items-center justify-center overflow-hidden">
+          {/* Neon spinning portal */}
+          <div className="relative w-80 h-80 flex items-center justify-center">
+            {/* Outer spinning neon loop */}
+            <div className="absolute inset-0 border-8 border-dashed border-emerald-500/30 rounded-full animate-[spin_8s_linear_infinite]" />
+            <div className="absolute inset-4 border-4 border-double border-indigo-500/40 rounded-full animate-[spin_6s_linear_infinite_reverse]" />
+            <div className="absolute inset-8 border border-dashed border-pink-500/50 rounded-full animate-[spin_4s_linear_infinite]" />
+            
+            {/* Rotating central neon portal core */}
+            <div className="w-40 h-40 bg-gradient-to-tr from-emerald-500 via-indigo-600 to-pink-500 rounded-full animate-spin blur-[2px] shadow-[0_0_50px_rgba(16,185,129,0.6)] flex items-center justify-center">
+              <span className="text-white text-2xl font-black tracking-widest animate-pulse">WARP</span>
+            </div>
+
+            {/* Orbiting particles */}
+            <div className="absolute w-4 h-4 bg-emerald-400 rounded-full animate-ping" style={{ top: '10%', left: '20%' }} />
+            <div className="absolute w-3 h-3 bg-pink-400 rounded-full animate-ping" style={{ bottom: '15%', right: '25%' }} />
+            <div className="absolute w-5 h-5 bg-indigo-400 rounded-full animate-pulse" style={{ top: '60%', left: '80%' }} />
+          </div>
+
+          <div className="text-center mt-12 z-10 space-y-3 px-6">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-indigo-300 to-pink-400 animate-pulse uppercase">
+              Quantum Session Warp
+            </h2>
+            <div className="font-mono text-[10px] md:text-xs text-gray-500 uppercase tracking-widest leading-relaxed">
+              <p className="text-emerald-400 animate-[pulse_1s_infinite]">DE-MATERIALIZING SESSION ENCRYPTION STATE...</p>
+              <p className="opacity-65 mt-1 font-semibold text-[9px]">Warp portal speed: 4.88 Ly/sec • IP OVER RIPPLE ACTIVE</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

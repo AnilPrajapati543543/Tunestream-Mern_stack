@@ -28,6 +28,28 @@ const PlayerContextProvider = (props) => {
     // AUTH MODAL STATE
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+    // SIDEBAR COLLAPSE STATES
+    const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
+    const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
+
+    // LIKED SONGS STATE
+    const [likedSongs, setLikedSongs] = useState(() => {
+        try {
+            const stored = localStorage.getItem("tunestream_liked_songs");
+            return stored ? JSON.parse(stored) : [];
+        } catch (_) {
+            return [];
+        }
+    });
+
+    const toggleLikeSong = (songId) => {
+        setLikedSongs(prev => {
+            const next = prev.includes(songId) ? prev.filter(id => id !== songId) : [...prev, songId];
+            localStorage.setItem("tunestream_liked_songs", JSON.stringify(next));
+            return next;
+        });
+    };
+
     const [time, setTime] = useState({
         currentTime: { second: 0, minute: 0 },
         totalTime: { second: 0, minute: 0 }
@@ -58,6 +80,10 @@ const PlayerContextProvider = (props) => {
         setPlayQueue(activeQueue);
         const t = activeQueue.find(i => i._id === id);
         if (t) setTrack(t);
+    };
+
+    const removeFromQueue = (songId) => {
+        setPlayQueue(prev => prev.filter(item => item._id !== songId));
     };
 
     //  PREVIOUS
@@ -231,7 +257,14 @@ const PlayerContextProvider = (props) => {
         isShuffling,
         isLooping,
         isAuthModalOpen,
-        setIsAuthModalOpen
+        setIsAuthModalOpen,
+        leftSidebarCollapsed,
+        setLeftSidebarCollapsed,
+        rightSidebarCollapsed,
+        setRightSidebarCollapsed,
+        likedSongs,
+        toggleLikeSong,
+        removeFromQueue
     };
 
     return (

@@ -1,9 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets.js';
 import { PlayerContext } from '../context/PlayerContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ListMusic, Tv, Library } from 'lucide-react';
 import VolumeControl from "./VolumeControl";
 
 const Player = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     track,
     playStatus,
@@ -17,7 +22,11 @@ const Player = () => {
     shuffleToggle,
     loopToggle,
     isShuffling,
-    isLooping
+    isLooping,
+    leftSidebarCollapsed,
+    setLeftSidebarCollapsed,
+    rightSidebarCollapsed,
+    setRightSidebarCollapsed
   } = useContext(PlayerContext);
 
   if (!track) return null;
@@ -125,9 +134,38 @@ const Player = () => {
         </div>
       </div>
 
-      {/* RIGHT (VOLUME) - Hidden on mobile */}
-      <div className='hidden md:flex items-center gap-3 w-[25%] justify-end'>
-         <VolumeControl />
+      {/* RIGHT (VOLUME & CONTROLS) - Hidden on mobile */}
+      <div className='hidden md:flex items-center gap-4 w-[30%] justify-end'>
+         {/* Left Library Sidebar collapse toggle */}
+         <button 
+           onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
+           className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${!leftSidebarCollapsed ? "text-emerald-400" : "text-gray-400 hover:text-white"}`}
+           title="Toggle Your Library"
+         >
+           <Library size={18} />
+         </button>
+
+         {/* Queue button */}
+         <button 
+           onClick={() => navigate(location.pathname === "/queue" ? "/" : "/queue")}
+           className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${location.pathname === "/queue" ? "text-emerald-400" : "text-gray-400 hover:text-white"}`}
+           title="Play Queue"
+         >
+           <ListMusic size={18} />
+         </button>
+
+         {/* Right Sidebar collapse toggle */}
+         <button 
+           onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
+           className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${!rightSidebarCollapsed ? "text-emerald-400" : "text-gray-400 hover:text-white"}`}
+           title="Now Playing View"
+         >
+           <Tv size={18} />
+         </button>
+
+         <div className="w-[120px] flex items-center">
+           <VolumeControl />
+         </div>
       </div>
 
     </div>

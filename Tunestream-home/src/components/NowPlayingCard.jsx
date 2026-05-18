@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import VolumeControl from "./VolumeControl";
 import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame } from "lucide-react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const NowPlayingCard = () => {
   const {
@@ -12,16 +13,21 @@ const NowPlayingCard = () => {
     playStatus,
     playWithId,
     playQueue,
+    rightSidebarCollapsed: collapsed,
+    setRightSidebarCollapsed: setCollapsed,
+    likedSongs,
+    toggleLikeSong
   } = useContext(PlayerContext);
 
-  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
   const [bgColor, setBgColor] = useState("rgba(18, 18, 18, 0.95)");
   const [followedArtists, setFollowedArtists] = useState({});
 
   // Auto-expand on new track play if it was collapsed
   useEffect(() => {
     if (track) setCollapsed(false);
-  }, [track]);
+  }, [track, setCollapsed]);
 
   // Load followed artists state from localStorage
   useEffect(() => {
@@ -197,11 +203,13 @@ const NowPlayingCard = () => {
                     key={track.videoUrl}
                     autoPlay
                     loop
-                    muted
-                    playsInline
+                    muted={true}
+                    playsInline={true}
+                    preload="auto"
+                    crossOrigin="anonymous"
                     className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
                   >
-                    <source src={track.videoUrl} type="video/mp4" />
+                    <source src={track.videoUrl} />
                   </video>
                 )
               ) : (
@@ -235,10 +243,14 @@ const NowPlayingCard = () => {
                 </p>
               </div>
               <button 
-                onClick={() => toast.success("Added to Liked Songs")}
-                className="p-1 rounded-full text-emerald-400 hover:text-emerald-300 hover:scale-110 transition flex-shrink-0"
+                onClick={() => toggleLikeSong(track._id)}
+                className="p-1 rounded-full text-gray-400 hover:text-white hover:scale-110 transition flex-shrink-0"
               >
-                <Heart size={18} fill="#10b981" />
+                <Heart 
+                  size={18} 
+                  fill={likedSongs.includes(track._id) ? "#ef4444" : "none"} 
+                  stroke={likedSongs.includes(track._id) ? "#ef4444" : "currentColor"} 
+                />
               </button>
             </div>
           </div>
@@ -304,7 +316,10 @@ const NowPlayingCard = () => {
                 <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                   Next in queue
                 </span>
-                <span className="text-[10px] font-bold text-emerald-400 hover:underline uppercase tracking-wider cursor-pointer">
+                <span 
+                  onClick={() => navigate("/queue")}
+                  className="text-[10px] font-bold text-emerald-400 hover:underline uppercase tracking-wider cursor-pointer"
+                >
                   Open queue
                 </span>
               </div>

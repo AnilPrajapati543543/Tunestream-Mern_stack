@@ -5,6 +5,8 @@ import DisplayAlbum from "./DisplayAlbum";
 import DisplayPlaylist from "./DisplayPlaylist";
 import MobileSearch from "./MobileSearch";
 import MobileLibrary from "./MobileLibrary";
+import DisplayLiked from "./DisplayLiked";
+import DisplayQueue from "./DisplayQueue";
 import { PlayerContext } from "../context/PlayerContext";
 
 const Display = () => {
@@ -50,6 +52,8 @@ const Display = () => {
         <Route path="/" element={<DisplayHome />} />
         <Route path="/search" element={<MobileSearch />} />
         <Route path="/library" element={<MobileLibrary />} />
+        <Route path="/liked" element={<DisplayLiked />} />
+        <Route path="/queue" element={<DisplayQueue />} />
         <Route
           path="/album/:id"
           element={<DisplayAlbum album={currentAlbum} />}

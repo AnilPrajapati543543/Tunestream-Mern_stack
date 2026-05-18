@@ -6,6 +6,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const HorizontalSection = ({ title, data, renderItem }) => {
   const scrollRef = useRef();
@@ -74,7 +75,7 @@ const HorizontalSection = ({ title, data, renderItem }) => {
 
 const DisplayHome = () => {
   const navigate = useNavigate();
-  const { songsData, albumsData, playWithId } = useContext(PlayerContext);
+  const { songsData, albumsData, playWithId, likedSongs } = useContext(PlayerContext);
   const [activeCategory, setActiveCategory] = useState("All");
 
   // Determine standard greeting based on current time
@@ -129,10 +130,7 @@ const DisplayHome = () => {
   // Click handler for tiles
   const handleTileClick = (tile) => {
     if (tile.type === "liked") {
-      // Play first song in list
-      if (songsData.length > 0) {
-        playWithId(songsData[0]._id, songsData);
-      }
+      navigate("/liked");
     } else if (tile.type === "album") {
       navigate(`/album/${tile.id}`);
     } else if (tile.type === "song") {
@@ -143,7 +141,12 @@ const DisplayHome = () => {
   const handleTilePlayClick = (e, tile) => {
     e.stopPropagation();
     if (tile.type === "liked") {
-      if (songsData.length > 0) playWithId(songsData[0]._id, songsData);
+      const favoriteSongs = songsData.filter(s => likedSongs.includes(s._id));
+      if (favoriteSongs.length > 0) {
+        playWithId(favoriteSongs[0]._id, favoriteSongs);
+      } else {
+        toast.info("No liked songs to play yet. Add some!");
+      }
     } else if (tile.type === "album") {
       // Find songs belonging to this album and play them
       const albumSongs = songsData.filter(s => s.album === tile.name);

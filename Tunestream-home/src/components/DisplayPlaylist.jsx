@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets.js'
 import { PlayerContext } from '../context/PlayerContext'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { Plus, Search, Trash2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import API from '../api/axios'
 
@@ -15,8 +16,23 @@ const DisplayPlaylist = () => {
   const [deleting, setDeleting] = useState(false)
   const [removingId, setRemovingId] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
 
   const { playWithId, playlists, setPlaylists, songsData, track: currentSong } = useContext(PlayerContext)
+
+  const handleAddSong = async (songId) => {
+    try {
+      const res = await API.post('/playlist/add-song', { playlistId: id, songId })
+      if (res.data.success) {
+        setPlaylists(prev =>
+          prev.map(p => p._id === id ? res.data.playlist : p)
+        )
+        toast.success("Song added to playlist!")
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to add song")
+    }
+  }
 
   // Keep local playlist in sync with context
   useEffect(() => {
@@ -162,21 +178,22 @@ const DisplayPlaylist = () => {
       )}
 
       {/* ── SONG TABLE HEADER ── */}
-      <div className='grid grid-cols-3 sm:grid-cols-4 mt-6 mb-4 px-6 text-gray-400 text-sm'>
-        <p><b className='mr-4'>#</b>Title</p>
-        <p>Album</p>
-        <p className='hidden sm:block'>Duration</p>
-        <p className='text-center'>Remove</p>
+      <div className='grid grid-cols-4 mt-6 mb-4 px-6 text-gray-400 text-[10px] uppercase font-bold tracking-widest'>
+        <p className="col-span-2 sm:col-span-1"><b className='mr-4'>#</b>Title</p>
+        <p className="hidden sm:block">Album</p>
+        <p className='hidden sm:block'>Date Added</p>
+        <div className="flex justify-end pr-4">
+           <span className="opacity-50">Duration</span>
+        </div>
       </div>
 
       <hr className='border-gray-700 mx-6' />
 
       {/* ── SONG ROWS ── */}
       <div className='px-4 mt-2'>
-        {playlistSongs.length === 0 && (
-          <p className="text-gray-400 p-8 text-center">No songs in this playlist yet.</p>
-        )}
-        {
+        {playlistSongs.length === 0 ? (
+          <p className="text-gray-400 p-8 text-center text-sm font-medium">No songs in this playlist yet. Use the recommender below to add some!</p>
+        ) : (
           playlistSongs.map((item, index) => {
             const isPlaying  = currentSong?._id === item._id
             const isRemoving = removingId === item._id
@@ -190,43 +207,119 @@ const DisplayPlaylist = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ delay: index * 0.03 }}
                 className={`
-                  grid grid-cols-3 sm:grid-cols-4 gap-2 p-3 items-center rounded-md cursor-pointer transition-all group
-                  ${isPlaying ? "bg-white/20 text-white" : "text-gray-400 hover:bg-white/10"}
+                  grid grid-cols-4 gap-2 p-3 items-center rounded-xl cursor-pointer transition-all group
+                  ${isPlaying ? "bg-white/10 shadow-lg" : "hover:bg-white/5"}
                 `}
               >
                 {/* Title col */}
-                <div className='flex items-center'>
-                  <span className='mr-4 w-4 text-gray-400'>{index + 1}</span>
-                  <div className='relative'>
-                    <img className='w-10 rounded mr-4' src={item.image} alt="" />
+                <div className='flex items-center col-span-3 sm:col-span-1 overflow-hidden'>
+                  <span className='mr-4 w-4 text-gray-500 font-bold text-xs hidden sm:inline'>{index + 1}</span>
+                  <div className='relative flex-shrink-0'>
+                    <img className='w-10 h-10 rounded mr-4 object-cover' src={item.image} alt="" />
                   </div>
-                  <span className={isPlaying ? "text-green-400 font-semibold" : ""}>{item.name}</span>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className={`truncate font-bold text-sm ${isPlaying ? "text-emerald-400" : "text-white"}`}>
+                      {item.name}
+                    </span>
+                    <span className="text-[10px] text-gray-500 truncate sm:hidden">
+                      {item.desc || 'Unknown Artist'}
+                    </span>
+                  </div>
                 </div>
 
-                <p className='text-sm truncate'>{item.album || 'Unknown'}</p>
+                <p className='text-xs text-gray-400 truncate hidden sm:block'>{item.album || 'Unknown'}</p>
 
-                <p className='text-sm hidden sm:block'>{item.duration}</p>
+                <p className='text-xs text-gray-500 hidden sm:block font-semibold'>Just now</p>
 
-                {/* Remove button col */}
-                <div className='flex justify-center'>
+                {/* Remove button and Duration col */}
+                <div className='text-xs text-gray-400 flex items-center justify-end gap-3 pr-4'>
                   <motion.button
                     onClick={(e) => handleRemoveSong(e, item._id)}
                     whileHover={{ scale: 1.15 }}
                     whileTap={{ scale: 0.9 }}
                     disabled={isRemoving}
-                    className='w-8 h-8 flex items-center justify-center rounded-full bg-red-500/10 hover:bg-red-500/30 text-red-400 hover:text-red-300 transition disabled:opacity-40'
+                    className='opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition flex-shrink-0'
                     title="Remove from playlist"
                   >
                     {isRemoving
                       ? <span className='text-xs animate-pulse'>…</span>
-                      : <span className='text-sm font-bold leading-none'>✕</span>
+                      : <Trash2 size={13} />
                     }
                   </motion.button>
+
+                  <div className="w-10 text-right">
+                    {isPlaying ? (
+                      <div className="flex gap-[2px] h-3 items-end justify-end">
+                        <div className="w-[2px] h-full bg-emerald-500 animate-bounce" style={{ animationDuration: '0.6s' }} />
+                        <div className="w-[2px] h-[60%] bg-emerald-500 animate-bounce" style={{ animationDuration: '0.4s' }} />
+                        <div className="w-[2px] h-[80%] bg-emerald-500 animate-bounce" style={{ animationDuration: '0.5s' }} />
+                      </div>
+                    ) : (
+                      item.duration
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )
           })
-        }
+        )}
+
+        {/* ── ADD SONGS RECOMMENDATIONS DRAWER ── */}
+        <div className='mt-12 pt-8 border-t border-white/5'>
+          <div className='mb-6'>
+            <h3 className='text-xl font-black text-white'>Let's add some songs to your playlist</h3>
+            <p className='text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider'>Search and expand your customized playlist layout</p>
+          </div>
+
+          {/* Search Input Box */}
+          <div className='relative w-full max-w-md mb-6'>
+            <Search size={16} className='absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500' />
+            <input 
+              type="text"
+              placeholder="Search for available songs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className='w-full bg-[#181818] border border-white/5 rounded-full pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-gray-500'
+            />
+          </div>
+
+          {/* Recommended list */}
+          <div className='space-y-1.5 max-h-[300px] overflow-y-auto custom-scrollbar pr-2'>
+            {(() => {
+              const playlistSongIds = playlistSongs.map(s => s._id);
+              const availableSongs = songsData
+                .filter(song => !playlistSongIds.includes(song._id) && song.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+              if (availableSongs.length === 0) {
+                return <p className='text-xs text-gray-500 italic p-4'>No matching songs found in Tunestream library.</p>;
+              }
+
+              return availableSongs.map(song => (
+                <div 
+                  key={song._id}
+                  className='flex items-center justify-between p-2.5 bg-[#181818]/40 hover:bg-[#181818]/80 border border-white/5 rounded-xl transition duration-150'
+                >
+                  <div className='flex items-center gap-3 min-w-0'>
+                    <img src={song.image} className='w-9 h-9 rounded object-cover flex-shrink-0' />
+                    <div className='min-w-0'>
+                      <p className='text-xs font-bold text-white truncate'>{song.name}</p>
+                      <p className='text-[10px] text-gray-400 truncate mt-0.5'>{song.desc || 'Available Track'}</p>
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={() => handleAddSong(song._id)}
+                    className='flex items-center gap-1.5 px-4 py-1.5 bg-[#282828] hover:bg-[#333] border border-white/10 text-white rounded-full text-xs font-black transition active:scale-95'
+                  >
+                    <Plus size={12} className='text-emerald-400' />
+                    <span>Add</span>
+                  </button>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+
       </div>
     </div>
   )

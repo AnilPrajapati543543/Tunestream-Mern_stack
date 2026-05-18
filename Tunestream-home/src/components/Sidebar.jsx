@@ -9,8 +9,6 @@ import { Plus, Search, Home, Library, ListMusic, User, FolderPlus, X, Check } fr
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
-  
   const { 
     songsData, 
     playWithId, 
@@ -18,6 +16,9 @@ const Sidebar = () => {
     playlists, 
     setPlaylists,
     playQueue,
+    leftSidebarCollapsed: collapsed,
+    setLeftSidebarCollapsed: setCollapsed,
+    likedSongs,
   } = useContext(PlayerContext);
 
   const [libSearchQuery, setLibSearchQuery] = useState("");
@@ -115,14 +116,14 @@ const Sidebar = () => {
         <div className="flex items-center justify-between">
           {!collapsed ? (
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-              <img className="w-8 h-8 rounded-full" src={assets.logo_small || assets.logo} alt="logo" />
+              <img className="w-8 h-8 rounded-full object-contain" src={assets.tunestream_logo} alt="logo" />
               <span className="font-black text-lg tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 Tunestream
               </span>
             </div>
           ) : (
             <div className="mx-auto cursor-pointer" onClick={() => navigate("/")}>
-              <img className="w-8 h-8 rounded-full" src={assets.logo_small || assets.logo} alt="logo" />
+              <img className="w-8 h-8 rounded-full object-contain" src={assets.tunestream_logo} alt="logo" />
             </div>
           )}
           
@@ -267,7 +268,7 @@ const Sidebar = () => {
           {/* LIKED SONGS ITEM (PERSISTENT unless filtering Artists) */}
           {activeFilter !== "artists" && (
             <div 
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/liked")}
               className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
               ${collapsed ? "justify-center" : ""}`}
             >
@@ -277,7 +278,7 @@ const Sidebar = () => {
               {!collapsed && (
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm font-bold truncate text-white">Liked Songs</span>
-                  <span className="text-[11px] text-gray-400 font-medium">Playlist • {songsData.length} songs</span>
+                  <span className="text-[11px] text-gray-400 font-medium">Playlist • {likedSongs.length} songs</span>
                 </div>
               )}
             </div>

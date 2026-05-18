@@ -4,12 +4,60 @@ import { useParams } from 'react-router-dom'
 import { assets } from '../assets/assets.js'
 import { PlayerContext } from '../context/PlayerContext'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { Plus, Trash2, Search, Check } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 const DisplayAlbum = ({ album }) => {
 
   const { id } = useParams()
   const [albumData, setAlbumData] = useState(null)
   const [bgColor, setBgColor] = useState('#121212')
+
+  // Album virtualization states
+  const [excludedIds, setExcludedIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`tunestream_album_exclude_${id}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch (_) { return []; }
+  });
+
+  const [addedIds, setAddedIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`tunestream_album_add_${id}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch (_) { return []; }
+  });
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleRemoveTrack = (e, songId) => {
+    e.stopPropagation();
+    const nextExcluded = [...excludedIds, songId];
+    setExcludedIds(nextExcluded);
+    localStorage.setItem(`tunestream_album_exclude_${id}`, JSON.stringify(nextExcluded));
+    
+    // Also clean up from added if it was virtually added
+    if (addedIds.includes(songId)) {
+      const nextAdded = addedIds.filter(x => x !== songId);
+      setAddedIds(nextAdded);
+      localStorage.setItem(`tunestream_album_add_${id}`, JSON.stringify(nextAdded));
+    }
+    toast.success("Song virtually removed from album");
+  };
+
+  const handleAddTrack = (songId) => {
+    const nextAdded = [...addedIds, songId];
+    setAddedIds(nextAdded);
+    localStorage.setItem(`tunestream_album_add_${id}`, JSON.stringify(nextAdded));
+
+    // Also clean up from excluded if it was virtually excluded
+    if (excludedIds.includes(songId)) {
+      const nextExcluded = excludedIds.filter(x => x !== songId);
+      setExcludedIds(nextExcluded);
+      localStorage.setItem(`tunestream_album_exclude_${id}`, JSON.stringify(nextExcluded));
+    }
+    toast.success("Song added to album!");
+  };
 
   const { playWithId, albumsData, songsData, track: currentSong } = useContext(PlayerContext)
 
@@ -123,76 +171,147 @@ const DisplayAlbum = ({ album }) => {
         </div>
       </div>
 
-      <hr className='border-gray-700 mx-6' />
-
-      {/* SONG LIST */}
+      <hr className='border-gray-700 mx-6' />      {/* SONG LIST */}
       <div className='px-4 mt-2'>
-        {
-          songsData
-            .filter((item) => item.album === albumData.name) // ✅ FIXED
-            .map((item, index, albumSongs) => {
+        {(() => {
+          const albumSongs = songsData
+            .filter((item) => (item.album === albumData.name || addedIds.includes(item._id)) && !excludedIds.includes(item._id));
 
-              const isPlaying = currentSong?._id === item._id
+          if (albumSongs.length === 0) {
+            return <p className="text-gray-400 p-8 text-center text-sm font-medium">No songs in this album.</p>;
+          }
 
-              return (
-                <motion.div
-                  key={item._id}
-                  onClick={() => playWithId(item._id, albumSongs)}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  className={`
-                    grid grid-cols-4 gap-2 p-3 items-center rounded-xl cursor-pointer transition-all
-                    ${isPlaying
-                      ? "bg-white/10 shadow-lg"
-                      : "hover:bg-white/5"}
-                  `}
-                >
+          return (
+            <>
+              {albumSongs.map((item, index) => {
+                const isPlaying = currentSong?._id === item._id;
 
-                  {/* Title */}
-                  <div className='flex items-center col-span-3 sm:col-span-1 overflow-hidden'>
-                    <span className='mr-4 w-4 text-gray-500 font-bold text-xs hidden sm:inline'>
-                      {index + 1}
-                    </span>
+                return (
+                  <motion.div
+                    key={item._id}
+                    onClick={() => playWithId(item._id, albumSongs)}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    className={`
+                      grid grid-cols-4 gap-2 p-3 items-center rounded-xl cursor-pointer transition-all group
+                      ${isPlaying
+                        ? "bg-white/10 shadow-lg"
+                        : "hover:bg-white/5"}
+                    `}
+                  >
+                    {/* Title */}
+                    <div className='flex items-center col-span-3 sm:col-span-1 overflow-hidden'>
+                      <span className='mr-4 w-4 text-gray-500 font-bold text-xs hidden sm:inline'>
+                        {index + 1}
+                      </span>
 
-                    <div className='relative flex-shrink-0'>
-                      <img
-                        className='w-10 h-10 rounded-md mr-4 object-cover shadow-md'
-                        src={item.image}
-                        alt=""
-                      />
+                      <div className='relative flex-shrink-0'>
+                        <img
+                          className='w-10 h-10 rounded-md mr-4 object-cover shadow-md'
+                          src={item.image}
+                          alt=""
+                        />
+                      </div>
+
+                      <div className="flex flex-col overflow-hidden">
+                        <span className={`truncate font-bold text-sm ${isPlaying ? "text-emerald-400" : "text-white"}`}>
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] text-gray-500 truncate sm:hidden">
+                          {item.desc || 'Unknown Artist'}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col overflow-hidden">
-                      <span className={`truncate font-bold text-sm ${isPlaying ? "text-emerald-400" : "text-white"}`}>
-                        {item.name}
-                      </span>
-                      <span className="text-[10px] text-gray-500 truncate sm:hidden">
-                        Artist Name
-                      </span>
-                    </div>
-                  </div>
+                    <p className='text-xs text-gray-400 truncate hidden sm:block'>{albumData.name}</p>
 
-                  <p className='text-xs text-gray-400 truncate hidden sm:block'>{albumData.name}</p>
+                    <p className='text-xs text-gray-500 hidden sm:block'>5 days ago</p>
 
-                  <p className='text-xs text-gray-500 hidden sm:block'>5 days ago</p>
+                    <div className='text-xs text-gray-400 flex items-center justify-end gap-3 pr-4'>
+                      {/* Remove song from Album button */}
+                      <button
+                        onClick={(e) => handleRemoveTrack(e, item._id)}
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition flex-shrink-0"
+                        title="Remove from album"
+                      >
+                        <Trash2 size={13} />
+                      </button>
 
-                  <div className='text-xs text-gray-400 flex justify-end pr-4'>
-                    {
-                      isPlaying
-                        ? <div className="flex gap-[2px] h-3 items-end">
-                            <div className="w-[2px] h-full bg-emerald-500 animate-bounce" style={{animationDuration: '0.6s'}} />
-                            <div className="w-[2px] h-[60%] bg-emerald-500 animate-bounce" style={{animationDuration: '0.4s'}} />
-                            <div className="w-[2px] h-[80%] bg-emerald-500 animate-bounce" style={{animationDuration: '0.5s'}} />
+                      <div className="w-10 text-right">
+                        {isPlaying && playStatus ? (
+                          <div className="flex gap-[2px] h-3 items-end justify-end">
+                            <div className="w-[2px] h-full bg-emerald-500 animate-bounce" style={{ animationDuration: '0.6s' }} />
+                            <div className="w-[2px] h-[60%] bg-emerald-500 animate-bounce" style={{ animationDuration: '0.4s' }} />
+                            <div className="w-[2px] h-[80%] bg-emerald-500 animate-bounce" style={{ animationDuration: '0.5s' }} />
                           </div>
-                        : item.duration
-                    }
-                  </div>
+                        ) : (
+                          item.duration
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
 
-                </motion.div>
-              )
-            })
-        }
+              {/* ── ADD SONGS RECOMMENDATIONS DRAWER ── */}
+              <div className='mt-12 pt-8 border-t border-white/5'>
+                <div className='mb-6'>
+                  <h3 className='text-xl font-black text-white'>Let's add some songs to your album</h3>
+                  <p className='text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider'>Search and expand your customized album layout</p>
+                </div>
+
+                {/* Search Input Box */}
+                <div className='relative w-full max-w-md mb-6'>
+                  <Search size={16} className='absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500' />
+                  <input 
+                    type="text"
+                    placeholder="Search for available songs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className='w-full bg-[#181818] border border-white/5 rounded-full pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-gray-500'
+                  />
+                </div>
+
+                {/* Recommended list */}
+                <div className='space-y-1.5 max-h-[300px] overflow-y-auto custom-scrollbar pr-2'>
+                  {(() => {
+                    const albumSongIds = albumSongs.map(s => s._id);
+                    const availableSongs = songsData
+                      .filter(song => !albumSongIds.includes(song._id) && song.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+                    if (availableSongs.length === 0) {
+                      return <p className='text-xs text-gray-500 italic p-4'>No matching songs found in Tunestream library.</p>;
+                    }
+
+                    return availableSongs.map(song => (
+                      <div 
+                        key={song._id}
+                        className='flex items-center justify-between p-2.5 bg-[#181818]/40 hover:bg-[#181818]/80 border border-white/5 rounded-xl transition duration-150'
+                      >
+                        <div className='flex items-center gap-3 min-w-0'>
+                          <img src={song.image} className='w-9 h-9 rounded object-cover flex-shrink-0' />
+                          <div className='min-w-0'>
+                            <p className='text-xs font-bold text-white truncate'>{song.name}</p>
+                            <p className='text-[10px] text-gray-400 truncate mt-0.5'>{song.desc || 'Available Track'}</p>
+                          </div>
+                        </div>
+                        
+                        <button
+                          onClick={() => handleAddTrack(song._id)}
+                          className='flex items-center gap-1.5 px-4 py-1.5 bg-[#282828] hover:bg-[#333] border border-white/10 text-white rounded-full text-xs font-black transition active:scale-95'
+                        >
+                          <Plus size={12} className='text-emerald-400' />
+                          <span>Add</span>
+                        </button>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </>
+          );
+        })()}
       </div>
     </div>
   )
