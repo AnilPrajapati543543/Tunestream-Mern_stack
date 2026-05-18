@@ -86,16 +86,39 @@ const NowPlayingCard = () => {
 
             {/* Background Video (Only if available) */}
             {track.videoUrl && (
-              <video
-                key={track.videoUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover opacity-30 z-0"
-              >
-                <source src={track.videoUrl} type="video/mp4" />
-              </video>
+              (() => {
+                const getYouTubeId = (url) => {
+                  if (!url) return null;
+                  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                  const match = url.match(regExp);
+                  return (match && match[2].length === 11) ? match[2] : null;
+                };
+                const ytId = getYouTubeId(track.videoUrl);
+                if (ytId) {
+                  return (
+                    <iframe
+                      key={ytId}
+                      src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+                      className="absolute inset-0 w-full h-full object-cover opacity-35 z-0 pointer-events-none scale-150"
+                      frameBorder="0"
+                      allow="autoplay; encrypted-media"
+                      title="background-video"
+                    />
+                  );
+                }
+                return (
+                  <video
+                    key={track.videoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover opacity-30 z-0"
+                  >
+                    <source src={track.videoUrl} type="video/mp4" />
+                  </video>
+                );
+              })()
             )}
 
             {/* HEADER */}
