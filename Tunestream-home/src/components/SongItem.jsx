@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { PlayerContext } from '../context/PlayerContext'
 import { motion } from 'framer-motion'
 import PlaylistModal from './PlaylistModal';
+import { Play } from 'lucide-react';
 
 const SongItem = ({ name, image, desc, id }) => {
 
@@ -34,7 +35,7 @@ const SongItem = ({ name, image, desc, id }) => {
                 whileHover={{ scale: 1.1 }}
                 className='absolute bottom-2 right-2 bg-emerald-500 w-11 h-11 rounded-full flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-auto'
             >
-                <span className='text-black text-xl ml-1'>▶</span>
+                <Play size={18} fill="currentColor" className="text-black ml-[2px]" />
             </motion.div>
         </div>
 

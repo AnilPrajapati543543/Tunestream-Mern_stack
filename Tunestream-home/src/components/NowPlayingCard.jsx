@@ -3,7 +3,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import { assets } from "../assets/assets.js";
 import { motion, AnimatePresence } from "framer-motion";
 import VolumeControl from "./VolumeControl";
-import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame } from "lucide-react";
+import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -124,18 +124,6 @@ const NowPlayingCard = () => {
   }, [track, playQueue]);
 
   if (!track || collapsed) {
-    // If collapsed, show a elegant floating expand handle on the right or hidden
-    if (collapsed && track) {
-      return (
-        <button 
-          onClick={() => setCollapsed(false)}
-          className="fixed right-4 top-24 z-30 p-2.5 bg-[#121212] border border-white/10 hover:bg-[#282828] text-emerald-400 rounded-full hover:scale-105 active:scale-95 transition shadow-2xl flex items-center justify-center gap-1.5"
-        >
-          <Sparkles size={16} className="animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-wider pr-1">Playing</span>
-        </button>
-      );
-    }
     return null;
   }
 
@@ -248,8 +236,9 @@ const NowPlayingCard = () => {
               >
                 <Heart 
                   size={18} 
-                  fill={likedSongs.includes(track._id) ? "#ef4444" : "none"} 
-                  stroke={likedSongs.includes(track._id) ? "#ef4444" : "currentColor"} 
+                  fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
+                  stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
+                  className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
                 />
               </button>
             </div>
@@ -317,7 +306,11 @@ const NowPlayingCard = () => {
                   Next in queue
                 </span>
                 <span 
-                  onClick={() => navigate("/queue")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    navigate("/queue");
+                  }}
                   className="text-[10px] font-bold text-emerald-400 hover:underline uppercase tracking-wider cursor-pointer"
                 >
                   Open queue
@@ -341,9 +334,9 @@ const NowPlayingCard = () => {
                     {nextTrack.desc || "Track details"}
                   </p>
                 </div>
-                <span className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 pr-1 transition duration-300">
-                  ▶
-                </span>
+                <div className="w-6 h-6 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-90 flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition duration-300 flex-shrink-0 shadow-md">
+                  <Play size={10} fill="currentColor" className="ml-[1px]" />
+                </div>
               </div>
             </div>
           )}

@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 import AlbumItem from "./AlbumItem";
 import SongItem from "./SongItem";
 import { PlayerContext } from "../context/PlayerContext";
-import { ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -218,8 +218,8 @@ const DisplayHome = () => {
                   >
                     {/* Visual */}
                     {tile.isLiked ? (
-                      <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                        <span className="text-white text-3xl">♥</span>
+                      <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <Heart fill="white" className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" size={24} />
                       </div>
                     ) : (
                       <img 

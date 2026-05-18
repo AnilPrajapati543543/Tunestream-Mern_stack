@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Play } from "lucide-react";
 
 const AlbumItem = ({ image, name, desc, id }) => {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const AlbumItem = ({ image, name, desc, id }) => {
               pointer-events-auto
             "
           >
-            <span className="text-black text-lg ml-0.5">▶</span>
+            <Play size={16} fill="currentColor" className="text-black ml-[1.5px]" />
           </motion.div>
         </div>
 

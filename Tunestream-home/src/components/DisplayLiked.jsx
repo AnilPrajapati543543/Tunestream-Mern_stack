@@ -163,7 +163,7 @@ const DisplayLiked = () => {
                         className='p-1 rounded-full text-indigo-400 hover:text-red-400 transition hover:scale-110'
                         title="Unlike Song"
                       >
-                        <Heart size={14} fill="#ef4444" className='text-[#ef4444]' />
+                        <Heart size={14} fill="#10b981" className='text-emerald-500' />
                       </button>
 
                       <div className='w-10 text-right font-mono font-semibold'>
