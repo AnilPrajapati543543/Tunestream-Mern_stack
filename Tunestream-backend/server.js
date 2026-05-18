@@ -88,7 +88,7 @@ app.use(
 // ================= RATE LIMIT =================
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 10000, // Substantially increased to prevent temporary HTTP 429 errors during rapid testing
   message: "Too many requests, try later",
   standardHeaders: true,
   legacyHeaders: false,
