@@ -100,6 +100,7 @@ const PlayerContextProvider = (props) => {
 
     //  SEEK
     const seekSong = (e) => {
+        if (!audioRef.current || isNaN(audioRef.current.duration) || !isFinite(audioRef.current.duration)) return;
         const rect = e.currentTarget.getBoundingClientRect();
         const percent = (e.clientX - rect.left) / rect.width;
         audioRef.current.currentTime = percent * audioRef.current.duration;
