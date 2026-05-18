@@ -28,7 +28,6 @@ const NowPlayingCard = () => {
 
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.src = track.image;
 
     img.onload = () => {
       const canvas = document.createElement("canvas");
@@ -39,6 +38,12 @@ const NowPlayingCard = () => {
       const data = ctx.getImageData(0, 0, 1, 1).data;
       setBgColor(`rgba(${data[0]}, ${data[1]}, ${data[2]}, 0.5)`);
     };
+
+    img.onerror = () => {
+      setBgColor('rgba(0, 0, 0, 0.95)');
+    };
+
+    img.src = track.image;
   }, [track]);
 
   if (!track) return null;

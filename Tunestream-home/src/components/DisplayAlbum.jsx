@@ -25,7 +25,6 @@ const DisplayAlbum = ({ album }) => {
 
     const img = new Image()
     img.crossOrigin = "anonymous"
-    img.src = albumData.image
 
     img.onload = () => {
       const canvas = document.createElement("canvas")
@@ -41,6 +40,12 @@ const DisplayAlbum = ({ album }) => {
 
       setBgColor(color)
     }
+
+    img.onerror = () => {
+      setBgColor('#121212')
+    }
+
+    img.src = albumData.image
   }, [albumData])
 
   const { scrollY } = useScroll()
