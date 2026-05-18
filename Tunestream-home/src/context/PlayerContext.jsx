@@ -17,6 +17,7 @@ const PlayerContextProvider = (props) => {
     const [playStatus, setPlayStatus] = useState(false);
     const [progress, setProgress] = useState(0);
     const [volume, setVolume] = useState(0.7);
+    const [loading, setLoading] = useState(true);
 
     //  SHUFFLE & LOOP
     const [isShuffling, setIsShuffling] = useState(false);
@@ -226,6 +227,8 @@ const PlayerContextProvider = (props) => {
 
             } catch (err) {
                 console.error("API Fetch Error:", err);
+            } finally {
+                setLoading(false);
             }
         };
         load();
@@ -264,7 +267,8 @@ const PlayerContextProvider = (props) => {
         setRightSidebarCollapsed,
         likedSongs,
         toggleLikeSong,
-        removeFromQueue
+        removeFromQueue,
+        loading
     };
 
     return (

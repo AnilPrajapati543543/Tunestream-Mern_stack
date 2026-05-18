@@ -4,6 +4,7 @@ import { PlayerContext } from '../context/PlayerContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Trash2, ListMusic, Music, Volume2, Sparkles, Pause } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { TrackRowsSkeleton } from './SkeletonLoaders';
 
 const DisplayQueue = () => {
   const {
@@ -13,7 +14,8 @@ const DisplayQueue = () => {
     playStatus,
     removeFromQueue,
     play,
-    pause
+    pause,
+    loading
   } = useContext(PlayerContext);
 
   // Find index of currently playing song
@@ -31,6 +33,22 @@ const DisplayQueue = () => {
     removeFromQueue(songId);
     toast.info("Removed song from active queue");
   };
+
+  if (loading) {
+    return (
+      <div className='text-white pb-32 min-h-screen relative bg-gradient-to-b from-[#193220] via-[#121212] to-[#121212] p-6 md:p-10 space-y-10'>
+        <Navbar />
+        <div className='flex items-center gap-4 mb-8 mt-4 animate-pulse'>
+          <div className='w-14 h-14 bg-white/10 rounded-xl' />
+          <div className='space-y-2'>
+            <div className='h-6 bg-white/10 rounded-full w-48' />
+            <div className='h-3 bg-white/5 rounded-full w-32' />
+          </div>
+        </div>
+        <TrackRowsSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className='text-white pb-32 min-h-screen relative overflow-hidden bg-gradient-to-b from-[#193220] via-[#121212] to-[#121212]'>

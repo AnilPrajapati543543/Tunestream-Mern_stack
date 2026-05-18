@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { QuickTilesSkeleton, MusicShelfSkeleton } from "./SkeletonLoaders";
 
 const HorizontalSection = ({ title, data, renderItem }) => {
   const scrollRef = useRef();
@@ -75,7 +76,7 @@ const HorizontalSection = ({ title, data, renderItem }) => {
 
 const DisplayHome = () => {
   const navigate = useNavigate();
-  const { songsData, albumsData, playWithId, likedSongs } = useContext(PlayerContext);
+  const { songsData, albumsData, playWithId, likedSongs, loading } = useContext(PlayerContext);
   const [activeCategory, setActiveCategory] = useState("All");
 
   // Determine standard greeting based on current time
@@ -182,7 +183,25 @@ const DisplayHome = () => {
 
       <div className="px-4 md:px-6 py-2 overflow-y-auto flex-1 custom-scrollbar">
 
-        {activeCategory !== "Podcasts" ? (
+        {loading ? (
+          <div className="space-y-8">
+            <section>
+              <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-4">{greeting}</h2>
+              <QuickTilesSkeleton />
+            </section>
+            
+            <section className="space-y-6">
+              <div>
+                <h2 className="text-xl md:text-2xl font-black tracking-tight mb-4">Featured Charts</h2>
+                <MusicShelfSkeleton />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-black tracking-tight mb-4">Today's Biggest Hits</h2>
+                <MusicShelfSkeleton />
+              </div>
+            </section>
+          </div>
+        ) : activeCategory !== "Podcasts" ? (
           <>
             {/* GREETING & QUICK TILES GRID */}
             <section className="mb-8">

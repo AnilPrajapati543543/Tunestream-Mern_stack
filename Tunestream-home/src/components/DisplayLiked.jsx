@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Play, Clock, Sparkles } from 'lucide-react';
 import { assets } from '../assets/assets.js';
 import { toast } from 'react-toastify';
+import { AlbumHeaderSkeleton, TrackRowsSkeleton } from './SkeletonLoaders';
 
 const DisplayLiked = () => {
   const {
@@ -13,7 +14,8 @@ const DisplayLiked = () => {
     toggleLikeSong,
     playWithId,
     track: currentSong,
-    playStatus
+    playStatus,
+    loading
   } = useContext(PlayerContext);
 
   // Filter songs that are currently liked
@@ -28,6 +30,15 @@ const DisplayLiked = () => {
     toggleLikeSong(songId);
     toast.info("Removed from Liked Songs");
   };
+
+  if (loading) {
+    return (
+      <div className='text-white pb-32 min-h-screen relative bg-gradient-to-b from-[#1b1e36] via-[#121212] to-[#121212] p-6 md:p-10 space-y-10'>
+        <AlbumHeaderSkeleton />
+        <TrackRowsSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className='text-white pb-32 min-h-screen relative bg-gradient-to-b from-[#1b1e36] via-[#121212] to-[#121212]'>

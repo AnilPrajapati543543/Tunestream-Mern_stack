@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { Plus, Search, Trash2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import API from '../api/axios'
+import { AlbumHeaderSkeleton, TrackRowsSkeleton } from './SkeletonLoaders'
 
 const DisplayPlaylist = () => {
 
@@ -94,7 +95,12 @@ const DisplayPlaylist = () => {
   }
 
   if (!playlistData) {
-    return <div className="text-white p-10">Loading Playlist...</div>
+    return (
+      <div className="p-6 md:p-10 space-y-10">
+        <AlbumHeaderSkeleton />
+        <TrackRowsSkeleton />
+      </div>
+    );
   }
 
   return (

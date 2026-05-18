@@ -6,6 +6,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import API from "../api/axios";
 import { toast } from "react-toastify";
 import { Plus, Search, Home, Library, ListMusic, User, FolderPlus, X, Check } from "lucide-react";
+import { SidebarSkeleton } from "./SkeletonLoaders";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Sidebar = () => {
     leftSidebarCollapsed: collapsed,
     setLeftSidebarCollapsed: setCollapsed,
     likedSongs,
+    loading
   } = useContext(PlayerContext);
 
   const [libSearchQuery, setLibSearchQuery] = useState("");
@@ -264,107 +266,111 @@ const Sidebar = () => {
 
         {/* LIBRARY LIST CONTAINER */}
         <div className="flex-1 overflow-y-auto mt-2 px-1 space-y-1.5 custom-scrollbar">
-          
-          {/* LIKED SONGS ITEM (PERSISTENT unless filtering Artists) */}
-          {activeFilter !== "artists" && (
-            <div 
-              onClick={() => navigate("/liked")}
-              className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
-              ${collapsed ? "justify-center" : ""}`}
-            >
-              <div className="w-10 h-10 rounded-md bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-purple-500/10 group-hover:scale-105 transition-transform duration-300">
-                <span className="text-white text-lg">♥</span>
-              </div>
-              {!collapsed && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold truncate text-white">Liked Songs</span>
-                  <span className="text-[11px] text-gray-400 font-medium">Playlist • {likedSongs.length} songs</span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* CUSTOM PLAYLISTS */}
-          {filteredPlaylists.map(playlist => (
-            <div 
-              key={playlist._id}
-              onClick={() => navigate(`/playlist/${playlist._id}`)}
-              className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
-              ${collapsed ? "justify-center" : ""}`}
-            >
-              <div className="w-10 h-10 bg-[#282828] text-emerald-500 rounded-md flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-md">
-                <ListMusic size={20} />
-              </div>
-              {!collapsed && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold truncate text-white group-hover:text-emerald-400 transition-colors">{playlist.name}</span>
-                  <span className="text-[11px] text-gray-400 font-medium">Playlist • {playlist.songs?.length || 0} songs</span>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* SONGS LIST (Standard view) */}
-          {filteredSongs.map(song => {
-            const isActive = track?._id === song._id;
-            return (
-              <div 
-                key={song._id}
-                onClick={() => playWithId(song._id)}
-                className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer transition-all group
-                ${collapsed ? "justify-center" : ""}
-                ${isActive ? "bg-emerald-500/10" : "hover:bg-[#1a1a1a]"}`}
-              >
-                <img 
-                  className={`w-10 h-10 rounded-md object-cover flex-shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-md
-                    ${isActive ? "ring-1 ring-emerald-500 shadow-emerald-500/25" : ""}`}
-                  src={song.image} 
-                  alt={song.name}
-                />
-                {!collapsed && (
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <span className={`text-sm font-bold truncate ${isActive ? "text-emerald-400" : "text-white"}`}>
-                      {song.name}
-                    </span>
-                    <span className="text-[11px] text-gray-400 font-medium truncate">
-                      Song • {song.desc || "Track"}
-                    </span>
+          {loading ? (
+            <SidebarSkeleton />
+          ) : (
+            <>
+              {/* LIKED SONGS ITEM (PERSISTENT unless filtering Artists) */}
+              {activeFilter !== "artists" && (
+                <div 
+                  onClick={() => navigate("/liked")}
+                  className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
+                  ${collapsed ? "justify-center" : ""}`}
+                >
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-purple-500/10 group-hover:scale-105 transition-transform duration-300">
+                    <span className="text-white text-lg">♥</span>
                   </div>
-                )}
-              </div>
-            );
-          })}
-
-          {/* ARTISTS LIST (When Artists chip is active) */}
-          {filteredArtists.map(artist => (
-            <div 
-              key={artist.id}
-              onClick={() => handleArtistClick(artist.name)}
-              className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
-              ${collapsed ? "justify-center" : ""}`}
-            >
-              <div className="w-10 h-10 rounded-full bg-[#282828] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden shadow-md">
-                <User size={18} className="text-gray-400" />
-              </div>
-              {!collapsed && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold truncate text-white group-hover:text-emerald-400 transition-colors">{artist.name}</span>
-                  <span className="text-[11px] text-gray-400 font-medium">Artist</span>
+                  {!collapsed && (
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold truncate text-white">Liked Songs</span>
+                      <span className="text-[11px] text-gray-400 font-medium">Playlist • {likedSongs.length} songs</span>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          ))}
 
-          {/* EMPTY STATES */}
-          {((activeFilter === "playlists" && filteredPlaylists.length === 0) ||
-            (activeFilter === "artists" && filteredArtists.length === 0) ||
-            (!activeFilter && filteredSongs.length === 0 && filteredPlaylists.length === 0)) && (
-            <div className="text-center py-8 opacity-40 flex flex-col items-center justify-center gap-2">
-              <span className="text-xl">🔍</span>
-              <p className="text-xs font-bold uppercase tracking-wider">No items found</p>
-            </div>
+              {/* CUSTOM PLAYLISTS */}
+              {filteredPlaylists.map(playlist => (
+                <div 
+                  key={playlist._id}
+                  onClick={() => navigate(`/playlist/${playlist._id}`)}
+                  className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
+                  ${collapsed ? "justify-center" : ""}`}
+                >
+                  <div className="w-10 h-10 bg-[#282828] text-emerald-500 rounded-md flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-md">
+                    <ListMusic size={20} />
+                  </div>
+                  {!collapsed && (
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold truncate text-white group-hover:text-emerald-400 transition-colors">{playlist.name}</span>
+                      <span className="text-[11px] text-gray-400 font-medium">Playlist • {playlist.songs?.length || 0} songs</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* SONGS LIST (Standard view) */}
+              {filteredSongs.map(song => {
+                const isActive = track?._id === song._id;
+                return (
+                  <div 
+                    key={song._id}
+                    onClick={() => playWithId(song._id)}
+                    className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer transition-all group
+                    ${collapsed ? "justify-center" : ""}
+                    ${isActive ? "bg-emerald-500/10" : "hover:bg-[#1a1a1a]"}`}
+                  >
+                    <img 
+                      className={`w-10 h-10 rounded-md object-cover flex-shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-md
+                        ${isActive ? "ring-1 ring-emerald-500 shadow-emerald-500/25" : ""}`}
+                      src={song.image} 
+                      alt={song.name}
+                    />
+                    {!collapsed && (
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className={`text-sm font-bold truncate ${isActive ? "text-emerald-400" : "text-white"}`}>
+                          {song.name}
+                        </span>
+                        <span className="text-[11px] text-gray-400 font-medium truncate">
+                          Song • {song.desc || "Track"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* ARTISTS LIST (When Artists chip is active) */}
+              {filteredArtists.map(artist => (
+                <div 
+                  key={artist.id}
+                  onClick={() => handleArtistClick(artist.name)}
+                  className={`flex items-center gap-3 p-1.5 rounded-md cursor-pointer hover:bg-[#1a1a1a] transition-all group
+                  ${collapsed ? "justify-center" : ""}`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#282828] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden shadow-md">
+                    <User size={18} className="text-gray-400" />
+                  </div>
+                  {!collapsed && (
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold truncate text-white group-hover:text-emerald-400 transition-colors">{artist.name}</span>
+                      <span className="text-[11px] text-gray-400 font-medium">Artist</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* EMPTY STATES */}
+              {((activeFilter === "playlists" && filteredPlaylists.length === 0) ||
+                (activeFilter === "artists" && filteredArtists.length === 0) ||
+                (!activeFilter && filteredSongs.length === 0 && filteredPlaylists.length === 0)) && (
+                <div className="text-center py-8 opacity-40 flex flex-col items-center justify-center gap-2">
+                  <span className="text-xl">🔍</span>
+                  <p className="text-xs font-bold uppercase tracking-wider">No items found</p>
+                </div>
+              )}
+            </>
           )}
-
         </div>
       </div>
     </motion.div>

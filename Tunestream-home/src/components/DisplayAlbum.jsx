@@ -6,6 +6,7 @@ import { PlayerContext } from '../context/PlayerContext'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Plus, Trash2, Search, Check } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { AlbumHeaderSkeleton, TrackRowsSkeleton } from './SkeletonLoaders'
 
 const DisplayAlbum = ({ album }) => {
 
@@ -104,7 +105,12 @@ const DisplayAlbum = ({ album }) => {
   const imageY = useTransform(scrollY, [0, 200], [0, -30])
 
   if (!albumData) {
-    return <div className="text-white p-10">Loading...</div>
+    return (
+      <div className="p-6 md:p-10 space-y-10">
+        <AlbumHeaderSkeleton />
+        <TrackRowsSkeleton />
+      </div>
+    );
   }
 
   return (
