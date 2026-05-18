@@ -13,6 +13,7 @@ const AddSong = () => {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [album, setAlbum] = useState("none");
+  const [videoUrl, setVideoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [albumData, setAlbumData] = useState([]);
@@ -38,6 +39,7 @@ const AddSong = () => {
       formData.append("album", album);
       formData.append("image", image);
       formData.append("audio", song);
+      formData.append("videoUrl", videoUrl);
 
       const response = await axios.post(`/song/add`, formData, {
         withCredentials: true,
@@ -53,6 +55,7 @@ const AddSong = () => {
         setAlbum("none");
         setImage(false);
         setSong(false);
+        setVideoUrl("");
       }
       else {
         toast.error("Something went wrong");
@@ -177,6 +180,11 @@ const AddSong = () => {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="flex flex-col gap-2 md:col-span-2">
+            <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Loop Video URL (Optional)</p>
+            <input className='premium-input' onChange={(e) => setVideoUrl(e.target.value)} value={videoUrl} type="text" placeholder='e.g. https://www.youtube.com/watch?v=... or MP4 link' />
           </div>
         </div>
 

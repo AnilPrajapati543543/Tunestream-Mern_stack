@@ -43,7 +43,7 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         {/* Home App Route */}
         <Route path="*" element={
-          <div className="h-screen flex flex-col bg-gradient-to-br from-black via-[#121212] to-black overflow-hidden">
+          <div className="h-screen flex flex-col bg-black overflow-hidden p-2 gap-2 text-white">
             <AuthModal 
               isOpen={isAuthModalOpen} 
               onClose={() => setIsAuthModalOpen(false)} 
@@ -52,18 +52,20 @@ const App = () => {
             
             <OnboardingGesture />
 
-            <div className="flex h-[90%] overflow-hidden relative">
-              <div className="hidden md:flex h-full">
+            <div className="flex flex-1 overflow-hidden gap-2 relative">
+              <div className="hidden md:flex h-full flex-shrink-0">
                 <Sidebar />
               </div>
               <Display />
-              <div className="hidden lg:flex h-full">
+              <div className="hidden lg:flex h-full flex-shrink-0">
                 <NowPlayingCard />
               </div>
             </div>
 
-            <Player />
-            <BottomNav />
+            <div className="w-full flex-shrink-0">
+              <Player />
+              <BottomNav />
+            </div>
 
             {track && <audio ref={audioRef} src={track.file} preload="auto" />}
           </div>

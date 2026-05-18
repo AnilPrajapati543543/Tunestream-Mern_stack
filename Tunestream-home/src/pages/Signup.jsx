@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import API from "../api/axios";
-import OTPInput from "../components/OTPInput";
 import { toast } from "react-toastify";
 
 const Signup = ({ switchToLogin, isModal }) => {

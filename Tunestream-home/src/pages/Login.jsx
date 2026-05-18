@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
-import OTPInput from "../components/OTPInput";
 import { toast } from "react-toastify";
 
 const Login = ({ switchToSignup, switchToForgot, isModal }) => {
+  const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
