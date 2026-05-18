@@ -428,31 +428,36 @@ const Sidebar = () => {
       className="h-full flex flex-col text-white select-none overflow-hidden"
     >
       {/* NAVIGATION BOX */}
-      <div className="bg-[#121212] rounded-lg p-4 flex flex-col gap-4 flex-shrink-0">
+      <div className="bg-[#121212] rounded-lg p-3 md:p-4 flex flex-col gap-4 flex-shrink-0">
         {/* LOGO & COLLAPSE */}
-        <div className="flex items-center justify-center">
-          {!collapsed ? (
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 cursor-pointer select-none" 
-              onClick={handleLogoClick}
-            >
-              <img className="w-8 h-8 rounded-full object-contain" src={assets.tunestream_logo} alt="logo" />
-              <span className="font-black text-lg tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Tunestream
-              </span>
-            </motion.div>
-          ) : (
-            <motion.div 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="mx-auto cursor-pointer select-none flex items-center justify-center" 
-              onClick={handleLogoClick}
-            >
-              <img className="w-8 h-8 rounded-full object-contain" src={assets.tunestream_logo} alt="logo" />
-            </motion.div>
-          )}
+        <div className={`flex items-center ${collapsed ? "justify-center" : "justify-start px-2"}`}>
+          <motion.div 
+            layout
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-3 cursor-pointer select-none" 
+            onClick={handleLogoClick}
+          >
+            <motion.img 
+              layout
+              className="w-8 h-8 rounded-full object-contain shadow-lg" 
+              src={assets.tunestream_logo} 
+              alt="logo" 
+            />
+            <AnimatePresence mode="popLayout">
+              {!collapsed && (
+                <motion.span 
+                  initial={{ opacity: 0, x: -15, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, x: -15, filter: "blur(4px)" }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="font-black text-lg md:text-xl tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent origin-left whitespace-nowrap"
+                >
+                  Tunestream
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
 
         {/* HOME BUTTON */}
@@ -461,8 +466,20 @@ const Sidebar = () => {
           className={`flex items-center gap-4 py-2 rounded-md cursor-pointer transition-colors hover:text-white text-gray-400
           ${collapsed ? "justify-center" : "px-2"}`}
         >
-          <Home size={22} className="text-gray-400 group-hover:text-white" />
-          {!collapsed && <span className="text-sm font-bold">Home</span>}
+          <Home size={22} className="text-gray-400 group-hover:text-white transition-transform hover:scale-105" />
+          <AnimatePresence mode="popLayout">
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-bold whitespace-nowrap"
+              >
+                Home
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -706,7 +723,7 @@ const Sidebar = () => {
             </div>
           ) : (
             <>
-              {leftSidebarExpanded && !collapsed ? (
+              {viewAs === "list" && leftSidebarExpanded && !collapsed ? (
                 <div className="flex flex-col w-full mt-2">
                   {/* Table Header */}
                   <div className="grid grid-cols-12 px-4 py-2 border-b border-white/5 font-bold tracking-wider text-[10px] uppercase text-gray-400">
@@ -720,11 +737,11 @@ const Sidebar = () => {
                   </div>
                 </div>
               ) : viewAs === "grid" && !collapsed ? (
-                <div className="grid grid-cols-3 gap-2.5 p-1 mt-2">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2.5 p-1 mt-2">
                   {unifiedItems.map(item => renderGridItem(item, false))}
                 </div>
               ) : viewAs === "grid-large" && !collapsed ? (
-                <div className="grid grid-cols-2 gap-3.5 p-1 mt-2">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3.5 p-1 mt-2">
                   {unifiedItems.map(item => renderGridItem(item, true))}
                 </div>
               ) : (
