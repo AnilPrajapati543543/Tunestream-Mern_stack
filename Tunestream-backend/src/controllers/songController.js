@@ -14,6 +14,28 @@ const logHistory = async (user, action, itemName, itemType) => {
   } catch (_) {}
 };
 
+// ── Helper: format URL to direct link ──────────────────────────────────────────
+const formatDirectUrl = (url) => {
+  if (!url) return url;
+  
+  let formattedUrl = url;
+
+  if (formattedUrl.startsWith('http://')) {
+      formattedUrl = formattedUrl.replace('http://', 'https://');
+  }
+
+  const gDriveMatch = formattedUrl.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);
+  if (gDriveMatch) {
+      return `https://drive.google.com/uc?export=download&id=${gDriveMatch[1]}`;
+  }
+  
+  if (formattedUrl.includes('dropbox.com')) {
+      return formattedUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('dl=0', 'dl=1');
+  }
+  
+  return formattedUrl;
+};
+
 // ADD SONG
 const addSong = async (req, res, next) => {
   try {
@@ -43,7 +65,7 @@ const addSong = async (req, res, next) => {
         audioUpload.duration % 60
       )}`;
     } else {
-      finalAudioUrl = songUrl;
+      finalAudioUrl = formatDirectUrl(songUrl);
     }
 
     if (imageFile) {
@@ -53,7 +75,7 @@ const addSong = async (req, res, next) => {
       );
       finalImageUrl = imageUpload.secure_url;
     } else if (imageUrl) {
-      finalImageUrl = imageUrl;
+      finalImageUrl = formatDirectUrl(imageUrl);
     }
 
     const songData = {
