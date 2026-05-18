@@ -37,6 +37,34 @@ const PlayerContextProvider = (props) => {
     const [leftSidebarExpanded, setLeftSidebarExpanded] = useState(false);
     const [rightSidebarExpanded, setRightSidebarExpanded] = useState(false);
 
+    const handleSetLeftSidebarCollapsed = (val) => {
+        setLeftSidebarCollapsed(val);
+        if (val) {
+            setLeftSidebarExpanded(false);
+        }
+    };
+
+    const handleSetLeftSidebarExpanded = (val) => {
+        setLeftSidebarExpanded(val);
+        if (val) {
+            setLeftSidebarCollapsed(false);
+        }
+    };
+
+    const handleSetRightSidebarCollapsed = (val) => {
+        setRightSidebarCollapsed(val);
+        if (val) {
+            setRightSidebarExpanded(false);
+        }
+    };
+
+    const handleSetRightSidebarExpanded = (val) => {
+        setRightSidebarExpanded(val);
+        if (val) {
+            setRightSidebarCollapsed(false);
+        }
+    };
+
     // LIKED SONGS STATE
     const [likedSongs, setLikedSongs] = useState(() => {
         try {
@@ -266,13 +294,13 @@ const PlayerContextProvider = (props) => {
         isAuthModalOpen,
         setIsAuthModalOpen,
         leftSidebarCollapsed,
-        setLeftSidebarCollapsed,
+        setLeftSidebarCollapsed: handleSetLeftSidebarCollapsed,
         rightSidebarCollapsed,
-        setRightSidebarCollapsed,
+        setRightSidebarCollapsed: handleSetRightSidebarCollapsed,
         leftSidebarExpanded,
-        setLeftSidebarExpanded,
+        setLeftSidebarExpanded: handleSetLeftSidebarExpanded,
         rightSidebarExpanded,
-        setRightSidebarExpanded,
+        setRightSidebarExpanded: handleSetRightSidebarExpanded,
         likedSongs,
         toggleLikeSong,
         removeFromQueue,

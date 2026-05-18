@@ -3,7 +3,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import { assets } from "../assets/assets.js";
 import { motion, AnimatePresence } from "framer-motion";
 import VolumeControl from "./VolumeControl";
-import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play, ChevronRight, Maximize2, Minimize2, Disc, Mic, MoreHorizontal, ChevronDown } from "lucide-react";
+import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play, Pause, ChevronRight, Maximize2, Minimize2, Disc, Mic, MoreHorizontal, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -11,8 +11,11 @@ const NowPlayingCard = () => {
   const {
     track,
     playStatus,
+    play,
+    pause,
     playWithId,
     playQueue,
+    progress,
     rightSidebarCollapsed: collapsed,
     setRightSidebarCollapsed: setCollapsed,
     rightSidebarExpanded,
@@ -26,6 +29,10 @@ const NowPlayingCard = () => {
   const [bgColor, setBgColor] = useState("rgba(18, 18, 18, 0.95)");
   const [followedArtists, setFollowedArtists] = useState({});
   const [scrollOffset, setScrollOffset] = useState(0);
+
+  const [spinDisc, setSpinDisc] = useState(true);
+  const [showLyrics, setShowLyrics] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   // Auto-expand on new track play if it was collapsed
   useEffect(() => {
@@ -126,6 +133,23 @@ const NowPlayingCard = () => {
     return playQueue[0]; // loop back to first song if none
   }, [track, playQueue]);
 
+  const lyricsLines = useMemo(() => {
+    return [
+      `♪ "${track?.name || 'Track'}" Playing on Tunestream ♪`,
+      "I hear the music calling my name",
+      "The rhythm flows through my veins",
+      "We trace the lights and dance in the dark",
+      "Every single beat leaves a mark",
+      "Underneath the emerald sky",
+      "With every pulse, we learn to fly",
+      "No more shadows, no more doubts",
+      "Turn it up, scream it out",
+      "This is our sound, this is our soul",
+      "Let the melody take control",
+      "♪ Tunestream Immersive Audio Experience ♪"
+    ];
+  }, [track]);
+
   if (!track || collapsed) {
     return null;
   }
@@ -161,38 +185,94 @@ const NowPlayingCard = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 relative">
             {/* Immersive Top Bar Icons */}
             <button 
-              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
-              title="Change Backdrop Aspect"
+              onClick={() => {
+                setSpinDisc(!spinDisc);
+                toast.info(spinDisc ? "Disc rotation paused" : "Disc rotation enabled");
+              }}
+              className={`p-2 rounded-full hover:bg-white/10 transition ${spinDisc ? "text-emerald-400" : "text-gray-400 hover:text-white"}`}
+              title="Toggle Disc Rotation"
             >
-              <Disc size={18} className="animate-spin-slow" />
+              <Disc size={18} className={spinDisc ? "animate-spin-slow" : ""} />
             </button>
 
-            {track.videoUrl && (
-              <button 
-                onClick={() => toast.info("Loop video active in backdrop")}
-                className="p-2 rounded-full hover:bg-white/10 text-emerald-400 transition"
-                title="Video Loop Active"
-              >
-                <Play size={18} fill="currentColor" />
-              </button>
-            )}
+            <button 
+              onClick={playStatus ? pause : play}
+              className={`p-2 rounded-full hover:bg-white/10 transition ${playStatus ? "text-emerald-400" : "text-gray-400 hover:text-white"}`}
+              title={playStatus ? "Pause Audio" : "Play Audio"}
+            >
+              {playStatus ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+            </button>
 
             <button 
-              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
+              onClick={() => {
+                setShowLyrics(!showLyrics);
+                if (showMenu) setShowMenu(false);
+              }}
+              className={`p-2 rounded-full hover:bg-white/10 transition ${showLyrics ? "text-emerald-400 bg-emerald-500/10 scale-105" : "text-gray-400 hover:text-white"}`}
               title="Lyrics View Mode"
             >
               <Mic size={18} />
             </button>
 
             <button 
-              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
+              onClick={() => {
+                setShowMenu(!showMenu);
+                if (showLyrics) setShowLyrics(false);
+              }}
+              className={`p-2 rounded-full hover:bg-white/10 transition relative ${showMenu ? "text-emerald-400 bg-emerald-500/10 scale-105" : "text-gray-400 hover:text-white"}`}
               title="More Actions"
             >
               <MoreHorizontal size={18} />
             </button>
+
+            {/* Actions Menu Dropdown Popover */}
+            <AnimatePresence>
+              {showMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                  className="absolute right-12 top-12 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2.5 rounded-2xl w-56 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto"
+                >
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      toast.info("Create or select playlist in library to add");
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                  >
+                    <Plus size={14} className="text-emerald-400" />
+                    <span>Add to Playlist</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success("Tunestream track link copied to clipboard!");
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                  >
+                    <Sparkles size={14} className="text-emerald-400" />
+                    <span>Copy Share Link</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      toast.success(`"${track.name}" pinned to your active player queue!`);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                  >
+                    <Disc size={14} className="text-emerald-400 animate-spin-slow" />
+                    <span>Pin to Player Queue</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Minimize / Full Screen Toggle */}
             <button
@@ -215,42 +295,65 @@ const NowPlayingCard = () => {
         </div>
 
         {/* SECTION 1: IMMERSIVE COVER HERO */}
-        <div 
-          className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 select-none z-10 sticky top-[80px] pointer-events-none"
-          style={{
-            transform: `scale(${scale}) translateY(${translateY}px)`,
-            filter: `brightness(${brightness})`,
-            opacity: coverOpacity,
-            transition: "transform 0.05s ease-out, filter 0.05s ease-out, opacity 0.05s ease-out"
-          }}
-        >
-          <div className="relative group flex flex-col items-center">
-            {/* Pulsing visual glow backdrop */}
-            <div className="absolute inset-0 bg-emerald-500/20 rounded-2xl filter blur-2xl scale-95 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            
-            <img 
-              src={track.image} 
-              className="w-72 h-72 md:w-[360px] md:h-[360px] object-cover rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.95)] border border-white/10 group-hover:scale-[1.02] transition-transform duration-500 z-10 pointer-events-auto"
-              alt={track.name} 
-            />
-          </div>
-
-          <h1 className="text-3xl md:text-5xl font-black mt-8 tracking-tight text-center truncate max-w-4xl hover:text-emerald-400 transition-colors z-10 pointer-events-auto">
-            {track.name}
-          </h1>
-          <p className="text-sm md:text-lg text-emerald-400 font-bold mt-2 text-center tracking-wide z-10 pointer-events-auto">
-            {track.desc || "Main Artist"}
-          </p>
-
-          {/* Bouncing Scroll Down helper */}
+        {!showLyrics ? (
           <div 
-            className="absolute bottom-8 flex flex-col items-center gap-1 opacity-50 animate-bounce"
-            style={{ opacity: Math.max(1 - scrollOffset / 100, 0) }}
+            className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 select-none z-10 sticky top-[80px] pointer-events-none"
+            style={{
+              transform: `scale(${scale}) translateY(${translateY}px)`,
+              filter: `brightness(${brightness})`,
+              opacity: coverOpacity,
+              transition: "transform 0.05s ease-out, filter 0.05s ease-out, opacity 0.05s ease-out"
+            }}
           >
-            <span className="text-[9px] uppercase font-black tracking-widest text-gray-400">Scroll down for details</span>
-            <ChevronDown size={14} className="text-gray-400" />
+            <div className="relative group flex flex-col items-center">
+              {/* Pulsing visual glow backdrop */}
+              <div className="absolute inset-0 bg-emerald-500/20 rounded-2xl filter blur-2xl scale-95 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              
+              <img 
+                src={track.image} 
+                className="w-72 h-72 md:w-[360px] md:h-[360px] object-cover rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.95)] border border-white/10 group-hover:scale-[1.02] transition-transform duration-500 z-10 pointer-events-auto"
+                alt={track.name} 
+              />
+            </div>
+
+            <h1 className="text-3xl md:text-5xl font-black mt-8 tracking-tight text-center truncate max-w-4xl hover:text-emerald-400 transition-colors z-10 pointer-events-auto">
+              {track.name}
+            </h1>
+            <p className="text-sm md:text-lg text-emerald-400 font-bold mt-2 text-center tracking-wide z-10 pointer-events-auto">
+              {track.desc || "Main Artist"}
+            </p>
+
+            {/* Bouncing Scroll Down helper */}
+            <div 
+              className="absolute bottom-8 flex flex-col items-center gap-1 opacity-50 animate-bounce"
+              style={{ opacity: Math.max(1 - scrollOffset / 100, 0) }}
+            >
+              <span className="text-[9px] uppercase font-black tracking-widest text-gray-400">Scroll down for details</span>
+              <ChevronDown size={14} className="text-gray-400" />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 z-10 sticky top-[80px] text-center w-full">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-2xl w-full flex flex-col gap-6 overflow-y-auto max-h-[70vh] px-4 py-10 scrollbar-hide"
+            >
+              {lyricsLines.map((line, idx) => (
+                <p 
+                  key={idx} 
+                  className="text-xl md:text-3xl font-black transition-all duration-300 hover:text-emerald-300 select-none cursor-pointer"
+                  style={{
+                    color: idx === Math.floor(progress / 8) % lyricsLines.length ? "#10b981" : "rgba(255,255,255,0.3)",
+                    textShadow: idx === Math.floor(progress / 8) % lyricsLines.length ? "0 0 20px rgba(16,185,129,0.6)" : "none"
+                  }}
+                >
+                  {line}
+                </p>
+              ))}
+            </motion.div>
+          </div>
+        )}
 
         {/* SECTION 2: DETAILS FLOATING PANELS */}
         <div className="w-full py-16 px-8 flex flex-col md:flex-row items-stretch justify-center gap-8 bg-black/35 backdrop-blur-3xl border-t border-white/5 relative z-20 min-h-[480px] shadow-[0_-30px_60px_rgba(0,0,0,0.85)] mt-[80px]">

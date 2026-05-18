@@ -130,7 +130,42 @@ const Report = () => {
   };
 
   if (loading) {
-    return <div className="text-center p-10">Loading history...</div>;
+    return (
+      <div className="flex flex-col gap-8 h-full animate-pulse">
+        <div className="flex justify-between items-end">
+          <div className="flex flex-col gap-2">
+            <div className="h-8 bg-white/10 rounded-lg w-48" />
+            <div className="h-4 bg-white/5 rounded-full w-96 mt-1" />
+          </div>
+          <div className="w-36 h-10 bg-white/10 rounded-full" />
+        </div>
+
+        <div className="bg-[var(--surface-color)] border border-[var(--border-color)] p-6 rounded-[2rem] flex flex-col gap-4">
+          <div className="h-4 bg-white/10 rounded-full w-24" />
+          <div className="flex flex-wrap gap-2">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="w-24 h-8 bg-white/5 rounded-xl" />
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pr-2">
+          <div className="flex flex-col gap-8 p-8 rounded-[2.5rem] bg-[var(--surface-color)]/50 border border-[var(--border-color)]">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-white/10" />
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="h-4 bg-white/10 rounded-full w-48" />
+                <div className="h-3 bg-white/5 rounded-full w-24" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="h-4 bg-white/10 rounded-full w-36" />
+              <div className="h-32 bg-white/5 rounded-2xl w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

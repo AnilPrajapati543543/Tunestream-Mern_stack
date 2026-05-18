@@ -48,7 +48,7 @@ const App = () => {
               isOpen={isAuthModalOpen} 
               onClose={() => setIsAuthModalOpen(false)} 
             />
-            <ToastContainer theme="dark" position="bottom-right" />
+            <ToastContainer theme="dark" position="top-center" autoClose={3000} />
             
             <OnboardingGesture />
 

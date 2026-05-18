@@ -52,8 +52,32 @@ const LinkedUsers = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-10 h-10 border-4 border-[var(--accent-color)]/20 border-t-[var(--accent-color)] rounded-full animate-spin"></div>
+      <div className="flex flex-col gap-8 h-full animate-pulse">
+        <div className="flex flex-col gap-2">
+          <div className="h-8 bg-white/10 rounded-lg w-48" />
+          <div className="h-4 bg-white/5 rounded-full w-96 mt-1" />
+        </div>
+        <div className="flex-1 overflow-y-auto pr-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-[var(--surface-color)] border border-[var(--border-color)] p-6 rounded-[2rem] flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-white/10 rounded-full w-2/3" />
+                    <div className="h-3 bg-white/5 rounded-full w-1/2" />
+                  </div>
+                </div>
+                <div className="h-10 bg-white/5 rounded-xl w-full" />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="h-12 bg-white/5 rounded-2xl" />
+                  <div className="h-12 bg-white/5 rounded-2xl" />
+                </div>
+                <div className="h-12 bg-white/10 rounded-2xl w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

@@ -9,15 +9,19 @@ const ListSong = () => {
 
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchSongs = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("/song/list");
       if (response.data.success) {
         setData(response.data.songs)
       }
     } catch (error) {
       toast.error("Error occur");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -76,7 +80,22 @@ const ListSong = () => {
 
           {/* Table Body - Independent Scroll Area */}
           <div className="flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-320px)] pr-2 custom-scrollbar">
-            {filteredSongs.length === 0 ? (
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <div 
+                  key={i}
+                  className="grid grid-cols-[80px_2fr_1.5fr_1fr_80px] items-center gap-4 px-6 py-3 bg-[var(--surface-color)] border border-[var(--border-color)] rounded-xl animate-pulse"
+                >
+                  <div className="w-12 h-12 bg-white/10 rounded-lg" />
+                  <div className="h-4 bg-white/10 rounded-full w-2/3" />
+                  <div className="h-4 bg-white/5 rounded-full w-1/2" />
+                  <div className="h-4 bg-white/5 rounded-full w-1/3" />
+                  <div className="flex justify-center">
+                    <div className="w-8 h-8 rounded-full bg-white/10" />
+                  </div>
+                </div>
+              ))
+            ) : filteredSongs.length === 0 ? (
               <div className="text-center py-20 text-[var(--text-secondary)] opacity-50">
                 <p className="text-4xl mb-4">🎵</p>
                 <p>{searchTerm ? "No songs match your search." : "No songs found. Start by adding one!"}</p>

@@ -43,7 +43,7 @@ const App = () => {
   if (!user || user.role !== 'admin') {
     return (
       <>
-        <ToastContainer />
+        <ToastContainer position="top-center" autoClose={3000} />
         <Routes>
           <Route path="/login" element={<AdminLogin />} />
           <Route path="/signup" element={<AdminSignup />} />
@@ -57,7 +57,7 @@ const App = () => {
 
   return (
     <div className={`h-screen flex transition-colors duration-300 overflow-hidden ${darkMode ? 'dark' : ''}`}>
-      <ToastContainer theme={darkMode ? "dark" : "light"} />
+      <ToastContainer theme={darkMode ? "dark" : "light"} position="top-center" autoClose={3000} />
 
       <Sidebar darkMode={darkMode} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 

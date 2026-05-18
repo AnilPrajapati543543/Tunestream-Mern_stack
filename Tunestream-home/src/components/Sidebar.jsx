@@ -37,6 +37,15 @@ const Sidebar = () => {
   const [viewAs, setViewAs] = useState("list");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
+  const handleLogoClick = () => {
+    if (leftSidebarExpanded) {
+      setLeftSidebarExpanded(false);
+      setCollapsed(false);
+    } else {
+      setCollapsed(!collapsed);
+    }
+  };
+
   // Extract unique artists from song descriptions/metadata
   const uniqueArtists = useMemo(() => {
     const artistSet = new Set();
@@ -421,31 +430,29 @@ const Sidebar = () => {
       {/* NAVIGATION BOX */}
       <div className="bg-[#121212] rounded-lg p-4 flex flex-col gap-4 flex-shrink-0">
         {/* LOGO & COLLAPSE */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           {!collapsed ? (
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 cursor-pointer select-none" 
+              onClick={handleLogoClick}
+            >
               <img className="w-8 h-8 rounded-full object-contain" src={assets.tunestream_logo} alt="logo" />
               <span className="font-black text-lg tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 Tunestream
               </span>
-            </div>
+            </motion.div>
           ) : (
-            <div className="mx-auto cursor-pointer" onClick={() => navigate("/")}>
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="mx-auto cursor-pointer select-none flex items-center justify-center" 
+              onClick={handleLogoClick}
+            >
               <img className="w-8 h-8 rounded-full object-contain" src={assets.tunestream_logo} alt="logo" />
-            </div>
+            </motion.div>
           )}
-          
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-full hover:bg-[#282828] text-gray-400 hover:text-white transition-colors"
-          >
-            <motion.img 
-              className="w-4" 
-              src={assets.arrow_icon} 
-              animate={{ rotate: collapsed ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            />
-          </button>
         </div>
 
         {/* HOME BUTTON */}
