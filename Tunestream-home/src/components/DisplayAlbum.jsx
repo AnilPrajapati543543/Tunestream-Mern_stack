@@ -60,7 +60,7 @@ const DisplayAlbum = ({ album }) => {
     toast.success("Song added to album!");
   };
 
-  const { playWithId, albumsData, songsData, track: currentSong } = useContext(PlayerContext)
+  const { playWithId, albumsData, songsData, track: currentSong, playStatus } = useContext(PlayerContext)
 
   useEffect(() => {
     if (albumsData.length > 0) {

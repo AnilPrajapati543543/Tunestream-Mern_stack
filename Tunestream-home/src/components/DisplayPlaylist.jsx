@@ -19,7 +19,7 @@ const DisplayPlaylist = () => {
   const [showConfirm, setShowConfirm] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
-  const { playWithId, playlists, setPlaylists, songsData, track: currentSong } = useContext(PlayerContext)
+  const { playWithId, playlists, setPlaylists, songsData, track: currentSong, playStatus } = useContext(PlayerContext)
 
   const handleAddSong = async (songId) => {
     try {
@@ -254,7 +254,7 @@ const DisplayPlaylist = () => {
                   </motion.button>
 
                   <div className="w-10 text-right">
-                    {isPlaying ? (
+                    {isPlaying && playStatus ? (
                       <div className="flex gap-[2px] h-3 items-end justify-end">
                         <div className="w-[2px] h-full bg-emerald-500 animate-bounce" style={{ animationDuration: '0.6s' }} />
                         <div className="w-[2px] h-[60%] bg-emerald-500 animate-bounce" style={{ animationDuration: '0.4s' }} />
