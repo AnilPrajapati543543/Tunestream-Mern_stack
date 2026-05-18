@@ -33,6 +33,10 @@ const PlayerContextProvider = (props) => {
     const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
     const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
 
+    // SIDEBAR EXPAND/FULL-WIDTH STATES
+    const [leftSidebarExpanded, setLeftSidebarExpanded] = useState(false);
+    const [rightSidebarExpanded, setRightSidebarExpanded] = useState(false);
+
     // LIKED SONGS STATE
     const [likedSongs, setLikedSongs] = useState(() => {
         try {
@@ -265,6 +269,10 @@ const PlayerContextProvider = (props) => {
         setLeftSidebarCollapsed,
         rightSidebarCollapsed,
         setRightSidebarCollapsed,
+        leftSidebarExpanded,
+        setLeftSidebarExpanded,
+        rightSidebarExpanded,
+        setRightSidebarExpanded,
         likedSongs,
         toggleLikeSong,
         removeFromQueue,

@@ -24,7 +24,7 @@ const ArtistRedirect = () => {
 };
 
 const App = () => {
-  const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen } = useContext(PlayerContext);
+  const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen, leftSidebarExpanded, rightSidebarExpanded } = useContext(PlayerContext);
   const { user, loading: authLoading } = useAuth();
 
   if (authLoading) return (
@@ -53,11 +53,13 @@ const App = () => {
             <OnboardingGesture />
 
             <div className="flex flex-1 overflow-hidden gap-2 relative">
-              <div className="hidden md:flex h-full flex-shrink-0">
-                <Sidebar />
-              </div>
-              <Display />
-              <div className="hidden lg:flex h-full flex-shrink-0">
+              {!rightSidebarExpanded && (
+                <div className={`hidden md:flex h-full ${leftSidebarExpanded ? 'flex-1' : 'flex-shrink-0'}`}>
+                  <Sidebar />
+                </div>
+              )}
+              {!leftSidebarExpanded && !rightSidebarExpanded && <Display />}
+              <div className={`hidden lg:flex h-full ${rightSidebarExpanded ? 'flex-1' : 'flex-shrink-0'}`}>
                 <NowPlayingCard />
               </div>
             </div>

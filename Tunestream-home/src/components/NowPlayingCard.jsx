@@ -3,7 +3,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import { assets } from "../assets/assets.js";
 import { motion, AnimatePresence } from "framer-motion";
 import VolumeControl from "./VolumeControl";
-import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play } from "lucide-react";
+import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play, ChevronRight, Maximize2, Minimize2, Disc, Mic, MoreHorizontal, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +15,8 @@ const NowPlayingCard = () => {
     playQueue,
     rightSidebarCollapsed: collapsed,
     setRightSidebarCollapsed: setCollapsed,
+    rightSidebarExpanded,
+    setRightSidebarExpanded,
     likedSongs,
     toggleLikeSong
   } = useContext(PlayerContext);
@@ -23,6 +25,7 @@ const NowPlayingCard = () => {
 
   const [bgColor, setBgColor] = useState("rgba(18, 18, 18, 0.95)");
   const [followedArtists, setFollowedArtists] = useState({});
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   // Auto-expand on new track play if it was collapsed
   useEffect(() => {
@@ -127,7 +130,214 @@ const NowPlayingCard = () => {
     return null;
   }
 
-  // Parse YouTube video ID if YouTube link is supplied
+  const renderFullScreenPlayer = () => {
+    const scale = Math.max(1 - scrollOffset / 1200, 0.75);
+    const translateY = scrollOffset * 0.22;
+    const brightness = Math.max(1 - scrollOffset / 350, 0.2);
+    const coverOpacity = Math.max(1 - scrollOffset / 550, 0.08);
+
+    return (
+      <div 
+        onScroll={(e) => setScrollOffset(e.target.scrollTop)}
+        className="w-full h-full flex flex-col relative overflow-y-auto custom-scrollbar scroll-smooth"
+        style={{
+          background: `radial-gradient(circle at center, ${bgColor} 0%, #080808 100%)`
+        }}
+      >
+        {/* Large Blurred Backdrop Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center filter blur-3xl opacity-20 scale-110 z-0 pointer-events-none"
+          style={{ backgroundImage: `url(${track.image})` }}
+        />
+
+        {/* HEADER SECTION */}
+        <div className="p-6 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#080808]/40 backdrop-blur-md z-20">
+          <div className="flex flex-col min-w-0">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+              Playing from
+            </span>
+            <span className="text-sm font-black truncate text-white mt-0.5">
+              {track.album !== "none" ? track.album : "Tunestream Playlist"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Immersive Top Bar Icons */}
+            <button 
+              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
+              title="Change Backdrop Aspect"
+            >
+              <Disc size={18} className="animate-spin-slow" />
+            </button>
+
+            {track.videoUrl && (
+              <button 
+                onClick={() => toast.info("Loop video active in backdrop")}
+                className="p-2 rounded-full hover:bg-white/10 text-emerald-400 transition"
+                title="Video Loop Active"
+              >
+                <Play size={18} fill="currentColor" />
+              </button>
+            )}
+
+            <button 
+              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
+              title="Lyrics View Mode"
+            >
+              <Mic size={18} />
+            </button>
+
+            <button 
+              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
+              title="More Actions"
+            >
+              <MoreHorizontal size={18} />
+            </button>
+
+            {/* Minimize / Full Screen Toggle */}
+            <button
+              onClick={() => setRightSidebarExpanded(false)}
+              className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition active:scale-95"
+              title="Exit Full Screen"
+            >
+              <Minimize2 size={18} />
+            </button>
+
+            {/* Collapse Sidebar Entirely */}
+            <button
+              onClick={() => setCollapsed(true)}
+              className="p-2 rounded-full hover:bg-white/10 text-emerald-400 hover:text-emerald-300 hover:scale-105 active:scale-95 transition-all"
+              title="Collapse Sidebar"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* SECTION 1: IMMERSIVE COVER HERO */}
+        <div 
+          className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 select-none z-10 sticky top-[80px] pointer-events-none"
+          style={{
+            transform: `scale(${scale}) translateY(${translateY}px)`,
+            filter: `brightness(${brightness})`,
+            opacity: coverOpacity,
+            transition: "transform 0.05s ease-out, filter 0.05s ease-out, opacity 0.05s ease-out"
+          }}
+        >
+          <div className="relative group flex flex-col items-center">
+            {/* Pulsing visual glow backdrop */}
+            <div className="absolute inset-0 bg-emerald-500/20 rounded-2xl filter blur-2xl scale-95 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            
+            <img 
+              src={track.image} 
+              className="w-72 h-72 md:w-[360px] md:h-[360px] object-cover rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.95)] border border-white/10 group-hover:scale-[1.02] transition-transform duration-500 z-10 pointer-events-auto"
+              alt={track.name} 
+            />
+          </div>
+
+          <h1 className="text-3xl md:text-5xl font-black mt-8 tracking-tight text-center truncate max-w-4xl hover:text-emerald-400 transition-colors z-10 pointer-events-auto">
+            {track.name}
+          </h1>
+          <p className="text-sm md:text-lg text-emerald-400 font-bold mt-2 text-center tracking-wide z-10 pointer-events-auto">
+            {track.desc || "Main Artist"}
+          </p>
+
+          {/* Bouncing Scroll Down helper */}
+          <div 
+            className="absolute bottom-8 flex flex-col items-center gap-1 opacity-50 animate-bounce"
+            style={{ opacity: Math.max(1 - scrollOffset / 100, 0) }}
+          >
+            <span className="text-[9px] uppercase font-black tracking-widest text-gray-400">Scroll down for details</span>
+            <ChevronDown size={14} className="text-gray-400" />
+          </div>
+        </div>
+
+        {/* SECTION 2: DETAILS FLOATING PANELS */}
+        <div className="w-full py-16 px-8 flex flex-col md:flex-row items-stretch justify-center gap-8 bg-black/35 backdrop-blur-3xl border-t border-white/5 relative z-20 min-h-[480px] shadow-[0_-30px_60px_rgba(0,0,0,0.85)] mt-[80px]">
+          
+          {/* LEFT COLUMN: CREDITS CARD */}
+          <div className="bg-[#181818]/60 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-2xl w-full max-w-lg flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b border-white/5 pb-3">
+              <h2 className="text-lg font-black text-white tracking-wide">Credits</h2>
+              <span className="text-xs font-bold text-gray-400 hover:text-white cursor-pointer transition">Show all</span>
+            </div>
+            
+            <div className="flex flex-col gap-4">
+              {creditsList.map((artist, idx) => {
+                const isFollowing = followedArtists[artist.name];
+                return (
+                  <div key={idx} className="flex justify-between items-center gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-[#282828] flex items-center justify-center overflow-hidden shadow-md">
+                        <img 
+                          src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=150&auto=format&fit=crop&q=60" 
+                          className="w-full h-full object-cover" 
+                          alt={artist.name} 
+                        />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-white truncate hover:text-emerald-400 cursor-pointer transition" onClick={() => navigate(`/?search=${encodeURIComponent(artist.name)}`)}>
+                          {artist.name}
+                        </span>
+                        <span className="text-xs text-gray-400 font-medium truncate mt-0.5">
+                          {artist.role}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => toggleFollow(artist.name)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition active:scale-95
+                        ${isFollowing 
+                          ? "border border-emerald-500 text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10" 
+                          : "border border-white/20 text-white hover:border-white hover:bg-white/5"}`}
+                    >
+                      {isFollowing ? "Following" : "Follow"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: NEXT IN QUEUE CARD */}
+          {nextTrack && (
+            <div className="bg-[#181818]/60 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-2xl w-full max-w-lg flex flex-col gap-4">
+              <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                <h2 className="text-lg font-black text-white tracking-wide">Next in queue</h2>
+                <span 
+                  onClick={() => navigate("/queue")}
+                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 cursor-pointer transition"
+                >
+                  Open queue
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 transition group cursor-pointer" onClick={() => playWithId(nextTrack._id)}>
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden shadow-lg flex-shrink-0">
+                  <img src={nextTrack.image} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt={nextTrack.name} />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <Play size={16} fill="white" className="text-white ml-0.5" />
+                  </div>
+                </div>
+                
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-sm font-bold text-white truncate group-hover:text-emerald-400 transition-colors">
+                    {nextTrack.name}
+                  </span>
+                  <span className="text-xs text-gray-400 truncate mt-1 font-medium">
+                    {nextTrack.desc || "Track"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+    );
+  };
+
   const getYouTubeId = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -142,17 +352,20 @@ const NowPlayingCard = () => {
       <motion.div
         key="right-now-playing"
         initial={{ width: 0, opacity: 0 }}
-        animate={{ width: 300, opacity: 1 }}
+        animate={{ width: rightSidebarExpanded ? "100%" : 300, opacity: 1 }}
         exit={{ width: 0, opacity: 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="h-full flex-shrink-0 flex overflow-hidden select-none"
       >
-        <div
-          className="w-full h-full rounded-lg flex flex-col text-white overflow-y-auto custom-scrollbar border border-white/5 relative"
-          style={{
-            background: `linear-gradient(180deg, ${bgColor} 0%, #121212 100%)`,
-          }}
-        >
+        {rightSidebarExpanded ? (
+          renderFullScreenPlayer()
+        ) : (
+          <div
+            className="w-full h-full rounded-lg flex flex-col text-white overflow-y-auto custom-scrollbar border border-white/5 relative"
+            style={{
+              background: `linear-gradient(180deg, ${bgColor} 0%, #121212 100%)`,
+            }}
+          >
           {/* HEADER SECTION */}
           <div className="p-4 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#121212]/30 backdrop-blur-md z-10">
             <div className="flex flex-col min-w-0">
@@ -163,12 +376,25 @@ const NowPlayingCard = () => {
                 {track.album !== "none" ? track.album : "Tunestream Playlist"}
               </span>
             </div>
-            <button
-              onClick={() => setCollapsed(true)}
-              className="p-1.5 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition"
-            >
-              <X size={16} />
-            </button>
+            <div className="flex items-center gap-1.5">
+              {/* Full Width / Expand Toggle */}
+              <button
+                onClick={() => setRightSidebarExpanded(!rightSidebarExpanded)}
+                className="p-1.5 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                title={rightSidebarExpanded ? "Collapse Sidebar Width" : "Expand Sidebar Width"}
+              >
+                {rightSidebarExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+              </button>
+
+              {/* Collapse Sidebar Entirely Toggle */}
+              <button
+                onClick={() => setCollapsed(true)}
+                className="p-1.5 rounded-full hover:bg-white/10 text-emerald-400 hover:text-emerald-300 hover:scale-105 active:scale-95 transition-all"
+                title="Collapse Sidebar"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
 
           {/* MAIN CANVAS VISUAL (Loop Video or pulsing Image) */}
@@ -341,6 +567,7 @@ const NowPlayingCard = () => {
             </div>
           )}
         </div>
+      )}
       </motion.div>
     </AnimatePresence>
   );
