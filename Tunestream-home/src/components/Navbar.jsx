@@ -69,6 +69,7 @@ const Navbar = () => {
               Sign up
             </button>
             <button 
+              id="onboarding-login-btn"
               onClick={() => setIsAuthModalOpen(true)}
               className="px-4 sm:px-6 md:px-8 py-1.5 sm:py-2 md:py-2.5 bg-white text-black rounded-full font-bold text-[10px] sm:text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-lg"
             >
@@ -79,7 +80,15 @@ const Navbar = () => {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="relative">
+      <div className="flex items-center gap-3 relative">
+        <button 
+          id="onboarding-admin-portal"
+          onClick={() => window.open(import.meta.env.VITE_ADMIN_URL || "https://www-tunestream-admin.vercel.app", "_blank")}
+          className="items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold hover:bg-emerald-500 hover:text-black transition-all hidden sm:flex"
+        >
+          <span>Creator Portal</span>
+        </button>
+
         {user ? (
           <button
             onClick={handleLogout}

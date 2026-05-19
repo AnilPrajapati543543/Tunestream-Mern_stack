@@ -75,6 +75,24 @@ const NowPlayingCard = () => {
     }
   };
 
+  // Auto-close menu when sidebar expand/collapse changes
+  useEffect(() => {
+    setShowMenu(false);
+  }, [rightSidebarExpanded]);
+
+  // Click outside menu handler
+  useEffect(() => {
+    if (!showMenu) return;
+    const handleClickOutside = (e) => {
+      const isDropdownClick = e.target.closest(".menu-dropdown") || e.target.closest('[title="More Actions"]');
+      if (!isDropdownClick) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showMenu]);
+
   // Generate background color based on the current track image
   useEffect(() => {
     if (!track?.image) return;
@@ -248,7 +266,7 @@ const NowPlayingCard = () => {
                   initial={{ opacity: 0, scale: 0.9, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                  className="absolute right-12 top-12 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2.5 rounded-2xl w-56 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto"
+                  className="menu-dropdown absolute right-12 top-12 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2.5 rounded-2xl w-56 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto"
                 >
                   <button
                     onClick={() => {
@@ -546,7 +564,7 @@ const NowPlayingCard = () => {
                     initial={{ opacity: 0, scale: 0.95, y: 5 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 5 }}
-                    className="absolute right-0 top-9 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2 rounded-2xl w-48 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto text-left"
+                    className="menu-dropdown absolute right-0 top-9 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2 rounded-2xl w-48 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto text-left"
                   >
                     <button
                       onClick={() => {

@@ -26,12 +26,12 @@ const HorizontalSection = ({ title, data, renderItem }) => {
   if (!data || data.length === 0) return null;
 
   return (
-    <section className="mb-6 md:mb-10 relative group">
+    <section className="mb-6 md:mb-10 relative group/section">
       {/* Title + Buttons */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl md:text-2xl font-black tracking-tight hover:underline cursor-pointer">{title}</h1>
 
-        <div className="hidden md:flex gap-2 opacity-0 group-hover:opacity-100 transition duration-300">
+        <div className="hidden md:flex gap-2 opacity-0 group-hover/section:opacity-100 transition duration-300">
           <button
             onClick={() => scroll("left")}
             className="p-1.5 bg-[#181818] hover:bg-[#282828] text-gray-400 hover:text-white rounded-full transition"
@@ -64,6 +64,7 @@ const HorizontalSection = ({ title, data, renderItem }) => {
         {data.map((item, index) => (
           <div
             key={index}
+            id={index === 0 && title === "Featured Charts" ? "onboarding-album-card" : undefined}
             className="flex-shrink-0 snap-start"
           >
             {renderItem(item)}
@@ -230,9 +231,8 @@ const DisplayHome = () => {
                     )}
 
                     {/* Meta */}
-                    <div className="pl-3 md:pl-4 pr-1 md:pr-2 py-1.5 md:py-2 overflow-hidden flex-1 min-w-0 flex flex-col justify-center">
-                      <p className="text-xs md:text-sm font-black text-white leading-tight tracking-tight line-clamp-2 whitespace-normal">{tile.name}</p>
-                      <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 hidden md:block">{tile.desc || "Playlist"}</p>
+                    <div className="pl-3 md:pl-4 pr-1 md:pr-2 overflow-hidden flex-1 min-w-0 flex flex-col justify-center">
+                      <p className="text-xs md:text-sm font-black text-white leading-tight tracking-tight line-clamp-2">{tile.name}</p>
                     </div>
 
                     {/* Floating Play Button */}

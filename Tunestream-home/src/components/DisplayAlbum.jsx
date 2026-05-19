@@ -60,7 +60,7 @@ const DisplayAlbum = ({ album }) => {
     toast.success("Song added to album!");
   };
 
-  const { playWithId, albumsData, songsData, track: currentSong, playStatus } = useContext(PlayerContext)
+  const { playWithId, albumsData, songsData, track: currentSong, playStatus, play, pause } = useContext(PlayerContext)
 
   useEffect(() => {
     if (albumsData.length > 0) {
@@ -195,12 +195,22 @@ const DisplayAlbum = ({ album }) => {
                 return (
                   <motion.div
                     key={item._id}
-                    onClick={() => playWithId(item._id, albumSongs)}
+                    onClick={() => {
+                      if (isPlaying) {
+                        if (playStatus) {
+                          pause();
+                        } else {
+                          play();
+                        }
+                      } else {
+                        playWithId(item._id, albumSongs);
+                      }
+                    }}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03 }}
                     className={`
-                      grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-2 p-2 md:p-3 items-center rounded-xl cursor-pointer transition-all group
+                      grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-2 p-2 md:p-3 items-center rounded-xl cursor-pointer transition-all group/row
                       ${isPlaying
                         ? "bg-white/10 shadow-lg"
                         : "hover:bg-white/5"}
@@ -208,8 +218,15 @@ const DisplayAlbum = ({ album }) => {
                   >
                     {/* Title */}
                     <div className='flex items-center col-span-2 md:col-span-1 overflow-hidden'>
-                      <span className='mr-4 w-4 text-gray-500 font-bold text-xs hidden sm:inline'>
-                        {index + 1}
+                      <span className='mr-4 w-4 text-gray-500 font-bold text-xs hidden sm:flex items-center justify-center relative'>
+                        <span className="group-hover/row:hidden">{index + 1}</span>
+                        <span className="hidden group-hover/row:inline text-emerald-400">
+                          {isPlaying && playStatus ? (
+                            <span className="text-[10px] font-bold">II</span>
+                          ) : (
+                            <span className="text-[10px] font-bold">▶</span>
+                          )}
+                        </span>
                       </span>
 
                       <div className='relative flex-shrink-0'>
@@ -238,7 +255,7 @@ const DisplayAlbum = ({ album }) => {
                       {/* Remove song from Album button */}
                       <button
                         onClick={(e) => handleRemoveTrack(e, item._id)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition flex-shrink-0"
+                        className="opacity-0 group-hover/row:opacity-100 p-1.5 rounded-full hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition flex-shrink-0"
                         title="Remove from album"
                       >
                         <Trash2 size={13} />
@@ -259,62 +276,6 @@ const DisplayAlbum = ({ album }) => {
                   </motion.div>
                 );
               })}
-
-              {/* ── ADD SONGS RECOMMENDATIONS DRAWER ── */}
-              <div className='mt-12 pt-8 border-t border-white/5'>
-                <div className='mb-6'>
-                  <h3 className='text-xl font-black text-white'>Let's add some songs to your album</h3>
-                  <p className='text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider'>Search and expand your customized album layout</p>
-                </div>
-
-                {/* Search Input Box */}
-                <div className='relative w-full max-w-md mb-6'>
-                  <Search size={16} className='absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500' />
-                  <input 
-                    type="text"
-                    placeholder="Search for available songs..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='w-full bg-[#181818] border border-white/5 rounded-full pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-gray-500'
-                  />
-                </div>
-
-                {/* Recommended list */}
-                <div className='space-y-1.5 max-h-[300px] overflow-y-auto custom-scrollbar pr-2'>
-                  {(() => {
-                    const albumSongIds = albumSongs.map(s => s._id);
-                    const availableSongs = songsData
-                      .filter(song => !albumSongIds.includes(song._id) && song.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-                    if (availableSongs.length === 0) {
-                      return <p className='text-xs text-gray-500 italic p-4'>No matching songs found in Tunestream library.</p>;
-                    }
-
-                    return availableSongs.map(song => (
-                      <div 
-                        key={song._id}
-                        className='flex items-center justify-between p-2.5 bg-[#181818]/40 hover:bg-[#181818]/80 border border-white/5 rounded-xl transition duration-150'
-                      >
-                        <div className='flex items-center gap-3 min-w-0'>
-                          <img src={song.image} className='w-9 h-9 rounded object-cover flex-shrink-0' />
-                          <div className='min-w-0'>
-                            <p className='text-xs font-bold text-white truncate'>{song.name}</p>
-                            <p className='text-[10px] text-gray-400 truncate mt-0.5'>{song.desc || 'Available Track'}</p>
-                          </div>
-                        </div>
-                        
-                        <button
-                          onClick={() => handleAddTrack(song._id)}
-                          className='flex items-center gap-1.5 px-4 py-1.5 bg-[#282828] hover:bg-[#333] border border-white/10 text-white rounded-full text-xs font-black transition active:scale-95'
-                        >
-                          <Plus size={12} className='text-emerald-400' />
-                          <span>Add</span>
-                        </button>
-                      </div>
-                    ));
-                  })()}
-                </div>
-              </div>
             </>
           );
         })()}

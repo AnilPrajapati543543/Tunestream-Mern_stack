@@ -15,7 +15,9 @@ const DisplayLiked = () => {
     playWithId,
     track: currentSong,
     playStatus,
-    loading
+    loading,
+    play,
+    pause
   } = useContext(PlayerContext);
 
   // Filter songs that are currently liked
@@ -113,19 +115,35 @@ const DisplayLiked = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: index * 0.02 }}
-                    onClick={() => handlePlayLiked(item._id)}
+                    onClick={() => {
+                      if (isPlaying) {
+                        if (playStatus) {
+                          pause();
+                        } else {
+                          play();
+                        }
+                      } else {
+                        handlePlayLiked(item._id);
+                      }
+                    }}
                     className={`
-                      grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-2 p-2 md:p-3 items-center rounded-xl cursor-pointer transition-all duration-200 group
+                      grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-2 p-2 md:p-3 items-center rounded-xl cursor-pointer transition-all duration-200 group/row
                       ${isPlaying ? "bg-white/10 shadow-lg shadow-black/10 border border-white/5" : "hover:bg-white/5"}
                     `}
                   >
                     {/* Title Column */}
                     <div className='flex items-center col-span-3 sm:col-span-1 overflow-hidden'>
-                      <div className='mr-4 w-4 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0'>
-                        <span className='group-hover:hidden'>
+                      <div className='mr-4 w-4 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0 relative'>
+                        <span className='group-hover/row:hidden'>
                           {index + 1}
                         </span>
-                        <Play size={10} className='hidden group-hover:block text-emerald-400 fill-emerald-400 scale-125' />
+                        <span className="hidden group-hover/row:inline text-emerald-400">
+                          {isPlaying && playStatus ? (
+                            <span className="text-[10px] font-bold">II</span>
+                          ) : (
+                            <span className="text-[10px] font-bold">▶</span>
+                          )}
+                        </span>
                       </div>
 
                       <div className='relative flex-shrink-0 shadow shadow-black/40 rounded-lg overflow-hidden border border-white/5 mr-4'>

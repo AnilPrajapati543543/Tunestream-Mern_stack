@@ -505,6 +505,7 @@ const Sidebar = () => {
               
               {/* Add Playlist */}
               <button
+                id="onboarding-playlist-btn"
                 onClick={() => setShowCreateInput(!showCreateInput)}
                 className={`p-1.5 rounded-full hover:bg-[#282828] text-gray-400 hover:text-white transition-colors ${showCreateInput ? "bg-emerald-500 text-black hover:text-black" : ""}`}
                 title="Create Playlist"
