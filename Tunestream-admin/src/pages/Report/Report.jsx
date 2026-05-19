@@ -79,7 +79,7 @@ const Report = () => {
       const userName = group.user?.name || 'Unknown User';
 
       const categorizedLogs = [
-        { key: 'user', title: 'User Management', logs: group.logs.filter(log => ['USER_JOINED', 'REMOVED_USER'].includes(log.action)) },
+        { key: 'user', title: 'User Management', logs: group.logs.filter(log => ['USER_JOINED', 'REMOVED_USER', 'FEEDBACK_SUBMITTED'].includes(log.action)) },
         { key: 'add', title: 'Additions (Songs/Albums)', logs: group.logs.filter(log => log.action.includes('ADDED') || log.action.includes('CREATED')) },
         { key: 'delete', title: 'Deletions', logs: group.logs.filter(log => log.action.includes('DELETED') || log.action === 'REMOVED_FROM_PLAYLIST') }
       ].filter(section => selectedCats.includes(section.key) && section.logs.length > 0);
@@ -254,7 +254,7 @@ const Report = () => {
           ) : (
             Object.values(groupedHistory).map((group, gIdx) => {
               const categorizedLogs = {
-                userActions: group.logs.filter(log => ['USER_JOINED', 'REMOVED_USER'].includes(log.action)),
+                userActions: group.logs.filter(log => ['USER_JOINED', 'REMOVED_USER', 'FEEDBACK_SUBMITTED'].includes(log.action)),
                 addActions: group.logs.filter(log => log.action.includes('ADDED') || log.action.includes('CREATED')),
                 deleteActions: group.logs.filter(log => log.action.includes('DELETED') || log.action === 'REMOVED_FROM_PLAYLIST')
               };
@@ -313,9 +313,11 @@ const Report = () => {
                                     <td className="px-6 py-4">
                                       <span className={`
                                         px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider
-                                        ${log.action === 'REMOVED_USER'
-                                          ? 'bg-rose-500/10 text-rose-500'
-                                          : log.action.includes('ADDED')
+                                        ${log.action === 'FEEDBACK_SUBMITTED'
+                                          ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                                          : log.action === 'REMOVED_USER'
+                                            ? 'bg-rose-500/10 text-rose-500'
+                                            : log.action.includes('ADDED')
                                             ? 'bg-emerald-500/10 text-emerald-500'
                                             : log.action.includes('CREATED')
                                               ? 'bg-blue-500/10 text-blue-500'

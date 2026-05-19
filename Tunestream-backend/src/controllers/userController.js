@@ -492,5 +492,31 @@ export const getArtistProfileByName = async (req, res, next) => {
   }
 };
 
+// ================= SUBMIT USER RATINGS FEEDBACK =================
+export const submitFeedback = async (req, res, next) => {
+  try {
+    const { name, rating, comment } = req.body;
+    if (!rating) {
+      throw new ApiError(400, "Rating is required");
+    }
+
+    const adminId = req.user.role === 'admin' ? req.user._id : req.user.adminId;
+    if (adminId) {
+      await historyModel.create({
+        userId: req.user._id,
+        adminId,
+        action: "FEEDBACK_SUBMITTED",
+        itemName: `${name || req.user.name}: Rated ${rating} Stars`,
+        itemType: comment || "No written review provided"
+      });
+    }
+
+    res.json({ success: true, message: "Feedback submitted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 
 

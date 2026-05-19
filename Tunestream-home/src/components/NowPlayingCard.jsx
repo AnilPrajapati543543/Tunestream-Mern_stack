@@ -529,16 +529,6 @@ const NowPlayingCard = () => {
                 {track.album !== "none" ? track.album : "Tunestream Playlist"}
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              {/* Full Width / Expand Toggle */}
-              <button
-                onClick={() => setRightSidebarExpanded(!rightSidebarExpanded)}
-                className="p-1.5 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                title={rightSidebarExpanded ? "Collapse Sidebar Width" : "Expand Sidebar Width"}
-              >
-                {rightSidebarExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-              </button>
-            </div>
           </div>
 
           {/* TALL IMMERSIVE VISUAL CARD (Spotify Canvas style) */}
@@ -581,14 +571,6 @@ const NowPlayingCard = () => {
               {/* Dark gradient overlay inside card */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent z-10 pointer-events-none" />
 
-              {/* Dynamic canvas visualizer overlay when playing */}
-              {playStatus && (
-                <div className="absolute top-3.5 left-3.5 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full flex items-center gap-1.5 border border-white/10 shadow-lg z-20">
-                  <Flame size={12} className="text-emerald-400 animate-pulse" />
-                  <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider">Canvas</span>
-                </div>
-              )}
-
               {/* Track Name + Artist + Action buttons layered over bottom of visual card */}
               <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between pointer-events-auto">
                 <div className="min-w-0 pr-2 flex-1">
@@ -602,17 +584,17 @@ const NowPlayingCard = () => {
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <button
                     onClick={(e) => { e.stopPropagation(); setIsPlaylistModalOpen(true); }}
-                    className="p-2 bg-black/40 hover:bg-emerald-500 hover:text-black rounded-full text-white transition active:scale-90 flex-shrink-0 shadow-md"
+                    className="p-1.5 bg-transparent hover:scale-110 active:scale-95 text-white transition flex-shrink-0"
                     title="Add to Playlist"
                   >
-                    <Plus size={14} className="stroke-[3]" />
+                    <Plus size={16} className="stroke-[3]" />
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); toggleLikeSong(track._id); }}
-                    className="p-2 bg-black/40 hover:bg-emerald-500 hover:text-black rounded-full text-white transition active:scale-90 flex-shrink-0 shadow-md"
+                    className="p-1.5 bg-transparent hover:scale-110 active:scale-95 text-gray-400 hover:text-emerald-400 transition flex-shrink-0"
                   >
                     <Heart 
-                      size={14} 
+                      size={16} 
                       fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
                       stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
                       className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
@@ -628,7 +610,10 @@ const NowPlayingCard = () => {
           <div className="px-4 py-3 border-t border-white/5 mt-2">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-black text-white tracking-tight">Credits</span>
-              <span className="text-[10px] font-bold text-gray-400 hover:text-white uppercase tracking-wider cursor-pointer">
+              <span 
+                onClick={() => openArtistProfile(track.desc)}
+                className="text-[10px] font-bold text-gray-400 hover:text-emerald-400 uppercase tracking-wider cursor-pointer transition-colors"
+              >
                 Show all
               </span>
             </div>
