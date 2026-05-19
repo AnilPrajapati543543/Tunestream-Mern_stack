@@ -14,6 +14,7 @@ const Sidebar = ({ darkMode, isOpen, setIsOpen }) => {
     { to: "/list-albums", icon: assets.album_icon, text: "List Album" },
     ...(user?.role === 'admin' ? [{ to: "/linked-users", icon: assets.album_icon, text: "Linked Users" }] : []),
     { to: "/report", icon: assets.song_icon, text: "Report" },
+    { to: "/artist-profile", icon: assets.song_icon, text: "Artist Profile" },
   ];
 
   return (

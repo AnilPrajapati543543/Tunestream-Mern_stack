@@ -5,6 +5,7 @@ import Player from "./components/Player.jsx";
 import Display from "./components/Display.jsx";
 import NowPlayingCard from "./components/NowPlayingCard.jsx";
 import AuthModal from "./components/AuthModal.jsx";
+import ArtistProfileModal from "./components/ArtistProfileModal.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import { PlayerContext } from "./context/PlayerContext";
 import { useAuth } from "./context/AuthContext";
@@ -24,7 +25,7 @@ const ArtistRedirect = () => {
 };
 
 const App = () => {
-  const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen, leftSidebarExpanded, rightSidebarExpanded } = useContext(PlayerContext);
+  const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen, leftSidebarExpanded, rightSidebarExpanded, rightSidebarCollapsed } = useContext(PlayerContext);
   const { user, loading: authLoading } = useAuth();
 
   if (authLoading) return (
@@ -48,6 +49,7 @@ const App = () => {
               isOpen={isAuthModalOpen} 
               onClose={() => setIsAuthModalOpen(false)} 
             />
+            <ArtistProfileModal />
             <ToastContainer theme="dark" position="top-center" autoClose={3000} />
             
             <OnboardingGesture />
@@ -59,9 +61,11 @@ const App = () => {
                 </div>
               )}
               {!leftSidebarExpanded && !rightSidebarExpanded && <Display />}
-              <div className={`hidden lg:flex h-full ${rightSidebarExpanded ? 'flex-1' : 'flex-shrink-0'}`}>
-                <NowPlayingCard />
-              </div>
+              {!rightSidebarCollapsed && (
+                <div className={`hidden lg:flex h-full ${rightSidebarExpanded ? 'flex-1' : 'flex-shrink-0'}`}>
+                  <NowPlayingCard />
+                </div>
+              )}
             </div>
 
             <div className="w-full flex-shrink-0">

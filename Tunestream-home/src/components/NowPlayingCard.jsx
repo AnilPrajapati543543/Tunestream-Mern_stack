@@ -6,6 +6,7 @@ import VolumeControl from "./VolumeControl";
 import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play, Pause, ChevronRight, Maximize2, Minimize2, Disc, Mic, MoreHorizontal, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import PlaylistModal from "./PlaylistModal";
 
 const NowPlayingCard = () => {
   const {
@@ -21,8 +22,11 @@ const NowPlayingCard = () => {
     rightSidebarExpanded,
     setRightSidebarExpanded,
     likedSongs,
-    toggleLikeSong
+    toggleLikeSong,
+    openArtistProfile
   } = useContext(PlayerContext);
+
+  const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -33,6 +37,15 @@ const NowPlayingCard = () => {
   const [spinDisc, setSpinDisc] = useState(true);
   const [showLyrics, setShowLyrics] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+
+  const handleArtistClick = (artistName) => {
+    if (!artistName) return;
+    // Extract main artist in case of comma separated lists
+    const mainArtist = artistName.split(/[,&]/)[0].trim();
+    navigate(`/?search=${encodeURIComponent(mainArtist)}`);
+    setRightSidebarExpanded(false);
+    toast.info(`Filtering by artist: ${mainArtist}`);
+  };
 
   // Auto-expand on new track play if it was collapsed
   useEffect(() => {
@@ -282,15 +295,6 @@ const NowPlayingCard = () => {
             >
               <Minimize2 size={18} />
             </button>
-
-            {/* Collapse Sidebar Entirely */}
-            <button
-              onClick={() => setCollapsed(true)}
-              className="p-2 rounded-full hover:bg-white/10 text-emerald-400 hover:text-emerald-300 hover:scale-105 active:scale-95 transition-all"
-              title="Collapse Sidebar"
-            >
-              <ChevronRight size={20} />
-            </button>
           </div>
         </div>
 
@@ -299,33 +303,79 @@ const NowPlayingCard = () => {
           <div 
             className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 select-none z-10 sticky top-[80px] pointer-events-none"
             style={{
-              transform: `scale(${scale}) translateY(${translateY}px)`,
+              transform: `perspective(1000px) rotateX(${scrollOffset * 0.03}deg) translateY(${translateY}px) scale(${scale})`,
               filter: `brightness(${brightness})`,
               opacity: coverOpacity,
-              transition: "transform 0.05s ease-out, filter 0.05s ease-out, opacity 0.05s ease-out"
+              transition: "transform 0.05s ease-out, filter 0.05s ease-out, opacity 0.05s ease-out",
+              transformStyle: "preserve-3d"
             }}
           >
-            <div className="relative group flex flex-col items-center">
+            <div className="relative group flex flex-col items-center pointer-events-auto">
               {/* Pulsing visual glow backdrop */}
-              <div className="absolute inset-0 bg-emerald-500/20 rounded-2xl filter blur-2xl scale-95 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="absolute inset-0 bg-emerald-500/20 rounded-[2rem] filter blur-3xl scale-95 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               
-              <img 
-                src={track.image} 
-                className="w-72 h-72 md:w-[360px] md:h-[360px] object-cover rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.95)] border border-white/10 group-hover:scale-[1.02] transition-transform duration-500 z-10 pointer-events-auto"
-                alt={track.name} 
-              />
-            </div>
+              <div className="w-[320px] h-[450px] md:w-[380px] md:h-[520px] relative rounded-[2rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.95)] shadow-emerald-500/10 border border-white/10 group-hover:scale-[1.02] transition-all duration-500 z-10 flex flex-col justify-end">
+                
+                {track.videoUrl ? (
+                  ytId ? (
+                    <iframe
+                      key={ytId}
+                      src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+                      className="absolute inset-0 w-full h-full object-cover scale-150 pointer-events-none opacity-90"
+                      frameBorder="0"
+                      allow="autoplay; encrypted-media"
+                      title="loop-video-fullscreen"
+                    />
+                  ) : (
+                    <video
+                      key={track.videoUrl}
+                      autoPlay
+                      loop
+                      muted={true}
+                      playsInline={true}
+                      preload="auto"
+                      crossOrigin="anonymous"
+                      className="absolute inset-0 w-full h-full object-cover opacity-90"
+                    >
+                      <source src={track.videoUrl} />
+                    </video>
+                  )
+                ) : (
+                  <img 
+                    src={track.image} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    alt={track.name} 
+                  />
+                )}
 
-            <h1 className="text-3xl md:text-5xl font-black mt-8 tracking-tight text-center truncate max-w-4xl hover:text-emerald-400 transition-colors z-10 pointer-events-auto">
-              {track.name}
-            </h1>
-            <p className="text-sm md:text-lg text-emerald-400 font-bold mt-2 text-center tracking-wide z-10 pointer-events-auto">
-              {track.desc || "Main Artist"}
-            </p>
+                {/* Dark gradient overlay inside card */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent z-10 pointer-events-none" />
+
+                {/* Meta details at bottom of card */}
+                <div className="absolute bottom-6 left-6 right-6 z-20 flex items-end justify-between pointer-events-auto">
+                  <div className="min-w-0 pr-4 flex-1">
+                    <h2 className="text-xl md:text-3xl font-black text-white tracking-tight drop-shadow-md truncate">
+                      {track.name}
+                    </h2>
+                    <p className="text-xs md:text-sm text-emerald-400 font-bold tracking-wide drop-shadow mt-1 hover:underline cursor-pointer" onClick={() => openArtistProfile(track.desc)}>
+                      {track.desc || "Main Artist"}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsPlaylistModalOpen(true)}
+                    className="p-3 bg-emerald-500 hover:bg-emerald-400 hover:scale-110 active:scale-95 text-black rounded-2xl transition shadow-xl flex-shrink-0"
+                    title="Add to Playlist"
+                  >
+                    <Plus size={18} className="stroke-[3]" />
+                  </button>
+                </div>
+
+              </div>
+            </div>
 
             {/* Bouncing Scroll Down helper */}
             <div 
-              className="absolute bottom-8 flex flex-col items-center gap-1 opacity-50 animate-bounce"
+              className="absolute bottom-6 flex flex-col items-center gap-1 opacity-50 animate-bounce"
               style={{ opacity: Math.max(1 - scrollOffset / 100, 0) }}
             >
               <span className="text-[9px] uppercase font-black tracking-widest text-gray-400">Scroll down for details</span>
@@ -488,15 +538,6 @@ const NowPlayingCard = () => {
               >
                 {rightSidebarExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
               </button>
-
-              {/* Collapse Sidebar Entirely Toggle */}
-              <button
-                onClick={() => setCollapsed(true)}
-                className="p-1.5 rounded-full hover:bg-white/10 text-emerald-400 hover:text-emerald-300 hover:scale-105 active:scale-95 transition-all"
-                title="Collapse Sidebar"
-              >
-                <ChevronRight size={18} />
-              </button>
             </div>
           </div>
 
@@ -555,21 +596,30 @@ const NowPlayingCard = () => {
                 <h3 className="text-lg font-black tracking-tight text-white hover:underline cursor-pointer truncate">
                   {track.name}
                 </h3>
-                <p className="text-xs text-gray-400 hover:text-white cursor-pointer mt-0.5 truncate font-medium">
+                <p className="text-xs text-gray-400 hover:text-white cursor-pointer mt-0.5 truncate font-medium" onClick={() => openArtistProfile(track.desc)}>
                   {track.desc || "Track details"}
                 </p>
               </div>
-              <button 
-                onClick={() => toggleLikeSong(track._id)}
-                className="p-1 rounded-full text-gray-400 hover:text-white hover:scale-110 transition flex-shrink-0"
-              >
-                <Heart 
-                  size={18} 
-                  fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
-                  stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
-                  className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
-                />
-              </button>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <button
+                  onClick={() => setIsPlaylistModalOpen(true)}
+                  className="p-1.5 rounded-full text-gray-400 hover:text-white hover:scale-110 active:scale-90 transition flex-shrink-0"
+                  title="Add to Playlist"
+                >
+                  <Plus size={16} />
+                </button>
+                <button 
+                  onClick={() => toggleLikeSong(track._id)}
+                  className="p-1.5 rounded-full text-gray-400 hover:text-white hover:scale-110 active:scale-90 transition flex-shrink-0"
+                >
+                  <Heart 
+                    size={16} 
+                    fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
+                    stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
+                    className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -593,7 +643,7 @@ const NowPlayingCard = () => {
                         {artist.name[0]}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-white truncate hover:underline cursor-pointer">
+                        <p className="text-xs font-bold text-white truncate hover:underline cursor-pointer" onClick={() => openArtistProfile(artist.name)}>
                           {artist.name}
                         </p>
                         <p className="text-[10px] text-gray-400 truncate">
@@ -671,6 +721,7 @@ const NowPlayingCard = () => {
           )}
         </div>
       )}
+      <PlaylistModal isOpen={isPlaylistModalOpen} onClose={() => setIsPlaylistModalOpen(false)} songId={track._id} />
       </motion.div>
     </AnimatePresence>
   );

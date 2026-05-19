@@ -6,7 +6,7 @@ import { Play } from 'lucide-react';
 
 const SongItem = ({ name, image, desc, id }) => {
 
-  const { playWithId } = useContext(PlayerContext)
+  const { playWithId, openArtistProfile } = useContext(PlayerContext)
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   return (
@@ -53,7 +53,7 @@ const SongItem = ({ name, image, desc, id }) => {
       {/* TEXT */}
       <div className='mt-3'>
         <p className='font-bold text-white mb-1 truncate'>{name}</p>
-        <p className='text-gray-400 text-xs md:text-sm line-clamp-2 leading-relaxed'>{desc}</p>
+        <p className='text-gray-400 text-xs md:text-sm line-clamp-2 leading-relaxed hover:underline hover:text-emerald-400' onClick={(e) => { e.stopPropagation(); openArtistProfile(desc); }}>{desc}</p>
       </div>
 
     </motion.div>

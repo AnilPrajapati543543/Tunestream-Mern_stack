@@ -8,7 +8,9 @@ import {
   getLinkedUsers,
   forgotPassword,
   resetPassword,
-  removeLinkedUser
+  removeLinkedUser,
+  updateArtistProfile,
+  getArtistProfileByName
 } from "../controllers/userController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -25,6 +27,10 @@ router.get("/me", protect, getMe);
 router.get("/refresh", refreshToken);
 router.get("/linked", protect, getLinkedUsers);
 router.delete("/linked/:id", protect, removeLinkedUser);
+
+// ARTIST PROFILE
+router.put("/artist-profile", protect, updateArtistProfile);
+router.get("/artist/:name", getArtistProfileByName);
 
 // PASSWORD RESET
 router.post("/forgot-password", forgotPassword);

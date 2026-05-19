@@ -214,24 +214,24 @@ const DisplayHome = () => {
                     onClick={() => handleTileClick(tile)}
                     whileHover={{ scale: 1.015 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group flex items-center bg-white/5 hover:bg-white/10 transition duration-300 rounded-md overflow-hidden cursor-pointer relative pr-0 md:pr-16 select-none"
+                    className="group flex items-center bg-white/5 hover:bg-white/10 transition duration-300 rounded-md overflow-hidden cursor-pointer relative pr-12 md:pr-16 select-none w-full"
                   >
                     {/* Visual */}
                     {tile.isLiked ? (
-                      <div className="w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                      <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
                         <Heart fill="white" className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" size={16} />
                       </div>
                     ) : (
                       <img 
                         src={tile.image} 
                         alt={tile.name} 
-                        className="w-12 h-12 md:w-20 md:h-20 object-cover flex-shrink-0"
+                        className="w-20 h-20 object-cover flex-shrink-0"
                       />
                     )}
 
                     {/* Meta */}
-                    <div className="pl-2 md:pl-4 pr-1 md:pr-2 py-1.5 md:py-2 overflow-hidden flex-1 min-w-0">
-                      <p className="text-[11px] md:text-sm font-black text-white truncate tracking-tight">{tile.name}</p>
+                    <div className="pl-3 md:pl-4 pr-1 md:pr-2 py-1.5 md:py-2 overflow-hidden flex-1 min-w-0 flex flex-col justify-center">
+                      <p className="text-xs md:text-sm font-black text-white leading-tight tracking-tight line-clamp-2 whitespace-normal">{tile.name}</p>
                       <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 hidden md:block">{tile.desc || "Playlist"}</p>
                     </div>
 

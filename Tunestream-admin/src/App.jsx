@@ -10,6 +10,7 @@ import Sidebar from './components/Sidebar/Sidebar';
 import Navbar from './components/Navbar/Navbar';
 import Report from './pages/Report/Report';
 import LinkedUsers from './pages/LinkedUsers/LinkedUsers';
+import ArtistProfile from './pages/ArtistProfile/ArtistProfile';
 import AdminLogin from './pages/Login/Login';
 import AdminSignup from './pages/Signup/Signup';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
@@ -78,6 +79,7 @@ const App = () => {
                 <Route path="/list-albums" element={<ListAlbum />} />
                 <Route path="/linked-users" element={<LinkedUsers />} />
                 <Route path="/report" element={<Report />} />
+                <Route path="/artist-profile" element={<ArtistProfile />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </div>

@@ -17,8 +17,24 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "artist"],
     default: "user"
+  },
+  artistBio: {
+    type: String,
+    default: ""
+  },
+  artistImage: {
+    type: String,
+    default: ""
+  },
+  monthlyListeners: {
+    type: Number,
+    default: 0
+  },
+  followersCount: {
+    type: Number,
+    default: 0
   },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,

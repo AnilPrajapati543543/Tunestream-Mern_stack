@@ -37,6 +37,17 @@ const PlayerContextProvider = (props) => {
     const [leftSidebarExpanded, setLeftSidebarExpanded] = useState(false);
     const [rightSidebarExpanded, setRightSidebarExpanded] = useState(false);
 
+    // ARTIST PROFILE MODAL STATES
+    const [artistProfileOpen, setArtistProfileOpen] = useState(false);
+    const [activeArtistName, setActiveArtistName] = useState("");
+
+    const openArtistProfile = (artistName) => {
+        if (!artistName) return;
+        const mainArtist = artistName.split(/[,&]/)[0].trim();
+        setActiveArtistName(mainArtist);
+        setArtistProfileOpen(true);
+    };
+
     const handleSetLeftSidebarCollapsed = (val) => {
         setLeftSidebarCollapsed(val);
         if (val) {
@@ -304,6 +315,10 @@ const PlayerContextProvider = (props) => {
         likedSongs,
         toggleLikeSong,
         removeFromQueue,
+        artistProfileOpen,
+        setArtistProfileOpen,
+        activeArtistName,
+        openArtistProfile,
         loading
     };
 

@@ -520,15 +520,6 @@ const Sidebar = () => {
               >
                 {leftSidebarExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
               </button>
-
-              {/* Collapse Sidebar Entirely Toggle */}
-              <button
-                onClick={() => setCollapsed(true)}
-                className="p-1.5 rounded-full hover:bg-[#282828] text-gray-400 hover:text-white transition-colors"
-                title="Collapse Library"
-              >
-                <ChevronLeft size={16} />
-              </button>
             </div>
           )}
         </div>
