@@ -214,7 +214,7 @@ const DisplayHome = () => {
                     onClick={() => handleTileClick(tile)}
                     whileHover={{ scale: 1.015 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group flex items-center bg-white/5 hover:bg-white/10 transition duration-300 rounded-md overflow-hidden cursor-pointer relative pr-12 md:pr-16 select-none w-full"
+                    className="group flex items-center bg-white/5 hover:bg-white/10 transition duration-300 rounded-md overflow-hidden cursor-pointer relative pr-12 md:pr-16 select-none w-full h-20"
                   >
                     {/* Visual */}
                     {tile.isLiked ? (

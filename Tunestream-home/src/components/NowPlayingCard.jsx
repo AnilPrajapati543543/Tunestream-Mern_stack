@@ -541,11 +541,11 @@ const NowPlayingCard = () => {
             </div>
           </div>
 
-          {/* MAIN CANVAS VISUAL (Loop Video or pulsing Image) */}
+          {/* TALL IMMERSIVE VISUAL CARD (Spotify Canvas style) */}
           <div className="p-4 flex-shrink-0">
-            <div className="relative w-full aspect-square rounded-lg overflow-hidden group shadow-lg shadow-black/40 border border-white/5">
+            <div className="relative w-full h-[410px] rounded-[1.8rem] overflow-hidden group shadow-2xl shadow-black/80 border border-white/10 flex flex-col justify-end">
               
-              {/* Optional 10s Loop Video */}
+              {/* Optional Loop Video / Image */}
               {track.videoUrl ? (
                 ytId ? (
                   <iframe
@@ -571,55 +571,56 @@ const NowPlayingCard = () => {
                   </video>
                 )
               ) : (
-                /* Static Image visual with micro zoom hover */
                 <img
                   src={track.image}
-                  className="w-full h-full object-cover transition duration-700 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105"
                   alt="track"
                 />
               )}
 
+              {/* Dark gradient overlay inside card */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent z-10 pointer-events-none" />
+
               {/* Dynamic canvas visualizer overlay when playing */}
               {playStatus && (
-                <div className="absolute bottom-2 left-2 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full flex items-center gap-1.5 border border-white/10 shadow-lg">
+                <div className="absolute top-3.5 left-3.5 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full flex items-center gap-1.5 border border-white/10 shadow-lg z-20">
                   <Flame size={12} className="text-emerald-400 animate-pulse" />
-                  <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider">Canvas Visualizer</span>
+                  <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider">Canvas</span>
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* DETAIL DESCRIPTION */}
-          <div className="px-4 pb-2">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="text-lg font-black tracking-tight text-white hover:underline cursor-pointer truncate">
-                  {track.name}
-                </h3>
-                <p className="text-xs text-gray-400 hover:text-white cursor-pointer mt-0.5 truncate font-medium" onClick={() => openArtistProfile(track.desc)}>
-                  {track.desc || "Track details"}
-                </p>
+              {/* Track Name + Artist + Action buttons layered over bottom of visual card */}
+              <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between pointer-events-auto">
+                <div className="min-w-0 pr-2 flex-1">
+                  <h3 className="text-base font-black tracking-tight text-white hover:underline cursor-pointer truncate drop-shadow-md">
+                    {track.name}
+                  </h3>
+                  <p className="text-[11px] text-emerald-400 hover:text-emerald-300 cursor-pointer mt-0.5 truncate font-bold drop-shadow hover:underline" onClick={(e) => { e.stopPropagation(); openArtistProfile(track.desc); }}>
+                    {track.desc || "Track details"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setIsPlaylistModalOpen(true); }}
+                    className="p-2 bg-black/40 hover:bg-emerald-500 hover:text-black rounded-full text-white transition active:scale-90 flex-shrink-0 shadow-md"
+                    title="Add to Playlist"
+                  >
+                    <Plus size={14} className="stroke-[3]" />
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); toggleLikeSong(track._id); }}
+                    className="p-2 bg-black/40 hover:bg-emerald-500 hover:text-black rounded-full text-white transition active:scale-90 flex-shrink-0 shadow-md"
+                  >
+                    <Heart 
+                      size={14} 
+                      fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
+                      stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
+                      className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
+                    />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
-                <button
-                  onClick={() => setIsPlaylistModalOpen(true)}
-                  className="p-1.5 rounded-full text-gray-400 hover:text-white hover:scale-110 active:scale-90 transition flex-shrink-0"
-                  title="Add to Playlist"
-                >
-                  <Plus size={16} />
-                </button>
-                <button 
-                  onClick={() => toggleLikeSong(track._id)}
-                  className="p-1.5 rounded-full text-gray-400 hover:text-white hover:scale-110 active:scale-90 transition flex-shrink-0"
-                >
-                  <Heart 
-                    size={16} 
-                    fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
-                    stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
-                    className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
-                  />
-                </button>
-              </div>
+
             </div>
           </div>
 
