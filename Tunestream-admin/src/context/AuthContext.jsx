@@ -54,6 +54,11 @@ export const AuthProvider = ({ children }) => {
       // Silently handle logout errors
     } finally {
       setUser(null);
+      // Redirect dynamically supporting both local ports and production domains
+      const userPortalUrl = window.location.origin.includes("localhost") 
+        ? window.location.origin.replace("5174", "5173") 
+        : window.location.origin.replace("-admin", "-home").replace("admin.", "");
+      window.location.href = userPortalUrl;
     }
   };
 
