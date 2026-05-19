@@ -37,25 +37,21 @@ const AlbumItem = ({ image, name, desc, id }) => {
 
         {/* BOTTOM-RIGHT PLAY BUTTON */}
         <div className="absolute inset-0 pointer-events-none">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+          <div
             className="
               absolute bottom-2 right-2
-              bg-emerald-500
+              bg-emerald-500 hover:scale-110 active:scale-95
               w-10 h-10
               rounded-full
               flex items-center justify-center
               shadow-xl
-              opacity-0 group-hover:opacity-100
-              group-hover:translate-y-0
+              opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0
               transition-all duration-300
               pointer-events-auto
             "
           >
-            <Play size={16} fill="currentColor" className="text-black ml-[1.5px]" />
-          </motion.div>
+            <Play size={16} fill="black" className="text-black ml-[2px]" />
+          </div>
         </div>
 
       </div>

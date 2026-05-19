@@ -521,13 +521,23 @@ const NowPlayingCard = () => {
           >
           {/* HEADER SECTION */}
           <div className="p-4 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#121212]/30 backdrop-blur-md z-10">
-            <div className="flex flex-col min-w-0">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-                Playing from
-              </span>
-              <span className="text-xs font-black truncate text-white mt-0.5">
+            <div className="flex items-center gap-2 min-w-0">
+              <Disc size={15} className="text-emerald-400 animate-[spin_8s_linear_infinite] flex-shrink-0" />
+              <span className="text-xs font-black truncate text-white">
                 {track.album !== "none" ? track.album : "Tunestream Playlist"}
               </span>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button className="p-1 rounded-full text-gray-400 hover:text-white transition active:scale-95">
+                <MoreHorizontal size={16} />
+              </button>
+              <button
+                onClick={() => setRightSidebarExpanded(!rightSidebarExpanded)}
+                className="p-1 rounded-full text-gray-400 hover:text-white transition active:scale-95"
+                title="Expand Full Screen"
+              >
+                <Maximize2 size={16} />
+              </button>
             </div>
           </div>
 
@@ -541,7 +551,7 @@ const NowPlayingCard = () => {
                   <iframe
                     key={ytId}
                     src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-                    className="absolute inset-0 w-full h-full object-cover scale-150 z-0 pointer-events-none opacity-90"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover pointer-events-none opacity-90 scale-[1.75] z-0"
                     frameBorder="0"
                     allow="autoplay; encrypted-media"
                     title="loop-video"
