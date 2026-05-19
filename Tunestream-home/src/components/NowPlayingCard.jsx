@@ -3,7 +3,7 @@ import { PlayerContext } from "../context/PlayerContext";
 import { assets } from "../assets/assets.js";
 import { motion, AnimatePresence } from "framer-motion";
 import VolumeControl from "./VolumeControl";
-import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play, Pause, ChevronRight, Maximize2, Minimize2, Disc, Mic, MoreHorizontal, ChevronDown } from "lucide-react";
+import { Plus, X, Heart, Sparkles, UserPlus, UserCheck, Flame, Play, Pause, ChevronRight, Maximize2, Minimize2, Disc, Mic, MoreHorizontal, ChevronDown, Shuffle, SkipBack, SkipForward, Timer, Share2, Headphones, Check } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import PlaylistModal from "./PlaylistModal";
@@ -25,14 +25,30 @@ const NowPlayingCard = () => {
     toggleLikeSong,
     openArtistProfile,
     mobileNowPlayingActive,
-    setMobileNowPlayingActive
+    setMobileNowPlayingActive,
+    time,
+    isShuffling,
+    isLooping,
+    shuffleToggle,
+    loopToggle,
+    seekSong,
+    previous,
+    next
   } = useContext(PlayerContext);
 
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const navigate = useNavigate();
 
   const [bgColor, setBgColor] = useState("rgba(18, 18, 18, 0.95)");
+  const [vibrantBgColor, setVibrantBgColor] = useState("rgb(29, 185, 84)");
   const [followedArtists, setFollowedArtists] = useState({});
   const [scrollOffset, setScrollOffset] = useState(0);
 
@@ -115,13 +131,21 @@ const NowPlayingCard = () => {
         const g = Math.floor(data[1] * 0.25);
         const b = Math.floor(data[2] * 0.25);
         setBgColor(`rgba(${r}, ${g}, ${b}, 0.95)`);
+        
+        // Vibrant background color for mobile full screen
+        const vr = data[0];
+        const vg = data[1];
+        const vb = data[2];
+        setVibrantBgColor(`rgb(${vr}, ${vg}, ${vb})`);
       } catch (_) {
         setBgColor("rgba(18, 18, 18, 0.95)");
+        setVibrantBgColor("rgb(29, 185, 84)");
       }
     };
 
     img.onerror = () => {
       setBgColor("rgba(18, 18, 18, 0.95)");
+      setVibrantBgColor("rgb(29, 185, 84)");
     };
 
     img.src = track.image;
@@ -525,6 +549,533 @@ const NowPlayingCard = () => {
     );
   };
 
+  const renderMobileFullScreenPlayer = () => {
+    return (
+      <div 
+        className="w-full h-full flex flex-col relative overflow-y-auto custom-scrollbar select-none"
+        style={{
+          background: `linear-gradient(to bottom, ${vibrantBgColor} 0%, rgba(10, 10, 10, 0.98) 60%, #050505 100%)`
+        }}
+      >
+        {/* HEADER SECTION */}
+        <div className="px-6 pt-8 pb-4 flex items-center justify-between z-20">
+          <button 
+            onClick={() => setMobileNowPlayingActive(false)}
+            className="text-white hover:opacity-80 active:scale-95 transition"
+            title="Collapse Player"
+          >
+            <ChevronDown size={28} />
+          </button>
+          
+          <div className="text-center">
+            <p className="text-[10px] tracking-[0.15em] font-black text-white/60 uppercase">
+              PLAYING FROM {track.album !== "none" ? "ALBUM" : "PLAYLIST"}
+            </p>
+            <p className="text-xs font-black text-white mt-0.5 max-w-[200px] truncate">
+              {track.album !== "none" ? track.album : "Tunestream Playlist"}
+            </p>
+          </div>
+
+          <button 
+            onClick={() => setShowMenu(!showMenu)}
+            className={`p-1.5 rounded-full transition active:scale-95 text-white/80 hover:text-white`}
+            title="More Actions"
+          >
+            <MoreHorizontal size={22} />
+          </button>
+        </div>
+
+        {/* ALBUM COVER HERO */}
+        <div className="flex-1 flex items-center justify-center py-4 px-6 z-10">
+          <div className="w-full aspect-square max-w-[320px] relative rounded-2xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] border border-white/10 flex items-center justify-center">
+            {track.videoUrl ? (
+              ytId ? (
+                <iframe
+                  key={ytId}
+                  src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+                  className="absolute w-[240%] h-[100%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90 scale-[1.05] z-0"
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  title="mobile-loop-video"
+                />
+              ) : (
+                <video
+                  key={track.videoUrl}
+                  autoPlay
+                  loop
+                  muted={true}
+                  playsInline={true}
+                  preload="auto"
+                  crossOrigin="anonymous"
+                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
+                >
+                  <source src={track.videoUrl} />
+                </video>
+              )
+            ) : (
+              <img 
+                src={track.image} 
+                className="absolute inset-0 w-full h-full object-cover"
+                alt={track.name} 
+              />
+            )}
+          </div>
+        </div>
+
+        {/* SONG META ROW */}
+        <div className="px-6 pt-4 flex items-center justify-between z-20">
+          <div className="min-w-0 pr-4">
+            <h2 className="text-xl md:text-2xl font-black text-white tracking-tight truncate">
+              {track.name}
+            </h2>
+            <p className="text-sm font-semibold text-white/60 truncate mt-1 hover:underline cursor-pointer" onClick={() => openArtistProfile(track.desc)}>
+              {track.desc || "Main Artist"}
+            </p>
+          </div>
+          
+          <button 
+            onClick={() => toggleLikeSong(track._id)}
+            className="transition active:scale-90 flex-shrink-0"
+          >
+            {likedSongs.includes(track._id) ? (
+              <div className="w-6 h-6 rounded-full bg-[#1db954] flex items-center justify-center shadow-md">
+                <Check size={13} strokeWidth={3} className="text-black" />
+              </div>
+            ) : (
+              <Plus size={24} className="text-white/70 hover:text-white" />
+            )}
+          </button>
+        </div>
+
+        {/* SEEK PROGRESS BAR */}
+        <div className="px-6 mt-6 flex flex-col gap-2 z-20">
+          <div 
+            onClick={(e) => seekSong(e)}
+            className="w-full h-[4px] bg-white/20 rounded-full cursor-pointer relative"
+          >
+            <div 
+              className="h-full bg-white rounded-full absolute left-0 top-0"
+              style={{ width: `${progress}%` }}
+            />
+            <div 
+              className="w-3 h-3 bg-white rounded-full absolute -top-1 shadow-md"
+              style={{ left: `calc(${progress}% - 6px)` }}
+            />
+          </div>
+          <div className="flex justify-between items-center text-[10px] font-mono text-white/60">
+            <span>{String(time.currentTime.minute).padStart(2, '0')}:{String(time.currentTime.second).padStart(2, '0')}</span>
+            <span>{String(time.totalTime.minute).padStart(2, '0')}:{String(time.totalTime.second).padStart(2, '0')}</span>
+          </div>
+        </div>
+
+        {/* PLAYBACK CONTROLS */}
+        <div className="px-6 mt-6 flex items-center justify-between z-20">
+          <button 
+            onClick={shuffleToggle}
+            className={`p-2 transition active:scale-95 ${isShuffling ? "text-[#1db954]" : "text-white/60 hover:text-white"}`}
+          >
+            <Shuffle size={20} />
+          </button>
+          
+          <button 
+            onClick={previous}
+            className="p-2 text-white hover:text-white active:scale-95 transition"
+          >
+            <SkipBack size={26} fill="currentColor" />
+          </button>
+          
+          <button 
+            onClick={playStatus ? pause : play}
+            className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition flex-shrink-0"
+          >
+            {playStatus ? (
+              <Pause size={24} fill="black" className="text-black" />
+            ) : (
+              <Play size={24} fill="black" className="text-black ml-[4px]" />
+            )}
+          </button>
+          
+          <button 
+            onClick={next}
+            className="p-2 text-white hover:text-white active:scale-95 transition"
+          >
+            <SkipForward size={26} fill="currentColor" />
+          </button>
+          
+          <button 
+            onClick={loopToggle}
+            className={`p-2 transition active:scale-95 ${isLooping ? "text-[#1db954]" : "text-white/60 hover:text-white"}`}
+          >
+            <Timer size={20} />
+          </button>
+        </div>
+
+        {/* DEVICE CONNECT & AUX ACTIONS */}
+        <div className="px-6 mt-8 flex items-center justify-between text-white/60 z-20">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#1db954]">
+            <Headphones size={16} />
+            <span>Redmi Buds 5A</span>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied!");
+              }}
+              className="hover:text-white active:scale-95 transition"
+            >
+              <Share2 size={16} />
+            </button>
+            <button 
+              onClick={() => {
+                navigate("/queue");
+                setMobileNowPlayingActive(false);
+              }}
+              className="hover:text-white active:scale-95 transition"
+            >
+              <ListMusic size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* LYRICS PREVIEW SHEET */}
+        <div className="px-4 mt-8 pb-8 z-20">
+          <div 
+            onClick={() => {
+              setShowLyrics(!showLyrics);
+              toast.info(showLyrics ? "Closed full lyrics" : "Scroll for full lyrics");
+            }}
+            className="rounded-2xl p-5 cursor-pointer relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border border-white/5"
+            style={{
+              background: `linear-gradient(to bottom, rgba(${vibrantBgColor.match(/\d+/g)?.join(',') || '16,185,129'}, 0.45) 0%, rgba(20, 20, 20, 0.95) 100%)`,
+            }}
+          >
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-xs font-black text-white uppercase tracking-wider">Lyrics preview</span>
+              <div className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-full text-[10px] font-bold">Show More</div>
+            </div>
+            <div className="space-y-2 mt-2">
+              {lyricsLines.slice(0, 4).map((line, idx) => (
+                <p key={idx} className="text-sm font-extrabold text-white/90 truncate leading-relaxed">
+                  {line}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Actions Menu Dropdown Popover */}
+        <AnimatePresence>
+          {showMenu && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              className="menu-dropdown fixed top-16 right-6 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2.5 rounded-2xl w-56 shadow-2xl z-[30] flex flex-col gap-1 pointer-events-auto"
+            >
+              <button
+                onClick={() => {
+                  setShowMenu(false);
+                  setIsPlaylistModalOpen(true);
+                }}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+              >
+                <Plus size={14} className="text-emerald-400" />
+                <span>Add to Playlist</span>
+              </button>
+              
+              <button
+                onClick={() => {
+                  setShowMenu(false);
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success("Tunestream track link copied to clipboard!");
+                }}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+              >
+                <Sparkles size={14} className="text-emerald-400" />
+                <span>Copy Share Link</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowMenu(false);
+                  toast.success(`"${track.name}" pinned to your active player queue!`);
+                }}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+              >
+                <Disc size={14} className="text-emerald-400 animate-spin-slow" />
+                <span>Pin to Player Queue</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  const renderCollapsedPlayer = () => {
+    return (
+      <div
+        className="w-full h-full rounded-lg flex flex-col text-white overflow-y-auto custom-scrollbar border border-white/5 relative"
+        style={{
+          background: `linear-gradient(180deg, ${bgColor} 0%, #121212 100%)`,
+        }}
+      >
+        {/* HEADER SECTION */}
+        <div className="p-4 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#121212]/30 backdrop-blur-md z-10">
+          <div className="flex items-center gap-2 min-w-0">
+            <Disc size={15} className="text-emerald-400 animate-[spin_8s_linear_infinite] flex-shrink-0" />
+            <span className="text-xs font-black truncate text-white">
+              {track.album !== "none" ? track.album : "Tunestream Playlist"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0 relative">
+            <button 
+              onClick={() => {
+                setShowMenu(!showMenu);
+                if (showLyrics) setShowLyrics(false);
+              }}
+              className={`p-1.5 rounded-full transition active:scale-95 relative ${showMenu ? "text-emerald-400 bg-emerald-500/10 scale-105" : "text-gray-400 hover:text-white"}`}
+              title="More Actions"
+            >
+              <MoreHorizontal size={16} />
+            </button>
+            
+            {/* Actions Menu Dropdown Popover */}
+            <AnimatePresence>
+              {showMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: 5 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 5 }}
+                  className="menu-dropdown absolute right-0 top-9 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2 rounded-2xl w-48 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto text-left"
+                >
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      setIsPlaylistModalOpen(true);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                  >
+                    <Plus size={14} className="text-emerald-400" />
+                    <span>Add to Playlist</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success("Link copied!");
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                  >
+                    <Sparkles size={14} className="text-emerald-400" />
+                    <span>Copy Share Link</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      toast.success(`"${track.name}" pinned to queue!`);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                  >
+                    <Disc size={14} className="text-emerald-400 animate-spin-slow" />
+                    <span>Pin to Queue</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <button
+              onClick={() => setRightSidebarExpanded(!rightSidebarExpanded)}
+              className="p-1.5 rounded-full text-gray-400 hover:text-white transition active:scale-95"
+              title="Expand Full Screen"
+            >
+              <Maximize2 size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* TALL IMMERSIVE VISUAL CARD (Spotify Canvas style) */}
+        <div className="p-4 flex-shrink-0">
+          <div className="relative w-full h-[410px] rounded-[1.8rem] overflow-hidden group shadow-2xl shadow-black/80 border border-white/10 flex flex-col justify-end">
+            
+            {/* Optional Loop Video / Image */}
+            {track.videoUrl ? (
+              ytId ? (
+                <iframe
+                  key={ytId}
+                  src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
+                  className="absolute w-[240%] h-[100%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90 scale-[1.05] z-0"
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  title="loop-video"
+                />
+              ) : (
+                <video
+                  key={track.videoUrl}
+                  autoPlay
+                  loop
+                  muted={true}
+                  playsInline={true}
+                  preload="auto"
+                  crossOrigin="anonymous"
+                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
+                >
+                  <source src={track.videoUrl} />
+                </video>
+              )
+            ) : (
+              <img
+                src={track.image}
+                className="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105"
+                alt="track"
+              />
+            )}
+
+            {/* Dark gradient overlay inside card */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent z-10 pointer-events-none" />
+
+            {/* Track Name + Artist + Action buttons layered over bottom of visual card */}
+            <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between pointer-events-auto">
+              <div className="min-w-0 pr-2 flex-1">
+                <h3 className="text-base font-black tracking-tight text-white hover:underline cursor-pointer truncate drop-shadow-md">
+                  {track.name}
+                </h3>
+                <p className="text-[11px] text-emerald-400 hover:text-emerald-300 cursor-pointer mt-0.5 truncate font-bold drop-shadow hover:underline" onClick={(e) => { e.stopPropagation(); openArtistProfile(track.desc); }}>
+                  {track.desc || "Track details"}
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsPlaylistModalOpen(true); }}
+                  className="p-1.5 bg-transparent hover:scale-110 active:scale-95 text-white transition flex-shrink-0"
+                  title="Add to Playlist"
+                >
+                  <Plus size={16} className="stroke-[3]" />
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); toggleLikeSong(track._id); }}
+                  className="p-1.5 bg-transparent hover:scale-110 active:scale-95 text-gray-400 hover:text-emerald-400 transition flex-shrink-0"
+                >
+                  <Heart 
+                    size={16} 
+                    fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
+                    stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
+                    className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
+                  />
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* DYNAMIC CREDITS PANEL */}
+        <div className="px-4 py-3 border-t border-white/5 mt-2">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-black text-white tracking-tight">Credits</span>
+            <span 
+              onClick={() => openArtistProfile(track.desc)}
+              className="text-[10px] font-bold text-gray-400 hover:text-emerald-400 uppercase tracking-wider cursor-pointer transition-colors"
+            >
+              Show all
+            </span>
+          </div>
+
+          <div className="space-y-3.5 bg-[#181818] p-3 rounded-lg border border-white/5 shadow-inner">
+            {creditsList.map((artist, idx) => {
+              const isFollowing = followedArtists[artist.name];
+              return (
+                <div key={`${artist.name}-${idx}`} className="flex items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {/* Avatar */}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500 flex items-center justify-center font-bold text-black text-xs flex-shrink-0 shadow-md">
+                      {artist.name[0]}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-white truncate hover:underline cursor-pointer" onClick={() => openArtistProfile(artist.name)}>
+                        {artist.name}
+                      </p>
+                      <p className="text-[10px] text-gray-400 truncate">
+                        {artist.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => toggleFollow(artist.name)}
+                    className={`px-3 py-1 text-[10px] font-black rounded-full border transition active:scale-95 flex items-center gap-1 flex-shrink-0
+                      ${isFollowing 
+                        ? "border-emerald-500 text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10" 
+                        : "border-gray-500 text-white hover:border-white"}`}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <UserCheck size={10} />
+                        <span>Following</span>
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus size={10} />
+                        <span>Follow</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* NEXT IN QUEUE PREVIEW */}
+        {nextTrack && (
+          <div className="px-4 py-3 border-t border-white/5 mt-auto">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                Next in queue
+              </span>
+              <span 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  navigate("/queue");
+                }}
+                className="text-[10px] font-bold text-emerald-400 hover:underline uppercase tracking-wider cursor-pointer"
+              >
+                Open queue
+              </span>
+            </div>
+
+            <div 
+              onClick={() => playWithId(nextTrack._id, playQueue)}
+              className="flex items-center gap-3 bg-[#181818] p-2.5 rounded-lg border border-white/5 hover:bg-[#282828] cursor-pointer transition group shadow-inner"
+            >
+              <img
+                src={nextTrack.image}
+                className="w-10 h-10 rounded object-cover flex-shrink-0 group-hover:scale-105 transition duration-300 shadow-md"
+                alt="next track"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition-colors">
+                  {nextTrack.name}
+                </p>
+                <p className="text-[10px] text-gray-400 truncate mt-0.5">
+                  {nextTrack.desc || "Track details"}
+                </p>
+              </div>
+              <div className="w-6 h-6 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-90 flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition duration-300 flex-shrink-0 shadow-md">
+                <Play size={10} fill="currentColor" className="ml-[1px]" />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const getYouTubeId = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -539,274 +1090,20 @@ const NowPlayingCard = () => {
       <motion.div
         key="right-now-playing"
         initial={{ width: 0, opacity: 0 }}
-        animate={{ width: rightSidebarExpanded ? "100%" : 300, opacity: 1 }}
+        animate={{ width: (isMobile || rightSidebarExpanded || mobileNowPlayingActive) ? "100%" : 300, opacity: 1 }}
         exit={{ width: 0, opacity: 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="h-full flex-shrink-0 flex overflow-hidden select-none"
       >
-        {rightSidebarExpanded ? (
+        {mobileNowPlayingActive ? (
+          renderMobileFullScreenPlayer()
+        ) : rightSidebarExpanded ? (
           renderFullScreenPlayer()
         ) : (
-          <div
-            className="w-full h-full rounded-lg flex flex-col text-white overflow-y-auto custom-scrollbar border border-white/5 relative"
-            style={{
-              background: `linear-gradient(180deg, ${bgColor} 0%, #121212 100%)`,
-            }}
-          >
-          {/* HEADER SECTION */}
-          <div className="p-4 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#121212]/30 backdrop-blur-md z-10">
-            <div className="flex items-center gap-2 min-w-0">
-              <Disc size={15} className="text-emerald-400 animate-[spin_8s_linear_infinite] flex-shrink-0" />
-              <span className="text-xs font-black truncate text-white">
-                {track.album !== "none" ? track.album : "Tunestream Playlist"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0 relative">
-              <button 
-                onClick={() => {
-                  setShowMenu(!showMenu);
-                  if (showLyrics) setShowLyrics(false);
-                }}
-                className={`p-1.5 rounded-full transition active:scale-95 relative ${showMenu ? "text-emerald-400 bg-emerald-500/10 scale-105" : "text-gray-400 hover:text-white"}`}
-                title="More Actions"
-              >
-                <MoreHorizontal size={16} />
-              </button>
-              
-              {/* Actions Menu Dropdown Popover */}
-              <AnimatePresence>
-                {showMenu && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95, y: 5 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 5 }}
-                    className="menu-dropdown absolute right-0 top-9 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2 rounded-2xl w-48 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto text-left"
-                  >
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        setIsPlaylistModalOpen(true);
-                      }}
-                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
-                    >
-                      <Plus size={14} className="text-emerald-400" />
-                      <span>Add to Playlist</span>
-                    </button>
-                    
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        navigator.clipboard.writeText(window.location.href);
-                        toast.success("Link copied!");
-                      }}
-                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
-                    >
-                      <Sparkles size={14} className="text-emerald-400" />
-                      <span>Copy Share Link</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        toast.success(`"${track.name}" pinned to queue!`);
-                      }}
-                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
-                    >
-                      <Disc size={14} className="text-emerald-400 animate-spin-slow" />
-                      <span>Pin to Queue</span>
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <button
-                onClick={() => setRightSidebarExpanded(!rightSidebarExpanded)}
-                className="p-1.5 rounded-full text-gray-400 hover:text-white transition active:scale-95"
-                title="Expand Full Screen"
-              >
-                <Maximize2 size={16} />
-              </button>
-            </div>
-          </div>
-
-          {/* TALL IMMERSIVE VISUAL CARD (Spotify Canvas style) */}
-          <div className="p-4 flex-shrink-0">
-            <div className="relative w-full h-[410px] rounded-[1.8rem] overflow-hidden group shadow-2xl shadow-black/80 border border-white/10 flex flex-col justify-end">
-              
-              {/* Optional Loop Video / Image */}
-              {track.videoUrl ? (
-                ytId ? (
-                  <iframe
-                    key={ytId}
-                    src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-                    className="absolute w-[240%] h-[100%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90 scale-[1.05] z-0"
-                    frameBorder="0"
-                    allow="autoplay; encrypted-media"
-                    title="loop-video"
-                  />
-                ) : (
-                  <video
-                    key={track.videoUrl}
-                    autoPlay
-                    loop
-                    muted={true}
-                    playsInline={true}
-                    preload="auto"
-                    crossOrigin="anonymous"
-                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
-                  >
-                    <source src={track.videoUrl} />
-                  </video>
-                )
-              ) : (
-                <img
-                  src={track.image}
-                  className="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105"
-                  alt="track"
-                />
-              )}
-
-              {/* Dark gradient overlay inside card */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent z-10 pointer-events-none" />
-
-              {/* Track Name + Artist + Action buttons layered over bottom of visual card */}
-              <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between pointer-events-auto">
-                <div className="min-w-0 pr-2 flex-1">
-                  <h3 className="text-base font-black tracking-tight text-white hover:underline cursor-pointer truncate drop-shadow-md">
-                    {track.name}
-                  </h3>
-                  <p className="text-[11px] text-emerald-400 hover:text-emerald-300 cursor-pointer mt-0.5 truncate font-bold drop-shadow hover:underline" onClick={(e) => { e.stopPropagation(); openArtistProfile(track.desc); }}>
-                    {track.desc || "Track details"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setIsPlaylistModalOpen(true); }}
-                    className="p-1.5 bg-transparent hover:scale-110 active:scale-95 text-white transition flex-shrink-0"
-                    title="Add to Playlist"
-                  >
-                    <Plus size={16} className="stroke-[3]" />
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); toggleLikeSong(track._id); }}
-                    className="p-1.5 bg-transparent hover:scale-110 active:scale-95 text-gray-400 hover:text-emerald-400 transition flex-shrink-0"
-                  >
-                    <Heart 
-                      size={16} 
-                      fill={likedSongs.includes(track._id) ? "#10b981" : "none"} 
-                      stroke={likedSongs.includes(track._id) ? "#10b981" : "currentColor"} 
-                      className={likedSongs.includes(track._id) ? "text-emerald-500" : ""}
-                    />
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* DYNAMIC CREDITS PANEL */}
-          <div className="px-4 py-3 border-t border-white/5 mt-2">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-black text-white tracking-tight">Credits</span>
-              <span 
-                onClick={() => openArtistProfile(track.desc)}
-                className="text-[10px] font-bold text-gray-400 hover:text-emerald-400 uppercase tracking-wider cursor-pointer transition-colors"
-              >
-                Show all
-              </span>
-            </div>
-
-            <div className="space-y-3.5 bg-[#181818] p-3 rounded-lg border border-white/5 shadow-inner">
-              {creditsList.map((artist, idx) => {
-                const isFollowing = followedArtists[artist.name];
-                return (
-                  <div key={`${artist.name}-${idx}`} className="flex items-center justify-between gap-2.5">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      {/* Avatar */}
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500 flex items-center justify-center font-bold text-black text-xs flex-shrink-0 shadow-md">
-                        {artist.name[0]}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-white truncate hover:underline cursor-pointer" onClick={() => openArtistProfile(artist.name)}>
-                          {artist.name}
-                        </p>
-                        <p className="text-[10px] text-gray-400 truncate">
-                          {artist.role}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => toggleFollow(artist.name)}
-                      className={`px-3 py-1 text-[10px] font-black rounded-full border transition active:scale-95 flex items-center gap-1 flex-shrink-0
-                        ${isFollowing 
-                          ? "border-emerald-500 text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10" 
-                          : "border-gray-500 text-white hover:border-white"}`}
-                    >
-                      {isFollowing ? (
-                        <>
-                          <UserCheck size={10} />
-                          <span>Following</span>
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus size={10} />
-                          <span>Follow</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* NEXT IN QUEUE PREVIEW */}
-          {nextTrack && (
-            <div className="px-4 py-3 border-t border-white/5 mt-auto">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-                  Next in queue
-                </span>
-                <span 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    navigate("/queue");
-                  }}
-                  className="text-[10px] font-bold text-emerald-400 hover:underline uppercase tracking-wider cursor-pointer"
-                >
-                  Open queue
-                </span>
-              </div>
-
-              <div 
-                onClick={() => playWithId(nextTrack._id, playQueue)}
-                className="flex items-center gap-3 bg-[#181818] p-2.5 rounded-lg border border-white/5 hover:bg-[#282828] cursor-pointer transition group shadow-inner"
-              >
-                <img
-                  src={nextTrack.image}
-                  className="w-10 h-10 rounded object-cover flex-shrink-0 group-hover:scale-105 transition duration-300 shadow-md"
-                  alt="next track"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition-colors">
-                    {nextTrack.name}
-                  </p>
-                  <p className="text-[10px] text-gray-400 truncate mt-0.5">
-                    {nextTrack.desc || "Track details"}
-                  </p>
-                </div>
-                <div className="w-6 h-6 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-90 flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition duration-300 flex-shrink-0 shadow-md">
-                  <Play size={10} fill="currentColor" className="ml-[1px]" />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-      <PlaylistModal isOpen={isPlaylistModalOpen} onClose={() => setIsPlaylistModalOpen(false)} songId={track._id} />
+          renderCollapsedPlayer()
+        )}
       </motion.div>
+      <PlaylistModal isOpen={isPlaylistModalOpen} onClose={() => setIsPlaylistModalOpen(false)} songId={track._id} />
     </AnimatePresence>
   );
 };
