@@ -1,10 +1,13 @@
 import React, { useContext, useState, useMemo } from "react";
 import { PlayerContext } from "../context/PlayerContext";
+import { useAuth } from "../context/AuthContext";
 import { assets } from "../assets/assets";
 import { motion } from "framer-motion";
+import Navbar from "./Navbar";
 
 const MobileSearch = () => {
   const { songsData, playWithId, track, openArtistProfile } = useContext(PlayerContext);
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredSongs = songsData.filter((song) =>
@@ -49,9 +52,20 @@ const MobileSearch = () => {
 
   return (
     <div className="flex flex-col h-full bg-[#121212] text-white">
+      {/* Navbar for larger screen heights */}
+      <Navbar />
+
       {/* Search input header */}
       <div className="p-4 bg-[#121212] sticky top-0 z-20">
-        <h1 className="text-3xl font-black mb-4 tracking-tight">Search</h1>
+        <div className="flex items-center justify-between mb-4 md:hidden">
+          <h1 className="text-3xl font-black tracking-tight">Search</h1>
+          {user && (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold text-black shadow-lg">
+              {user.name[0]?.toUpperCase()}
+            </div>
+          )}
+        </div>
+        <h1 className="hidden md:block text-3xl font-black mb-4 tracking-tight">Search</h1>
         <div className="relative">
           <input
             type="text"

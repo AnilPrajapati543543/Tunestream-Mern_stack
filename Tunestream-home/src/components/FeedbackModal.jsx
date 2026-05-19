@@ -13,6 +13,9 @@ const FeedbackModal = ({ isOpen, onClose, onSuccess }) => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Savage exit screen trigger state
+  const [showSavageOverlay, setShowSavageOverlay] = useState(false);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
@@ -38,6 +41,15 @@ const FeedbackModal = ({ isOpen, onClose, onSuccess }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Savage logout trigger sequence
+  const handleSavageExit = () => {
+    setShowSavageOverlay(true);
+    // Let the animation run for 2.2 seconds before completing the actual logout
+    setTimeout(() => {
+      onSuccess();
+    }, 2200);
   };
 
   // Define unique dynamic animations for each star index (0 to 4)
@@ -102,7 +114,7 @@ const FeedbackModal = ({ isOpen, onClose, onSuccess }) => {
           <div className="w-full flex items-center justify-between pb-2 border-b border-white/5">
             <span className="text-[10px] font-black uppercase text-amber-500 tracking-[0.25em] pl-1">TuneStream Ratings</span>
             <button 
-              onClick={() => onSuccess()}
+              onClick={handleSavageExit}
               className="p-1.5 rounded-full hover:bg-white/5 text-gray-400 hover:text-white transition active:scale-95"
             >
               <X size={16} />
@@ -188,14 +200,54 @@ const FeedbackModal = ({ isOpen, onClose, onSuccess }) => {
 
               <button
                 type="button"
-                onClick={() => onSuccess()}
-                className="text-[10px] text-gray-500 hover:text-white uppercase font-bold tracking-widest hover:underline pt-1 active:scale-95 transition"
+                onClick={handleSavageExit}
+                className="text-[10px] text-gray-500 hover:text-amber-500 uppercase font-bold tracking-widest hover:underline pt-1 active:scale-95 transition"
               >
                 Skip Feedback & Logout
               </button>
             </div>
           </form>
         </motion.div>
+
+        {/* Dynamic Savage Logout Overlay Animation */}
+        <AnimatePresence>
+          {showSavageOverlay && (
+            <motion.div
+              initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+              animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center text-center p-6 gap-6"
+            >
+              {/* Savage Middle Finger Motion Graphics */}
+              <motion.div
+                initial={{ scale: 0.3, rotate: -45, y: 100 }}
+                animate={{ 
+                  scale: [0.3, 1.2, 1], 
+                  rotate: [0, -10, 10, 0],
+                  y: 0 
+                }}
+                transition={{ duration: 0.8, type: "spring", damping: 12 }}
+                className="text-8xl select-none"
+              >
+                🖕
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-2 max-w-xs"
+              >
+                <h3 className="text-2xl font-black text-amber-500 uppercase tracking-widest animate-pulse">
+                  FUCK OFF THEN!
+                </h3>
+                <p className="text-xs text-gray-400 font-semibold leading-relaxed">
+                  Too lazy to tap a star? Logging you out immediately. Don't let the door hit you on the way out!
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </AnimatePresence>
   );
