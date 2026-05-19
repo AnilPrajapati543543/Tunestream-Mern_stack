@@ -31,7 +31,7 @@ const SongItem = ({ name, image, desc, id }) => {
         {/* BOTTOM-RIGHT PLAY BUTTON */}
         <div className='absolute inset-0 pointer-events-none'>
             <div
-                className='absolute bottom-2 right-2 bg-emerald-500 hover:scale-110 active:scale-95 w-11 h-11 rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-auto'
+                className='absolute bottom-2 right-2 bg-emerald-500 hover:scale-110 active:scale-95 w-11 h-11 rounded-full flex items-center justify-center shadow-xl opacity-0 invisible translate-y-3 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 pointer-events-auto'
             >
                 <Play size={18} fill="black" className="text-black ml-[2.5px]" />
             </div>

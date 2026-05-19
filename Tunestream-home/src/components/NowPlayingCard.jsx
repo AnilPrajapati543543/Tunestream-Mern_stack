@@ -178,7 +178,7 @@ const NowPlayingCard = () => {
         onScroll={(e) => setScrollOffset(e.target.scrollTop)}
         className="w-full h-full flex flex-col relative overflow-y-auto custom-scrollbar scroll-smooth"
         style={{
-          background: `radial-gradient(circle at center, ${bgColor} 0%, #080808 100%)`
+          background: "transparent"
         }}
       >
         {/* Large Blurred Backdrop Image */}
@@ -303,11 +303,11 @@ const NowPlayingCard = () => {
           <div 
             className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 select-none z-10 sticky top-[80px] pointer-events-none"
             style={{
-              transform: `perspective(1000px) rotateX(${scrollOffset * 0.03}deg) translateY(${translateY}px) scale(${scale})`,
+              transform: `perspective(1200px) rotateX(${scrollOffset * 0.04}deg) rotateY(${scrollOffset * -0.005}deg) translateY(${translateY}px) scale(${scale})`,
               filter: `brightness(${brightness})`,
               opacity: coverOpacity,
-              transition: "transform 0.05s ease-out, filter 0.05s ease-out, opacity 0.05s ease-out",
-              transformStyle: "preserve-3d"
+              transformStyle: "preserve-3d",
+              willChange: "transform, opacity, filter"
             }}
           >
             <div className="relative group flex flex-col items-center pointer-events-auto">
@@ -527,13 +527,67 @@ const NowPlayingCard = () => {
                 {track.album !== "none" ? track.album : "Tunestream Playlist"}
               </span>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button className="p-1 rounded-full text-gray-400 hover:text-white transition active:scale-95">
+            <div className="flex items-center gap-2 flex-shrink-0 relative">
+              <button 
+                onClick={() => {
+                  setShowMenu(!showMenu);
+                  if (showLyrics) setShowLyrics(false);
+                }}
+                className={`p-1.5 rounded-full transition active:scale-95 relative ${showMenu ? "text-emerald-400 bg-emerald-500/10 scale-105" : "text-gray-400 hover:text-white"}`}
+                title="More Actions"
+              >
                 <MoreHorizontal size={16} />
               </button>
+              
+              {/* Actions Menu Dropdown Popover */}
+              <AnimatePresence>
+                {showMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: 5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 5 }}
+                    className="absolute right-0 top-9 bg-[#181818]/95 backdrop-blur-xl border border-white/10 p-2 rounded-2xl w-48 shadow-2xl z-50 flex flex-col gap-1 pointer-events-auto text-left"
+                  >
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        setIsPlaylistModalOpen(true);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                    >
+                      <Plus size={14} className="text-emerald-400" />
+                      <span>Add to Playlist</span>
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        navigator.clipboard.writeText(window.location.href);
+                        toast.success("Link copied!");
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                    >
+                      <Sparkles size={14} className="text-emerald-400" />
+                      <span>Copy Share Link</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        toast.success(`"${track.name}" pinned to queue!`);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                    >
+                      <Disc size={14} className="text-emerald-400 animate-spin-slow" />
+                      <span>Pin to Queue</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <button
                 onClick={() => setRightSidebarExpanded(!rightSidebarExpanded)}
-                className="p-1 rounded-full text-gray-400 hover:text-white transition active:scale-95"
+                className="p-1.5 rounded-full text-gray-400 hover:text-white transition active:scale-95"
                 title="Expand Full Screen"
               >
                 <Maximize2 size={16} />

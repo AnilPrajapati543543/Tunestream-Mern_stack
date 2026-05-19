@@ -45,7 +45,7 @@ const AlbumItem = ({ image, name, desc, id }) => {
               rounded-full
               flex items-center justify-center
               shadow-xl
-              opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0
+              opacity-0 invisible translate-y-3 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
               transition-all duration-300
               pointer-events-auto
             "
