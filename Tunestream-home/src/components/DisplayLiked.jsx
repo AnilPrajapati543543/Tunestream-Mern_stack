@@ -50,7 +50,7 @@ const DisplayLiked = () => {
       <div 
         className='relative px-4 md:px-6 pt-10 md:pt-16 pb-6 md:pb-8 bg-gradient-to-b from-[#4f46e5]/40 to-[#121212]'
       >
-        <div className='flex flex-col md:flex-row items-end gap-6 relative z-10'>
+        <div className='flex flex-col md:flex-row items-start md:items-end gap-4 md:gap-6 relative z-10'>
           {/* Big Purple Heart Badge */}
           <div className='w-28 h-28 md:w-40 md:h-40 bg-gradient-to-br from-[#4f46e5] via-[#6366f1] to-[#818cf8] rounded-2xl shadow-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group border border-white/10'>
             <Heart size={48} fill="white" className='text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:scale-110 transition duration-500 md:w-[72px] md:h-[72px]' />

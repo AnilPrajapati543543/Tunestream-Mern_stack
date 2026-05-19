@@ -96,7 +96,7 @@ const FeedbackModal = ({ isOpen, onClose, onSuccess }) => {
           initial={{ opacity: 0, scale: 0.9, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 30 }}
-          className="relative w-full max-w-md bg-[#0b0b0f] border border-white/10 rounded-[2.5rem] p-6 text-white text-center flex flex-col items-center gap-6 shadow-[0_30px_70px_rgba(0,0,0,0.85)] z-10"
+          className="relative w-full max-w-md bg-[#0b0b0f] border border-white/10 rounded-[2.5rem] p-5 sm:p-6 text-white text-center flex flex-col items-center gap-4 sm:gap-6 shadow-[0_30px_70px_rgba(0,0,0,0.85)] z-10 max-h-[92vh] overflow-y-auto no-scrollbar"
         >
           {/* Header */}
           <div className="w-full flex items-center justify-between pb-2 border-b border-white/5">

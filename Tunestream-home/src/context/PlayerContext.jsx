@@ -277,6 +277,9 @@ const PlayerContextProvider = (props) => {
         load();
     }, [isAuthenticated]);
 
+    // MOBILE NOW PLAYING DRAWER STATE
+    const [mobileNowPlayingActive, setMobileNowPlayingActive] = useState(false);
+
     // CONTEXT VALUE
     const value = {
         audioRef,
@@ -319,6 +322,8 @@ const PlayerContextProvider = (props) => {
         setArtistProfileOpen,
         activeArtistName,
         openArtistProfile,
+        mobileNowPlayingActive,
+        setMobileNowPlayingActive,
         loading
     };
 

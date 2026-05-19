@@ -23,7 +23,9 @@ const NowPlayingCard = () => {
     setRightSidebarExpanded,
     likedSongs,
     toggleLikeSong,
-    openArtistProfile
+    openArtistProfile,
+    mobileNowPlayingActive,
+    setMobileNowPlayingActive
   } = useContext(PlayerContext);
 
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
@@ -181,7 +183,7 @@ const NowPlayingCard = () => {
     ];
   }, [track]);
 
-  if (!track || collapsed) {
+  if (!track || (collapsed && !mobileNowPlayingActive)) {
     return null;
   }
 
@@ -207,13 +209,24 @@ const NowPlayingCard = () => {
 
         {/* HEADER SECTION */}
         <div className="p-6 flex items-center justify-between border-b border-white/5 sticky top-0 bg-[#080808]/40 backdrop-blur-md z-20">
-          <div className="flex flex-col min-w-0">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
-              Playing from
-            </span>
-            <span className="text-sm font-black truncate text-white mt-0.5">
-              {track.album !== "none" ? track.album : "Tunestream Playlist"}
-            </span>
+          <div className="flex items-center gap-3 min-w-0">
+            {mobileNowPlayingActive && (
+              <button 
+                onClick={() => setMobileNowPlayingActive(false)}
+                className="p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition active:scale-95 mr-1"
+                title="Collapse Player"
+              >
+                <ChevronDown size={22} />
+              </button>
+            )}
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                Playing from
+              </span>
+              <span className="text-sm font-black truncate text-white mt-0.5">
+                {track.album !== "none" ? track.album : "Tunestream Playlist"}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-4 relative">
@@ -307,7 +320,10 @@ const NowPlayingCard = () => {
 
             {/* Minimize / Full Screen Toggle */}
             <button
-              onClick={() => setRightSidebarExpanded(false)}
+              onClick={() => {
+                setRightSidebarExpanded(false);
+                setMobileNowPlayingActive(false);
+              }}
               className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition active:scale-95"
               title="Exit Full Screen"
             >

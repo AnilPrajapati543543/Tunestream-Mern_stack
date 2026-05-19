@@ -26,14 +26,20 @@ const Player = () => {
     leftSidebarCollapsed,
     setLeftSidebarCollapsed,
     rightSidebarCollapsed,
-    setRightSidebarCollapsed
+    setRightSidebarCollapsed,
+    setMobileNowPlayingActive
   } = useContext(PlayerContext);
 
   if (!track) return null;
 
   return (
     <div 
-      className='fixed bottom-[70px] md:bottom-0 md:relative h-auto min-h-[56px] md:min-h-[70px] md:h-[10%] w-full bg-black/95 backdrop-blur-lg text-white flex flex-col md:flex-row items-center justify-between px-3 md:px-6 border-t border-white/5 z-40 transition-all duration-300'
+      onClick={() => {
+        if (window.innerWidth <= 768) {
+          setMobileNowPlayingActive(true);
+        }
+      }}
+      className='fixed bottom-[70px] md:bottom-0 md:relative h-auto min-h-[56px] md:min-h-[70px] md:h-[10%] w-full bg-black/95 backdrop-blur-lg text-white flex flex-col md:flex-row items-center justify-between px-3 md:px-6 border-t border-white/5 z-40 transition-all duration-300 cursor-pointer md:cursor-default'
     >
       
       {/* SONG INFO & MOBILE PLAY BUTTON */}
@@ -48,9 +54,9 @@ const Player = () => {
         
         {/* Mobile-only Play/Pause button next to song info */}
         <div className='flex md:hidden items-center gap-3 sm:gap-4'>
-            <img onClick={previous} className='w-4 sm:w-5 opacity-60 hover:opacity-100 cursor-pointer active:scale-75 transition' src={assets.prev_icon} alt="prev" />
+            <img onClick={(e) => { e.stopPropagation(); previous(); }} className='w-4 sm:w-5 opacity-60 hover:opacity-100 cursor-pointer active:scale-75 transition' src={assets.prev_icon} alt="prev" />
             <button
-                onClick={() => playStatus ? pause() : play()}
+                onClick={(e) => { e.stopPropagation(); playStatus ? pause() : play(); }}
                 className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
             >
                 {playStatus ? (
@@ -59,7 +65,7 @@ const Player = () => {
                 <img src={assets.play_icon} className="w-4 h-4 invert ml-[2px]" alt="play" />
                 )}
             </button>
-            <img onClick={next} className='w-4 sm:w-5 opacity-60 hover:opacity-100 cursor-pointer active:scale-75 transition' src={assets.next_icon} alt="next" />
+            <img onClick={(e) => { e.stopPropagation(); next(); }} className='w-4 sm:w-5 opacity-60 hover:opacity-100 cursor-pointer active:scale-75 transition' src={assets.next_icon} alt="next" />
         </div>
       </div>
 
@@ -118,7 +124,7 @@ const Player = () => {
             {String(time.currentTime.minute).padStart(2, '0')}:{String(time.currentTime.second).padStart(2, '0')}
           </p>
           <div
-            onClick={seekSong}
+            onClick={(e) => { e.stopPropagation(); seekSong(e); }}
             className='flex-1 h-[3px] md:h-[4px] bg-white/10 rounded-full cursor-pointer relative group overflow-hidden'
           >
             <div

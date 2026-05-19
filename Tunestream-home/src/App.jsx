@@ -10,6 +10,7 @@ import BottomNav from "./components/BottomNav.jsx";
 import { PlayerContext } from "./context/PlayerContext";
 import { useAuth } from "./context/AuthContext";
 import { ToastContainer } from 'react-toastify';
+import { motion, AnimatePresence } from "framer-motion";
 import 'react-toastify/dist/ReactToastify.css';
 
 import ResetPassword from "./pages/ResetPassword.jsx";
@@ -25,7 +26,7 @@ const ArtistRedirect = () => {
 };
 
 const App = () => {
-  const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen, leftSidebarExpanded, rightSidebarExpanded, rightSidebarCollapsed } = useContext(PlayerContext);
+  const { audioRef, track, loading: playerLoading, isAuthModalOpen, setIsAuthModalOpen, leftSidebarExpanded, rightSidebarExpanded, rightSidebarCollapsed, mobileNowPlayingActive } = useContext(PlayerContext);
   const { user, loading: authLoading } = useAuth();
 
   if (authLoading) return (
@@ -74,6 +75,21 @@ const App = () => {
             </div>
 
             {track && <audio ref={audioRef} src={track.file} preload="auto" />}
+
+            {/* Mobile Full-Screen NowPlaying view */}
+            <AnimatePresence>
+              {mobileNowPlayingActive && (
+                <motion.div 
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                  className="fixed inset-0 z-[100] bg-[#121212] flex flex-col md:hidden"
+                >
+                  <NowPlayingCard />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         } />
       </Routes>
