@@ -8,13 +8,13 @@ const Sidebar = ({ darkMode, isOpen, setIsOpen }) => {
   const { user } = useAuth();
 
   const menuItems = [
-    { to: "/add-song", icon: assets.add_song, text: "Add Song" },
-    { to: "/list-songs", icon: assets.song_icon, text: "List Songs" },
     { to: "/add-album", icon: assets.add_album, text: "Add Album" },
-    { to: "/list-albums", icon: assets.album_icon, text: "List Album" },
-    ...(user?.role === 'admin' ? [{ to: "/linked-users", icon: assets.album_icon, text: "Linked Users" }] : []),
-    { to: "/report", icon: assets.song_icon, text: "Report" },
+    { to: "/add-song", icon: assets.add_song, text: "Add Song" },
     { to: "/artist-profile", icon: assets.song_icon, text: "Artist Profile" },
+    ...(user?.role === 'admin' ? [{ to: "/linked-users", icon: assets.album_icon, text: "Linked Users" }] : []),
+    { to: "/list-albums", icon: assets.album_icon, text: "List Album" },
+    { to: "/list-songs", icon: assets.song_icon, text: "List Songs" },
+    { to: "/report", icon: assets.song_icon, text: "Report" },
   ];
 
   return (
@@ -86,23 +86,6 @@ const Sidebar = ({ darkMode, isOpen, setIsOpen }) => {
             )}
           </NavLink>
         ))}
-
-        {/* Dynamic Back-Link to User Home Portal */}
-        <a 
-          href={window.location.origin.includes("localhost") 
-            ? window.location.origin.replace("5174", "5173") 
-            : window.location.origin.replace("-admin", "-home").replace("admin.", "")}
-          className="group rounded-full mt-2"
-          target="_self"
-        >
-          <motion.div
-            whileHover={{ x: 4 }}
-            className="flex items-center gap-4 px-5 py-4 rounded-full text-[14px] font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-color)] hover:text-[var(--text-primary)] transition-all duration-300 relative overflow-hidden"
-          >
-            <span className="text-lg opacity-70 group-hover:scale-110 transition-transform">🏠</span>
-            <span className="relative z-10 text-[var(--accent-color)] font-black">User Portal</span>
-          </motion.div>
-        </a>
 
       </nav>
 

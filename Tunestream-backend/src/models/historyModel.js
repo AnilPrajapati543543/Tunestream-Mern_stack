@@ -13,7 +13,7 @@ const historySchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    enum: ["ADDED_SONG", "DELETED_SONG", "ADDED_ALBUM", "DELETED_ALBUM", "REMOVED_FROM_PLAYLIST", "DELETED_PLAYLIST", "CREATED_PLAYLIST", "ADDED_TO_PLAYLIST", "USER_JOINED", "REMOVED_USER"],
+    enum: ["ADDED_SONG", "DELETED_SONG", "ADDED_ALBUM", "DELETED_ALBUM", "REMOVED_FROM_PLAYLIST", "DELETED_PLAYLIST", "CREATED_PLAYLIST", "ADDED_TO_PLAYLIST", "USER_JOINED", "REMOVED_USER", "FEEDBACK_SUBMITTED"],
     required: true
   },
   itemName: {
@@ -22,7 +22,7 @@ const historySchema = new mongoose.Schema({
   },
   itemType: {
     type: String,
-    enum: ["Song", "Album", "Playlist", "User"],
+    enum: ["Song", "Album", "Playlist", "User", "Feedback"],
     required: true
   }
 }, { timestamps: true });
