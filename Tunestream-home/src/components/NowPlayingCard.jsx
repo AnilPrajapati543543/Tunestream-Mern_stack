@@ -321,7 +321,7 @@ const NowPlayingCard = () => {
                     <iframe
                       key={ytId}
                       src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-                      className="absolute inset-0 w-full h-full object-cover scale-150 pointer-events-none opacity-90"
+                      className="absolute w-[240%] h-[100%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90 scale-[1.05] z-0"
                       frameBorder="0"
                       allow="autoplay; encrypted-media"
                       title="loop-video-fullscreen"
@@ -605,7 +605,7 @@ const NowPlayingCard = () => {
                   <iframe
                     key={ytId}
                     src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1`}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover pointer-events-none opacity-90 scale-[1.75] z-0"
+                    className="absolute w-[240%] h-[100%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90 scale-[1.05] z-0"
                     frameBorder="0"
                     allow="autoplay; encrypted-media"
                     title="loop-video"

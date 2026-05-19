@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
+import { Play, Pause } from "lucide-react";
+import { PlayerContext } from "../context/PlayerContext";
 
 const AlbumItem = ({ image, name, desc, id }) => {
   const navigate = useNavigate();
+  const { track, playStatus, play, pause } = useContext(PlayerContext);
+
+  const isCurrentAlbum = track && track.album === name;
+  const isPlaying = isCurrentAlbum && playStatus;
+
+  const handlePlayClick = (e) => {
+    e.stopPropagation();
+    if (isCurrentAlbum) {
+      if (playStatus) {
+        pause();
+      } else {
+        play();
+      }
+    } else {
+      navigate(`/album/${id}`);
+    }
+  };
 
   return (
     <motion.div
@@ -38,6 +56,7 @@ const AlbumItem = ({ image, name, desc, id }) => {
         {/* BOTTOM-RIGHT PLAY BUTTON */}
         <div className="absolute inset-0 pointer-events-none">
           <div
+            onClick={handlePlayClick}
             className="
               absolute bottom-2 right-2
               bg-emerald-500 hover:scale-110 active:scale-95
@@ -50,7 +69,11 @@ const AlbumItem = ({ image, name, desc, id }) => {
               pointer-events-auto
             "
           >
-            <Play size={16} fill="black" className="text-black ml-[2px]" />
+            {isPlaying ? (
+              <Pause size={16} fill="black" className="text-black" />
+            ) : (
+              <Play size={16} fill="black" className="text-black ml-[2px]" />
+            )}
           </div>
         </div>
 
