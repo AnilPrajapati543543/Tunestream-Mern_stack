@@ -86,7 +86,12 @@ const OnboardingGesture = () => {
       const step = steps[currentStep];
       const element = document.getElementById(step.targetId);
       if (element) {
-        setTargetRect(element.getBoundingClientRect());
+        const rect = element.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) {
+          setTargetRect(null);
+        } else {
+          setTargetRect(rect);
+        }
       } else {
         setTargetRect(null); // Fallback to centered card overlay if target is hidden/absent
       }

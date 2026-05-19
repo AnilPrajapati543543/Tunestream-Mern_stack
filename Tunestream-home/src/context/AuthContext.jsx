@@ -39,20 +39,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-    useEffect(() => {
-  const loadUser = async () => {
-    if (document.cookie.includes("token")) {
-      try {
-        const res = await API.get("/user/me");
-        setUser(res.data);
-      } catch (err) {
-        setUser(null);
-      }
-    }
-  };
 
-  loadUser();
-}, []);
 
   return (
     <AuthContext.Provider

@@ -16,7 +16,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import ResetPassword from "./pages/ResetPassword.jsx";
 import OnboardingGesture from "./components/OnboardingGesture.jsx";
 
-export const url = import.meta.env.VITE_API_URL || "https://tunestream-backend.vercel.app";
+let appUrl = import.meta.env.VITE_API_URL || "https://www-tunestream.onrender.com";
+if (appUrl.includes("tunestream-backend.vercel.app")) {
+  appUrl = "https://www-tunestream.onrender.com";
+}
+export const url = appUrl;
 
 const ArtistRedirect = () => {
   React.useEffect(() => {
