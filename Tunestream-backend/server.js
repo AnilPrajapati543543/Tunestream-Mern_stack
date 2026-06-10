@@ -15,6 +15,7 @@ import songRouter from "./src/routes/songRoute.js";
 import albumRouter from "./src/routes/albumRoute.js";
 import historyRouter from "./src/routes/historyRoutes.js";
 import playlistRouter from "./src/routes/playlistRoutes.js";
+import socialRouter from "./src/routes/socialRoutes.js";
 import errorMiddleware from "./src/middleware/errorMiddleware.js";
 
 // ================= CONFIG =================
@@ -127,6 +128,7 @@ app.use("/api/song", songRouter);
 app.use("/api/album", albumRouter);
 app.use("/api/history", historyRouter);
 app.use("/api/playlist", playlistRouter);
+app.use("/api/social", socialRouter);
 
 // ================= 404 HANDLER =================
 app.use((req, res) => {

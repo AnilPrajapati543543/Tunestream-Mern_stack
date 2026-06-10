@@ -60,7 +60,34 @@ const userSchema = new mongoose.Schema({
   totalSessionTime: {
     type: Number,
     default: 0 // in seconds
-  }
+  },
+  following: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  xp: {
+    type: Number,
+    default: 0
+  },
+  level: {
+    type: Number,
+    default: 1
+  },
+  badges: [{
+    type: String
+  }],
+  dailyChallenges: [{
+    id: String,
+    title: String,
+    target: Number,
+    current: { type: Number, default: 0 },
+    completed: { type: Boolean, default: false },
+    xpReward: Number
+  }]
 
 }, { timestamps: true });
 

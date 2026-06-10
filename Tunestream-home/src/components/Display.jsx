@@ -9,6 +9,14 @@ import DisplayLiked from "./DisplayLiked";
 import DisplayQueue from "./DisplayQueue";
 import { PlayerContext } from "../context/PlayerContext";
 
+// Redesigned components
+import AudioVisualizer from "./AudioVisualizer";
+import AnalyticsDashboard from "./AnalyticsDashboard";
+import SocialHub from "./SocialHub";
+import UserProfile from "./UserProfile";
+import GamificationHub from "./GamificationHub";
+import GlobalMap from "./GlobalMap";
+
 const Display = () => {
   const { albumsData } = useContext(PlayerContext);
   const displayRef = useRef(null);
@@ -60,6 +68,12 @@ const Display = () => {
           element={<DisplayAlbum album={currentAlbum} />}
         />
         <Route path="/playlist/:id" element={<DisplayPlaylist />} />
+        <Route path="/visualizer" element={<AudioVisualizer />} />
+        <Route path="/analytics" element={<AnalyticsDashboard />} />
+        <Route path="/social" element={<SocialHub />} />
+        <Route path="/profile/:id" element={<UserProfile />} />
+        <Route path="/gamification" element={<GamificationHub />} />
+        <Route path="/map" element={<GlobalMap />} />
       </Routes>
     </div>
   );

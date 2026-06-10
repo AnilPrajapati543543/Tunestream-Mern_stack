@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PlayerContext } from "../context/PlayerContext";
 import API from "../api/axios";
 import { toast } from "react-toastify";
-import { Plus, Search, Home, Library, ListMusic, User, FolderPlus, X, Check, ChevronLeft, ChevronRight, LayoutGrid, Grid3X3, List, Maximize2, Minimize2, Play } from "lucide-react";
+import { Plus, Search, Home, Library, ListMusic, User, FolderPlus, X, Check, ChevronLeft, ChevronRight, LayoutGrid, Grid3X3, List, Maximize2, Minimize2, Play, Globe, Activity, Users, Trophy } from "lucide-react";
 import { SidebarSkeleton } from "./SkeletonLoaders";
 
 const Sidebar = () => {
@@ -477,6 +477,94 @@ const Sidebar = () => {
                 className="text-sm font-bold whitespace-nowrap"
               >
                 Home
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* GLOBAL MAP BUTTON */}
+        <div
+          onClick={() => navigate("/map")}
+          className={`flex items-center gap-4 py-2 rounded-md cursor-pointer transition-colors hover:text-white text-gray-400
+          ${collapsed ? "justify-center" : "px-2"}`}
+        >
+          <Globe size={22} className="text-gray-400 group-hover:text-white transition-transform hover:scale-105" />
+          <AnimatePresence mode="popLayout">
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-bold whitespace-nowrap"
+              >
+                Music Map
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ANALYTICS BUTTON */}
+        <div
+          onClick={() => navigate("/analytics")}
+          className={`flex items-center gap-4 py-2 rounded-md cursor-pointer transition-colors hover:text-white text-gray-400
+          ${collapsed ? "justify-center" : "px-2"}`}
+        >
+          <Activity size={22} className="text-gray-400 group-hover:text-white transition-transform hover:scale-105" />
+          <AnimatePresence mode="popLayout">
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-bold whitespace-nowrap"
+              >
+                Listening Stats
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* SOCIAL HUB BUTTON */}
+        <div
+          onClick={() => navigate("/social")}
+          className={`flex items-center gap-4 py-2 rounded-md cursor-pointer transition-colors hover:text-white text-gray-400
+          ${collapsed ? "justify-center" : "px-2"}`}
+        >
+          <Users size={22} className="text-gray-400 group-hover:text-white transition-transform hover:scale-105" />
+          <AnimatePresence mode="popLayout">
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-bold whitespace-nowrap"
+              >
+                Social Hub
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* QUEST BOARD BUTTON */}
+        <div
+          onClick={() => navigate("/gamification")}
+          className={`flex items-center gap-4 py-2 rounded-md cursor-pointer transition-colors hover:text-white text-gray-400
+          ${collapsed ? "justify-center" : "px-2"}`}
+        >
+          <Trophy size={22} className="text-gray-400 group-hover:text-white transition-transform hover:scale-105" />
+          <AnimatePresence mode="popLayout">
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="text-sm font-bold whitespace-nowrap"
+              >
+                Quests Board
               </motion.span>
             )}
           </AnimatePresence>

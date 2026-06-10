@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { PlayerContext } from "../context/PlayerContext";
 import API from "../api/axios";
 import FeedbackModal from "./FeedbackModal.jsx";
+import { Sun, Moon, Award } from "lucide-react";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -13,8 +14,28 @@ const Navbar = () => {
   const [ripple, setRipple] = useState({ x: 0, y: 0, show: false });
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
+  // Theme state
+  const [theme, setTheme] = useState(() => {
+    try {
+      const stored = localStorage.getItem("tunestream_theme");
+      if (stored) {
+        document.documentElement.setAttribute("data-theme", stored);
+        return stored;
+      }
+    } catch (_) {}
+    return "dark";
+  });
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    try {
+      localStorage.setItem("tunestream_theme", nextTheme);
+    } catch (_) {}
+  };
+
   const handleLogout = (e) => {
-    // Ripple effect position
     const rect = e.currentTarget.getBoundingClientRect();
     setRipple({
       x: e.clientX - rect.left,
@@ -26,7 +47,6 @@ const Navbar = () => {
       setRipple({ x: 0, y: 0, show: false });
     }, 500);
 
-    // Open feedback modal instead of immediate session kill
     setIsFeedbackModalOpen(true);
   };
 
@@ -55,15 +75,29 @@ const Navbar = () => {
       <div className="flex items-center gap-2">
         {user ? (
           <div className="flex items-center gap-3">
-             <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold text-black shadow-lg">
-                {user.name[0]}
+             <div 
+               onClick={() => navigate(`/profile/${user.id || user._id}`)}
+               className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-black text-black shadow-lg relative cursor-pointer hover:scale-105 transition active:scale-95 group"
+               title="View Public Profile"
+             >
+                {user.name[0].toUpperCase()}
+                <span className="absolute -bottom-1 -right-1 bg-yellow-500 text-black text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-black shadow-md">
+                  {user.level || 1}
+                </span>
+             </div>
+             <div className="hidden md:flex flex-col">
+               <span className="text-xs font-bold text-white leading-none">{user.name}</span>
+               <span className="text-[10px] text-gray-400 font-bold mt-0.5 flex items-center gap-0.5">
+                 <Award size={10} className="text-yellow-500" />
+                 Level {user.level || 1}
+               </span>
              </div>
           </div>
         ) : (
           <div className="flex items-center gap-2 sm:gap-3">
             <button 
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs md:text-sm font-semibold text-gray-400 hover:text-white transition-colors"
+               onClick={() => setIsAuthModalOpen(true)}
+               className="px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs md:text-sm font-semibold text-gray-400 hover:text-white transition-colors"
             >
               Sign up
             </button>
@@ -80,6 +114,15 @@ const Navbar = () => {
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-3 relative">
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-full transition-all border border-white/5 active:scale-95 flex items-center justify-center"
+          title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          {theme === "dark" ? <Sun size={16} className="text-yellow-500 animate-pulse" /> : <Moon size={16} className="text-indigo-400" />}
+        </button>
+
         <button 
           id="onboarding-admin-portal"
           onClick={() => window.open(import.meta.env.VITE_ADMIN_URL || "https://www-tunestream-admin.vercel.app", "_blank")}
@@ -88,10 +131,10 @@ const Navbar = () => {
           <span>Creator Portal</span>
         </button>
 
-        {user ? (
+        {user && (
           <button
             onClick={handleLogout}
-            className="relative overflow-hidden bg-emerald-800 hover:bg-emerald-900 active:scale-95 transition-all duration-200 px-3 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium shadow-md"
+            className="relative overflow-hidden bg-emerald-800 hover:bg-emerald-900 active:scale-95 transition-all duration-200 px-3 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium shadow-md text-white"
           >
             Logout
 
@@ -109,10 +152,6 @@ const Navbar = () => {
               />
             )}
           </button>
-        ) : (
-          <div className="flex gap-4">
-             {/* Add any other guest buttons here if needed */}
-          </div>
         )}
       </div>
     </div>

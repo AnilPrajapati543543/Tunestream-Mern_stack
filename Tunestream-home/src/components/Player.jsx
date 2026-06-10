@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets.js';
 import { PlayerContext } from '../context/PlayerContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ListMusic, Tv, Library } from 'lucide-react';
+import { ListMusic, Tv, Library, Sparkles, Activity } from 'lucide-react';
 import VolumeControl from "./VolumeControl";
+import API from "../api/axios";
+import { toast } from "react-toastify";
 
 const Player = () => {
   const navigate = useNavigate();
@@ -29,6 +31,48 @@ const Player = () => {
     setRightSidebarCollapsed,
     setMobileNowPlayingActive
   } = useContext(PlayerContext);
+
+  const [isAIDJEnabled, setIsAIDJEnabled] = useState(false);
+
+  // Log track play for analytics on database
+  useEffect(() => {
+    if (track) {
+      const logPlayToDB = async () => {
+        try {
+          const artist = track.desc ? track.desc.split(/[,&]/)[0].trim() : "various";
+          await API.post("/history/log-play", {
+            songId: track._id,
+            songName: track.name,
+            artistName: artist,
+            duration: 30 // logs standard 30s playback trigger
+          });
+        } catch (_) {}
+      };
+      logPlayToDB();
+    }
+  }, [track]);
+
+  // AI DJ speech synthesis hook
+  useEffect(() => {
+    if (isAIDJEnabled && track && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const artist = track.desc ? track.desc.split(/[,&]/)[0].trim() : "various artists";
+      const phrases = [
+        `Hey there! You're locked into TuneStream AI DJ. Up next, we have a premium cut: ${track.name} by the talented ${artist}. Check this one out!`,
+        `TuneStream AI DJ in the mix. Transitioning now into ${track.name} from the album ${track.album !== 'none' ? track.album : 'Hits Playlist'}. Enjoy the vibe!`,
+        `This is your AI DJ. Spicing up your listening feed with a record named ${track.name} by ${artist}. Let's tune in.`
+      ];
+      const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+      const utterance = new SpeechSynthesisUtterance(phrase);
+      
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice = voices.find(v => v.lang.includes("en-US") && v.name.includes("Google")) || voices.find(v => v.lang.includes("en"));
+      if (englishVoice) utterance.voice = englishVoice;
+      utterance.pitch = 0.95;
+      utterance.rate = 1.05;
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [track, isAIDJEnabled]);
 
   if (!track) return null;
 
@@ -167,6 +211,33 @@ const Player = () => {
            title="Now Playing View"
          >
            <Tv size={18} />
+         </button>
+
+         {/* AI DJ toggle button */}
+         <button 
+           onClick={() => {
+             setIsAIDJEnabled(!isAIDJEnabled);
+             toast.success(!isAIDJEnabled ? "AI DJ Mode Activated!" : "AI DJ Mode Deactivated");
+           }}
+           className={`p-1.5 rounded-full hover:bg-white/10 transition-all ${isAIDJEnabled ? "text-yellow-400 drop-shadow-[0_0_6px_rgba(234,179,8,0.6)] animate-pulse" : "text-gray-400 hover:text-white"}`}
+           title="Toggle AI DJ Voice Assistant"
+         >
+           <Sparkles size={18} />
+         </button>
+
+         {/* Visualizer toggle button */}
+         <button 
+           onClick={() => {
+             if (location.pathname === "/visualizer") {
+               navigate("/");
+             } else {
+               navigate("/visualizer");
+             }
+           }}
+           className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${location.pathname === "/visualizer" ? "text-emerald-400" : "text-gray-400 hover:text-white"}`}
+           title="Toggle Audio Visualizer"
+         >
+           <Activity size={18} />
          </button>
 
          <div className="w-[120px] flex items-center">

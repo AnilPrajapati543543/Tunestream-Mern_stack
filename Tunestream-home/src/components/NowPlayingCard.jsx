@@ -190,22 +190,83 @@ const NowPlayingCard = () => {
     return playQueue[0]; // loop back to first song if none
   }, [track, playQueue]);
 
-  const lyricsLines = useMemo(() => {
-    return [
-      `♪ "${track?.name || 'Track'}" Playing on Tunestream ♪`,
-      "I hear the music calling my name",
-      "The rhythm flows through my veins",
-      "We trace the lights and dance in the dark",
-      "Every single beat leaves a mark",
-      "Underneath the emerald sky",
-      "With every pulse, we learn to fly",
-      "No more shadows, no more doubts",
-      "Turn it up, scream it out",
-      "This is our sound, this is our soul",
-      "Let the melody take control",
-      "♪ Tunestream Immersive Audio Experience ♪"
-    ];
+  const [lyricLang, setLyricLang] = useState("en");
+  const [showAnnotation, setShowAnnotation] = useState(false);
+  const [selectedLyricForCard, setSelectedLyricForCard] = useState(null);
+  const [cardTheme, setCardTheme] = useState("emerald");
+
+  const lyricsTranslations = useMemo(() => {
+    return {
+      en: [
+        `♪ "${track?.name || 'Track'}" Playing on Tunestream ♪`,
+        "I hear the music calling my name",
+        "The rhythm flows through my veins",
+        "We trace the lights and dance in the dark",
+        "Every single beat leaves a mark",
+        "Underneath the emerald sky",
+        "With every pulse, we learn to fly",
+        "No more shadows, no more doubts",
+        "Turn it up, scream it out",
+        "This is our sound, this is our soul",
+        "Let the melody take control",
+        "♪ Tunestream Immersive Audio Experience ♪"
+      ],
+      es: [
+        `♪ "${track?.name || 'Pista'}" sonando en Tunestream ♪`,
+        "Escucho la música llamando mi nombre",
+        "El ritmo fluye por mis venas",
+        "Seguimos las luces y bailamos en la oscuridad",
+        "Cada latido deja una marca",
+        "Bajo el cielo esmeralda",
+        "Con cada pulso, aprendemos a volar",
+        "No más sombras, no más dudas",
+        "Súbelo, grítalo",
+        "Este es nuestro sonido, este es nuestro alma",
+        "Deja que la melodía tome el control",
+        "♪ Experiencia de audio inmersiva Tunestream ♪"
+      ],
+      hi: [
+        `♪ TuneStream पर "${track?.name || 'गीत'}" चल रहा है ♪`,
+        "मुझे अपना नाम पुकारता संगीत सुनाई दे रहा है",
+        "मेरी रगों में यह ताल बह रही है",
+        "हम रोशनी का पीछा करते हैं और अंधेरे में नाचते हैं",
+        "हर एक धड़कन एक छाप छोड़ती है",
+        "पन्ने जैसे हरे आसमान के नीचे",
+        "हर एक धड़कन के साथ, हम उड़ना सीखते हैं",
+        "अब कोई परछाईं नहीं, कोई शंका नहीं",
+        "आवाज़ बढ़ाओ, ज़ोर से चिल्लाओ",
+        "यह हमारी आवाज़ है, यह हमारी आत्मा है",
+        "सुरों को नियंत्रण लेने दो",
+        "♪ ट्यूनस्ट्रीम इमर्सिव ऑडियो अनुभव ♪"
+      ],
+      fr: [
+        `♪ "${track?.name || 'Piste'}" en lecture sur Tunestream ♪`,
+        "J'entends la musique m'appeler",
+        "Le rythme coule dans mes veines",
+        "Nous suivons les lumières et dansons dans le noir",
+        "Chaque battement laisse une trace",
+        "Sous le ciel d'émeraude",
+        "À chaque pulsation, nous apprenons à voler",
+        "Plus d'ombres, plus de doutes",
+        "Monte le son, crie-le fort",
+        "C'est notre son, c'est notre âme",
+        "Laisse la mélodie prendre le contrôle",
+        "♪ Expérience audio immersive Tunestream ♪"
+      ]
+    };
   }, [track]);
+
+  const lyricsLines = useMemo(() => {
+    return lyricsTranslations[lyricLang] || lyricsTranslations.en;
+  }, [lyricsTranslations, lyricLang]);
+
+  // Annotations mapped by lyric line index
+  const songAnnotations = {
+    1: "This song introduces the core narrative of modern high-fidelity acoustics designed specifically for TuneStream users.",
+    3: "This lyric describes the physiological response to deep sub-bass frequencies and spatial audio audio-stages.",
+    5: "The 'emerald sky' is a direct visual tribute to TuneStream's iconic signature design system accent color.",
+    9: "Refers to breaking free from standard web player boundaries and entering premium immersive experiences."
+  };
 
   if (!track || (collapsed && !mobileNowPlayingActive)) {
     return null;
@@ -442,24 +503,150 @@ const NowPlayingCard = () => {
           </div>
         ) : (
           <div className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center relative p-8 z-10 sticky top-[80px] text-center w-full">
+            
+            {/* Translations Toolbar */}
+            <div className="flex gap-2.5 mb-6 z-30 select-none bg-black/20 backdrop-blur px-3 py-1.5 rounded-full border border-white/5 pointer-events-auto">
+              {[
+                { code: "en", name: "English" },
+                { code: "es", name: "Español" },
+                { code: "hi", name: "हिन्दी" },
+                { code: "fr", name: "Français" }
+              ].map(lang => (
+                <button
+                  key={lang.code}
+                  onClick={() => setLyricLang(lang.code)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase transition
+                    ${lyricLang === lang.code ? "bg-emerald-500 text-black" : "bg-white/5 text-gray-400 hover:text-white"}`}
+                >
+                  {lang.name}
+                </button>
+              ))}
+            </div>
+
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-2xl w-full flex flex-col gap-6 overflow-y-auto max-h-[70vh] px-4 py-10 scrollbar-hide"
+              className="max-w-2xl w-full flex flex-col gap-5 overflow-y-auto max-h-[60vh] px-4 py-6 scrollbar-hide pointer-events-auto"
             >
-              {lyricsLines.map((line, idx) => (
-                <p 
-                  key={idx} 
-                  className="text-xl md:text-3xl font-black transition-all duration-300 hover:text-emerald-300 select-none cursor-pointer"
-                  style={{
-                    color: idx === Math.floor(progress / 8) % lyricsLines.length ? "#10b981" : "rgba(255,255,255,0.3)",
-                    textShadow: idx === Math.floor(progress / 8) % lyricsLines.length ? "0 0 20px rgba(16,185,129,0.6)" : "none"
-                  }}
-                >
-                  {line}
-                </p>
-              ))}
+              {lyricsLines.map((line, idx) => {
+                const isCurrent = idx === Math.floor(progress / 8) % lyricsLines.length;
+                const hasAnnotation = !!songAnnotations[idx];
+
+                return (
+                  <div key={idx} className="flex flex-col items-center gap-1 group relative">
+                    <p 
+                      onClick={() => setSelectedLyricForCard(line)}
+                      className="text-xl md:text-3xl font-black transition-all duration-300 hover:text-emerald-300 select-none cursor-pointer px-4 py-1.5 rounded-2xl hover:bg-white/5"
+                      style={{
+                        color: isCurrent ? "#10b981" : "rgba(255,255,255,0.35)",
+                        textShadow: isCurrent ? "0 0 20px rgba(16,185,129,0.5)" : "none"
+                      }}
+                      title="Click to generate Lyric Card"
+                    >
+                      {line}
+                    </p>
+
+                    {/* Annotation button */}
+                    {hasAnnotation && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAnnotation(showAnnotation === idx ? null : idx);
+                        }}
+                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors
+                          ${showAnnotation === idx 
+                            ? "bg-yellow-500 border-yellow-500 text-black font-black" 
+                            : "bg-white/5 border-white/10 text-yellow-500 hover:bg-white/10"}`}
+                      >
+                        Meaning
+                      </button>
+                    )}
+
+                    {/* Annotation description drawer */}
+                    <AnimatePresence>
+                      {showAnnotation === idx && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="text-[11px] text-yellow-400 bg-yellow-500/5 border border-yellow-500/10 p-3 rounded-2xl max-w-sm mt-1 leading-relaxed text-center font-bold"
+                        >
+                          {songAnnotations[idx]}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
             </motion.div>
+
+            {/* Lyric Card Share Modal */}
+            <AnimatePresence>
+              {selectedLyricForCard && (
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto">
+                  <motion.div 
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="bg-[#181818] border border-white/10 p-6 rounded-3xl w-full max-w-sm flex flex-col gap-4 shadow-2xl relative"
+                  >
+                    <h3 className="text-sm font-black uppercase text-gray-400 tracking-wider text-left">Shareable Lyric Card</h3>
+                    <button 
+                      onClick={() => setSelectedLyricForCard(null)}
+                      className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                    >
+                      <X size={18} />
+                    </button>
+
+                    <div 
+                      className={`w-full aspect-[4/3] rounded-2xl p-6 flex flex-col justify-between text-left shadow-lg transition-all duration-300
+                        ${cardTheme === 'emerald' ? 'bg-gradient-to-br from-emerald-500 to-teal-800' : ''}
+                        ${cardTheme === 'indigo' ? 'bg-gradient-to-br from-blue-600 to-indigo-900' : ''}
+                        ${cardTheme === 'orange' ? 'bg-gradient-to-br from-orange-500 to-amber-800' : ''}
+                        ${cardTheme === 'sunset' ? 'bg-gradient-to-br from-pink-600 to-rose-950' : ''}`}
+                    >
+                      <div className="text-white text-base md:text-lg font-black leading-snug drop-shadow-md">
+                        "{selectedLyricForCard}"
+                      </div>
+                      <div className="flex items-center gap-2 mt-4">
+                        <img src={track.image} className="w-8 h-8 rounded object-cover shadow" />
+                        <div>
+                          <p className="text-[10px] font-black text-white leading-none">{track.name}</p>
+                          <p className="text-[9px] text-white/75 font-semibold mt-0.5">{track.desc}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 justify-center">
+                      {['emerald', 'indigo', 'orange', 'sunset'].map(t => (
+                        <button 
+                          key={t}
+                          onClick={() => setCardTheme(t)}
+                          className={`w-5 h-5 rounded-full border border-white/20 capitalize
+                            ${t === 'emerald' ? 'bg-emerald-500' : ''}
+                            ${t === 'indigo' ? 'bg-indigo-600' : ''}
+                            ${t === 'orange' ? 'bg-orange-500' : ''}
+                            ${t === 'sunset' ? 'bg-pink-600' : ''}
+                            ${cardTheme === t ? 'ring-2 ring-white scale-110' : ''}`}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`"${selectedLyricForCard}" — ${track.name} by ${track.desc} (shared via Tunestream)`);
+                        toast.success("Lyric Card content copied to clipboard!");
+                        setSelectedLyricForCard(null);
+                      }}
+                      className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs rounded-xl shadow-lg transition active:scale-95"
+                    >
+                      Copy Share Text
+                    </button>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+
           </div>
         )}
 
